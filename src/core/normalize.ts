@@ -5,6 +5,7 @@ import {
   isSign,
   isCoeng,
   isKhmerCodePoint,
+  isShiftSign,
 } from "../constants/char-categories";
 
 const INVISIBLE_CHARS = /[\u200B\u200C\u200D\u2060\u200E\u200F\uFEFF]/g;
@@ -16,8 +17,9 @@ export function normalizeKhmerCluster(cluster: string): string {
   let i = 0;
   const base: string[] = [];
   const coengPairs: string[] = [];
+  const shiftSigns: string[] = [];
   const vowels: string[] = [];
-  const signs: string[] = [];
+  const otherSigns: string[] = [];
   const other: string[] = [];
 
   base.push(chars[i]);
@@ -34,11 +36,14 @@ export function normalizeKhmerCluster(cluster: string): string {
         i++;
       }
       coengPairs.push(pair);
+    } else if (isShiftSign(cp)) {
+      shiftSigns.push(chars[i]);
+      i++;
     } else if (isDependentVowel(cp)) {
       vowels.push(chars[i]);
       i++;
     } else if (isSign(cp)) {
-      signs.push(chars[i]);
+      otherSigns.push(chars[i]);
       i++;
     } else {
       other.push(chars[i]);
@@ -46,7 +51,7 @@ export function normalizeKhmerCluster(cluster: string): string {
     }
   }
 
-  return [...base, ...coengPairs, ...vowels, ...signs, ...other].join("");
+  return [...base, ...coengPairs, ...shiftSigns, ...vowels, ...otherSigns, ...other].join("");
 }
 
 export function normalizeKhmer(text: string): string {

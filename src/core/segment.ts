@@ -2,6 +2,9 @@ import type { SegmentOptions, SegmentResult, SegmentToken } from "../types/publi
 import { normalizeKhmer } from "./normalize";
 import { splitClusters } from "./cluster";
 import { fmmSegment } from "../algorithms/fmm";
+import { bmmSegment } from "../algorithms/bmm";
+import { bimmSegment } from "../algorithms/bimm";
+import { groupDigitTokens } from "../algorithms/group-digits";
 
 export function segmentWords(
   text: string,
@@ -14,7 +17,18 @@ export function segmentWords(
 
   let tokens: SegmentToken[];
   if (dictionary) {
-    tokens = fmmSegment(clusters, dictionary);
+    const strategy = options?.strategy ?? "fmm";
+    switch (strategy) {
+      case "bmm":
+        tokens = bmmSegment(clusters, dictionary);
+        break;
+      case "bimm":
+        tokens = bimmSegment(clusters, dictionary);
+        break;
+      default:
+        tokens = fmmSegment(clusters, dictionary);
+        break;
+    }
   } else {
     let offset = 0;
     tokens = clusters.map((cluster) => {
@@ -24,6 +38,8 @@ export function segmentWords(
       return { value: cluster, start, end, isKnown: false };
     });
   }
+
+  tokens = groupDigitTokens(tokens) as SegmentToken[];
 
   return {
     original: text,

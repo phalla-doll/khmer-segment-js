@@ -67,7 +67,7 @@ console.log(result.tokens);
 
 | Function | Description |
 |---|---|
-| `normalizeKhmer(text)` | Reorders Khmer characters into canonical order (base → coeng → vowel → sign) |
+| `normalizeKhmer(text)` | Reorders Khmer characters into canonical order (base → coeng → shift signs → vowel → sign) |
 | `normalizeKhmerCluster(cluster)` | Normalizes a single cluster |
 
 ### Cluster Utilities
@@ -170,9 +170,10 @@ This is a **separate import** — the core `khmer-segment` package stays small (
 
 ```
 input text
-  → normalize (reorder Unicode marks)
+  → normalize (reorder Unicode marks into canonical order)
   → split into clusters (not naive chars)
-  → run FMM algorithm (greedy longest match)
+  → run segmentation algorithm (FMM, BMM, or BiMM)
+  → group consecutive digits into single tokens
   → return structured tokens
 ```
 
@@ -192,7 +193,19 @@ A cluster starts with a **base** (consonant or independent vowel) and accumulate
 
 ### FMM (Forward Maximum Matching)
 
-Scans left-to-right, greedily matching the **longest** word at each position using trie-based prefix lookup. Falls back to single unknown tokens when no match is found. This is a baseline approach — bidirectional (BiMM) and frequency-aware methods generally produce better results.
+Scans left-to-right, greedily matching the **longest** word at each position using trie-based prefix lookup. Falls back to single unknown tokens when no match is found.
+
+### BMM (Backward Maximum Matching)
+
+Same idea as FMM, but scans right-to-left. Can produce different segmentation on ambiguous input where FMM greedily matches from the left.
+
+### BiMM (Bidirectional Maximum Matching)
+
+Runs both FMM and BMM, then picks the better result using heuristics: fewer unknown tokens wins; if tied, fewer total tokens (longer matches) wins; if still tied, FMM is preferred. This generally produces better results than either FMM or BMM alone.
+
+### Digit Grouping
+
+Consecutive Khmer digit clusters are automatically merged into a single token after segmentation, so `១៨៤` becomes one token instead of three separate `១`, `៨`, `៤` tokens.
 
 ---
 
@@ -257,9 +270,8 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 ## Limitations
 
-- FMM only (BMM and BiMM coming in v0.2)
 - No frequency-aware segmentation yet
-- Normalization covers basic reordering (base → coeng → vowel → sign), not all edge cases
+- Normalization covers canonical reordering (base → coeng → shift signs → vowel → sign), not all edge cases
 - No caret/backspace helpers yet
 - Dictionary-based approaches have an inherent accuracy ceiling compared to statistical/ML methods (e.g. CRF achieves ~99.7% accuracy vs ~95–97% for dictionary-based matching)
 - `splitClusters` uses a simplified Khmer Character Cluster (KCC) model — it groups base + coeng + vowel + sign but does not enforce the full KCC specification
@@ -268,20 +280,23 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 ## Roadmap
 
-### v0.1.0 (current)
+### v0.1.0
 
 - [x] `isKhmerChar`, `containsKhmer`, `isKhmerText`
 - [x] `normalizeKhmer`, `normalizeKhmerCluster`
 - [x] `splitClusters`, `countClusters`, `getClusterBoundaries`
 - [x] `createDictionary` (trie-based in-memory)
 - [x] `segmentWords` with FMM
-- [x] 98 tests
 - [x] Default dictionary (34K+ words, separate import)
 
-### v0.2.0 (next)
+### v0.2.0 (current)
 
-- [ ] BMM (Backward Maximum Matching) algorithm
-- [ ] BiMM (Bidirectional Maximum Matching) algorithm
+- [x] BMM (Backward Maximum Matching) algorithm
+- [x] BiMM (Bidirectional Maximum Matching) algorithm
+- [x] Digit grouping (consecutive Khmer digits merged into single tokens)
+- [x] Fixed normalization for MUUSIKATOAN (៉) and TRIISAP (៊) — shift signs now placed before vowels
+- [x] Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
+- [x] 139 tests
 - [ ] `compareTyping(expected, actual)` for MonkeyType-like apps
 - [ ] Better token metadata (`isKhmer`, `clusterCount`)
 

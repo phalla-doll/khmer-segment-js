@@ -7,10 +7,12 @@ export const CONSONANT_END = 0x17a2;
 export const INDEPENDENT_VOWEL_START = 0x17a3;
 export const INDEPENDENT_VOWEL_END = 0x17b3;
 
+// Dependent vowels: U+17B4 (QA) through U+17C5 (AU)
+// U+17C6–U+17C8 are NIKAHIT, REAHMUK, YUUKEALAKHMOU — signs, not vowels
 export const DEPENDENT_VOWEL_START = 0x17b4;
-export const DEPENDENT_VOWEL_END = 0x17c8;
+export const DEPENDENT_VOWEL_END = 0x17c5;
 
-export const SIGN_START = 0x17c9;
+export const SIGN_START = 0x17c6;
 export const SIGN_END = 0x17d3;
 
 export const KHMER_COENG = 0x17d2;

@@ -34,6 +34,11 @@ export function isSign(cp: number): boolean {
   return cp >= SIGN_START && cp <= SIGN_END;
 }
 
+/** MUUSIKATOAN (U+17C9) or TRIISAP (U+17CA) — consonant-shifting signs */
+export function isShiftSign(cp: number): boolean {
+  return cp === 0x17c9 || cp === 0x17ca;
+}
+
 export function isCoeng(cp: number): boolean {
   return cp === KHMER_COENG;
 }

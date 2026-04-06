@@ -44,6 +44,47 @@ describe("normalizeKhmerCluster", () => {
 
     expect(normalizeKhmerCluster(input)).toBe(input);
   });
+
+  it("places MUUSIKATOAN before dependent vowels", () => {
+    const mu = "\u1798";       // ម
+    const muusikatoan = "\u17C9"; // ៉
+    const oo = "\u17C4";      // ូ
+
+    const canonical = mu + muusikatoan + oo;
+    const reordered = mu + oo + muusikatoan;
+
+    expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+  });
+
+  it("places TRIISAP before dependent vowels", () => {
+    const ha = "\u17A0";     // ហ
+    const triisap = "\u17CA"; // ៊
+    const e = "\u17C1";      // េ
+
+    const canonical = ha + triisap + e;
+    const reordered = ha + e + triisap;
+
+    expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+  });
+
+  it("normalizes ម៉ូ cluster correctly", () => {
+    const cluster = "\u1798\u17C9\u17C4"; // ម៉ូ
+    expect(normalizeKhmerCluster(cluster)).toBe(cluster);
+
+    const reordered = "\u1798\u17C4\u17C9"; // មូ៉
+    expect(normalizeKhmerCluster(reordered)).toBe(cluster);
+  });
+
+  it("keeps other signs after vowels", () => {
+    const ka = "\u1780";     // ក
+    const aa = "\u17B6";     // ា
+    const nikahit = "\u17C6"; // ំ
+
+    const canonical = ka + aa + nikahit;
+    const reordered = ka + nikahit + aa;
+
+    expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+  });
 });
 
 describe("normalizeKhmer", () => {
@@ -99,5 +140,15 @@ describe("normalizeKhmer", () => {
   it("strips invisible chars from mixed Khmer and Latin text", () => {
     const input = "ក\u200Bhello\u200Dខ";
     expect(normalizeKhmer(input)).toBe("កhelloខ");
+  });
+
+  it("normalizes ម៉ូតូ preserving MUUSIKATOAN before vowel", () => {
+    const input = "ម៉ូតូ";
+    expect(normalizeKhmer(input)).toBe(input);
+  });
+
+  it("normalizes ប៉ុស្តិ៍ preserving MUUSIKATOAN before vowel", () => {
+    const input = "ប៉ុស្តិ៍";
+    expect(normalizeKhmer(input)).toBe(input);
   });
 });
