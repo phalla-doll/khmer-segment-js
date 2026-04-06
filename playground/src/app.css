@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Tailwind v4 uses --font-sans / --font-{name}; wrong names were ignored by the build. */
 @theme {
     --font-sans:
@@ -10,14 +12,31 @@
     /* ChatGPT-like chrome: flat canvas + hairline borders, no elevation */
     --color-canvas: #f7f7f8;
     --color-border: #e5e5e5;
+    --color-surface: #ffffff;
     /* OpenAI accent — focus rings & key selection states */
     --color-accent: #10a37f;
     --color-accent-muted: #ecfdf5;
     --color-accent-foreground: #ffffff;
 }
 
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+    --color-canvas: #09090b;
+    --color-border: #3f3f46;
+    --color-surface: #18181b;
+    --color-accent-muted: #14532d;
+}
+
 ::selection {
     background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+html.dark ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
 button,
