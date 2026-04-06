@@ -25,3 +25,7 @@ yarn-error.log*
 
 # dictionary build temp files
 /scripts/tmp/
+
+# playground build output
+/playground/dist/
+/playground/node_modules/

@@ -28,7 +28,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm run test && npm run lint"
+    "prepublishOnly": "npm run build && npm run test && npm run lint",
+    "playground:dev": "npm run dev --prefix playground",
+    "playground:build": "npm run build --prefix playground"
   },
   "keywords": [
     "khmer",
