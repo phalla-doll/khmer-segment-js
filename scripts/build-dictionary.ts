@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { join } from "path";
 
 const DATA_DIR = join(import.meta.dirname, "..", "src", "dictionary", "data");
+const SCRIPTS_DIR = import.meta.dirname;
 const OUTPUT = join(DATA_DIR, "khmer-words.json");
 
 const SOURCES: { file: string; weight: number }[] = [
@@ -14,14 +15,20 @@ const SOURCES: { file: string; weight: number }[] = [
   { file: "villages.txt", weight: 10 },
   { file: "places.txt", weight: 10 },
   { file: "names.txt", weight: 5 },
+  { file: "royal-academy.txt", weight: 5 },
 ];
 
 const BASE_URL =
   "https://raw.githubusercontent.com/silnrsi/khmerlbdict/master/src";
 
-async function downloadFile(name: string): Promise<string> {
-  const url = `${BASE_URL}/${name}`;
-  const res = await fetch(url);
+async function readFileContent(name: string): Promise<string> {
+  const localPath = join(SCRIPTS_DIR, name);
+  if (existsSync(localPath)) {
+    console.log(`  Using local file: ${localPath}`);
+    return readFileSync(localPath, "utf-8");
+  }
+  console.log(`  Downloading from ${BASE_URL}/${name}...`);
+  const res = await fetch(`${BASE_URL}/${name}`);
   if (!res.ok) throw new Error(`Failed to download ${name}: ${res.status}`);
   return await res.text();
 }
@@ -60,8 +67,8 @@ async function main() {
   const merged = new Map<string, number>();
 
   for (const { file, weight } of SOURCES) {
-    console.log(`Downloading ${file}...`);
-    const content = await downloadFile(file);
+    console.log(`Processing ${file}...`);
+    const content = await readFileContent(file);
     console.log(`  Parsing ${file} (weight: ${weight})...`);
     const words = parseLines(content, weight);
     console.log(`  Found ${words.size} unique words`);
