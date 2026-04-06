@@ -43,6 +43,8 @@
   "author": "Phalla Doll",
   "license": "MIT",
   "devDependencies": {
+    "@huggingface/hub": "^2.11.0",
+    "@types/node": "^25.5.2",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
     "vitest": "^3.0.0"
