@@ -1,52 +1,55 @@
 {
-  "name": "khmer-segment",
-  "version": "0.1.0",
-  "description": "Khmer text segmentation, normalization, and cluster utilities for JavaScript and TypeScript.",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+    "name": "khmer-segment",
+    "version": "0.1.0",
+    "description": "Khmer text segmentation, normalization, and cluster utilities for JavaScript and TypeScript.",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./dictionary": {
+            "types": "./dist/dictionary/index.d.ts",
+            "import": "./dist/dictionary/index.js",
+            "require": "./dist/dictionary/index.cjs"
+        }
     },
-    "./dictionary": {
-      "types": "./dist/dictionary/index.d.ts",
-      "import": "./dist/dictionary/index.js",
-      "require": "./dist/dictionary/index.cjs"
+    "files": [
+        "dist"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "tsc --noEmit",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "prepublishOnly": "npm run build && npm run test && npm run lint",
+        "playground:dev": "npm run dev --prefix playground",
+        "playground:build": "npm run build --prefix playground"
+    },
+    "keywords": [
+        "khmer",
+        "unicode",
+        "segmentation",
+        "nlp",
+        "typescript",
+        "javascript"
+    ],
+    "author": "Phalla Doll",
+    "license": "MIT",
+    "devDependencies": {
+        "@huggingface/hub": "^2.11.0",
+        "@types/node": "^25.5.2",
+        "prettier": "^3.8.1",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "vitest": "^3.0.0"
     }
-  },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm run test && npm run lint",
-    "playground:dev": "npm run dev --prefix playground",
-    "playground:build": "npm run build --prefix playground"
-  },
-  "keywords": [
-    "khmer",
-    "unicode",
-    "segmentation",
-    "nlp",
-    "typescript",
-    "javascript"
-  ],
-  "author": "Phalla Doll",
-  "license": "MIT",
-  "devDependencies": {
-    "@huggingface/hub": "^2.11.0",
-    "@types/node": "^25.5.2",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
-  }
 }
