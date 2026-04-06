@@ -14,6 +14,7 @@ export function fmmSegment(
   const tokens: FmmToken[] = [];
   const hasPrefixFn = dictionary.hasPrefix?.bind(dictionary);
   let i = 0;
+  let offset = 0;
 
   while (i < clusters.length) {
     let matched = false;
@@ -34,9 +35,10 @@ export function fmmSegment(
     for (let len = maxLen; len >= 1; len--) {
       const word = clusters.slice(i, i + len).join("");
       if (dictionary.has(word)) {
-        const start = clusters.slice(0, i).join("").length;
-        const end = start + word.length;
+        const start = offset;
+        const end = offset + word.length;
         tokens.push({ value: word, start, end, isKnown: true });
+        offset = end;
         i += len;
         matched = true;
         break;
@@ -45,9 +47,10 @@ export function fmmSegment(
 
     if (!matched) {
       const word = clusters[i];
-      const start = clusters.slice(0, i).join("").length;
-      const end = start + word.length;
+      const start = offset;
+      const end = offset + word.length;
       tokens.push({ value: word, start, end, isKnown: false });
+      offset = end;
       i++;
     }
   }
