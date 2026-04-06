@@ -1,0 +1,61 @@
+import { splitClusters } from "./cluster";
+import {
+  isConsonant,
+  isDependentVowel,
+  isSign,
+  isCoeng,
+  isKhmerCodePoint,
+} from "../constants/char-categories";
+
+export function normalizeKhmerCluster(cluster: string): string {
+  const chars = [...cluster];
+  if (chars.length <= 1) return chars.join("");
+
+  let i = 0;
+  const base: string[] = [];
+  const coengPairs: string[] = [];
+  const vowels: string[] = [];
+  const signs: string[] = [];
+  const other: string[] = [];
+
+  base.push(chars[i]);
+  i++;
+
+  while (i < chars.length) {
+    const cp = chars[i].codePointAt(0)!;
+
+    if (isCoeng(cp)) {
+      let pair = chars[i];
+      i++;
+      if (i < chars.length && isConsonant(chars[i].codePointAt(0)!)) {
+        pair += chars[i];
+        i++;
+      }
+      coengPairs.push(pair);
+    } else if (isDependentVowel(cp)) {
+      vowels.push(chars[i]);
+      i++;
+    } else if (isSign(cp)) {
+      signs.push(chars[i]);
+      i++;
+    } else {
+      other.push(chars[i]);
+      i++;
+    }
+  }
+
+  return [...base, ...coengPairs, ...vowels, ...signs, ...other].join("");
+}
+
+export function normalizeKhmer(text: string): string {
+  const clusters = splitClusters(text);
+  return clusters
+    .map((cluster) => {
+      const firstCp = cluster.codePointAt(0)!;
+      if (isKhmerCodePoint(firstCp)) {
+        return normalizeKhmerCluster(cluster);
+      }
+      return cluster;
+    })
+    .join("");
+}
