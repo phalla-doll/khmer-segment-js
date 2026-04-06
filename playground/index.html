@@ -466,25 +466,8 @@
     </div>
 
     <div class="input-group">
-      <label for="dict-input">Dictionary (one word per line)</label>
-      <textarea id="dict-input" rows="6" style="font-size:14px;">សួស្តី
-អ្នក
-ទាំងអស់គ្នា
-ក្មែរ
-ភាសា
-ប្រទេស
-កម្ពុជា
-សង្គម
-រាជធានី
-ផ្ទះ
-សាលា
-កូន
-ម្ដាយ
-បិតា
-គ្រូ
-សិស្ស
-ទឹក
-អាហារ</textarea>
+      <label for="dict-input">Dictionary (one word per line) <span style="color:var(--muted-gray);font-weight:400;">— added on top of the built-in 34K word dictionary</span></label>
+      <textarea id="dict-input" rows="4" style="font-size:14px;" placeholder="Add custom words here (optional)..."></textarea>
     </div>
   </div>
 
@@ -548,6 +531,10 @@
     segmentWords,
     createDictionary,
   } from "../dist/index.js";
+  import {
+    getDefaultDictionary,
+    loadFrequencyDictionary,
+  } from "../dist/dictionary/index.js";
 
   const inputEl = document.getElementById("khmer-input");
   const dictEl = document.getElementById("dict-input");
@@ -598,12 +585,16 @@
       return;
     }
 
-    const dictWords = dictEl.value
+    const builtInDict = getDefaultDictionary();
+
+    const customWords = dictEl.value
       .split("\n")
       .map((w) => w.trim())
       .filter(Boolean);
 
-    const dict = createDictionary(dictWords);
+    const freqData = loadFrequencyDictionary();
+    const allWords = [...freqData.words, ...customWords];
+    const dict = createDictionary(allWords, freqData.frequencies);
 
     const hasKhmer = containsKhmer(text);
     const isKhmer = isKhmerText(text);
@@ -616,7 +607,7 @@
       strategy,
     });
 
-    renderStats(hasKhmer, isKhmer, clusterCount, result.tokens.length, dictWords.length);
+    renderStats(hasKhmer, isKhmer, clusterCount, result.tokens.length, builtInDict.size, customWords.length);
     renderDetection(hasKhmer, isKhmer);
     renderNormalization(text, normalized);
     renderClusters(clusters);
@@ -635,7 +626,7 @@
     document.getElementById("token-count").textContent = "";
   }
 
-  function renderStats(hasKhmer, isKhmer, clusterCount, tokenCount, dictSize) {
+  function renderStats(hasKhmer, isKhmer, clusterCount, tokenCount, dictSize, customWordCount) {
     document.getElementById("stats-row").innerHTML = `
       <div class="stat-card">
         <div class="stat-value">${hasKhmer ? "Yes" : "No"}</div>
@@ -654,9 +645,14 @@
         <div class="stat-label">Tokens</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">${dictSize}</div>
+        <div class="stat-value">${dictSize.toLocaleString()}</div>
         <div class="stat-label">Dict Words</div>
       </div>
+      ${customWordCount > 0 ? `
+      <div class="stat-card">
+        <div class="stat-value">+${customWordCount}</div>
+        <div class="stat-label">Custom Words</div>
+      </div>` : ""}
     `;
   }
 

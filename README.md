@@ -115,14 +115,15 @@ interface SegmentToken {
 
 | Function | Description |
 |---|---|
-| `createDictionary(words)` | Creates an in-memory dictionary from a word list |
+| `createDictionary(words, frequencies?)` | Creates an in-memory dictionary from a word list |
 
 ```ts
-const dict = createDictionary(["សួស្តី", "អ្នក", "ក្មែរ"]);
+const dict = createDictionary(["សួស្តី", "អ្នក", "ខ្មែរ"]);
 
 dict.has("សួស្តី");        // true
 dict.hasPrefix!("សួ");     // true (trie-based O(k) lookup)
 dict.hasSuffix!("ី");       // true
+dict.size;                   // 3
 ```
 
 #### `KhmerDictionary` interface
@@ -132,10 +133,34 @@ interface KhmerDictionary {
   has(word: string): boolean;
   hasPrefix?(value: string): boolean;
   hasSuffix?(value: string): boolean;
+  getFrequency?(word: string): number | undefined;
+  size: number;
 }
 ```
 
 You can implement this interface for custom dictionary backends (remote, compressed, etc.).
+
+### Default Dictionary (`khmer-segment/dictionary`)
+
+A pre-built Khmer dictionary with **34,000+ words** sourced from [khmerlbdict](https://github.com/silnrsi/khmerlbdict) (MIT). Includes frequency data for future frequency-aware segmentation.
+
+```ts
+import { getDefaultDictionary, loadFrequencyDictionary } from "khmer-segment/dictionary";
+import { segmentWords } from "khmer-segment";
+
+const dict = getDefaultDictionary();
+
+console.log(dict.size);            // 34398
+console.log(dict.has("កម្ពុជា"));  // true
+
+const result = segmentWords("សួស្តីអ្នកទាំងអស់គ្នា", { dictionary: dict });
+
+const freqData = loadFrequencyDictionary();
+console.log(freqData.words.length);           // 34398
+console.log(freqData.frequencies.get("ជា"));  // 701541
+```
+
+This is a **separate import** — the core `khmer-segment` package stays small (~8KB). Only import the dictionary when you need it.
 
 ---
 
@@ -188,16 +213,29 @@ const result = segmentWords("កខគ");
 
 ## Dictionary Strategy
 
-The library ships with **no bundled dictionary**. This keeps the package small.
+The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 34,000+ Khmer words. This keeps the core package small (~8KB).
 
 Options:
+- Use the pre-built default: `getDefaultDictionary()` from `khmer-segment/dictionary`
 - Provide your own word list via `createDictionary(words)`
 - Load a JSON file at runtime
+- Combine both: spread default words + your custom words
 - Implement the `KhmerDictionary` interface for custom backends
 
 ```ts
-import words from "./khmer-words.json";
-const dict = createDictionary(words);
+// Option 1: Use the built-in dictionary
+import { getDefaultDictionary } from "khmer-segment/dictionary";
+const dict = getDefaultDictionary();
+
+// Option 2: Custom word list only
+import { createDictionary } from "khmer-segment";
+const dict = createDictionary(["សួស្តី", "អ្នក"]);
+
+// Option 3: Combine default + custom words
+import { loadFrequencyDictionary } from "khmer-segment/dictionary";
+import { createDictionary } from "khmer-segment";
+const { words, frequencies } = loadFrequencyDictionary();
+const dict = createDictionary([...words, "custom_word"], frequencies);
 ```
 
 ---
@@ -219,7 +257,6 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 ## Limitations
 
-- No default dictionary bundled — you must provide your own word list
 - FMM only (BMM and BiMM coming in v0.2)
 - No frequency-aware segmentation yet
 - Normalization covers basic reordering (base → coeng → vowel → sign), not all edge cases
@@ -236,7 +273,8 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - [x] `splitClusters`, `countClusters`, `getClusterBoundaries`
 - [x] `createDictionary` (trie-based in-memory)
 - [x] `segmentWords` with FMM
-- [x] 83 tests
+- [x] 98 tests
+- [x] Default dictionary (34K+ words, separate import)
 
 ### v0.2.0 (next)
 
@@ -250,7 +288,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - [ ] `deleteBackward(text, cursorIndex)` — cluster-safe backspace
 - [ ] `getCaretBoundaries(text)` — caret-safe navigation
 - [ ] Frequency-aware segmentation
-- [ ] Optional bundled mini dictionary
+- [ ] Compressed dictionary format
 
 ### Future
 
@@ -278,7 +316,7 @@ npm run lint      # TypeScript type check
 ### Automated Tests
 
 ```bash
-npm test              # run 83 tests with vitest
+npm test              # run 98 tests with vitest
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check
 ```

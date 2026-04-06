@@ -34,4 +34,6 @@ export interface KhmerDictionary {
   has(word: string): boolean;
   hasPrefix?(value: string): boolean;
   hasSuffix?(value: string): boolean;
+  getFrequency?(word: string): number | undefined;
+  size: number;
 }
