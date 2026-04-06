@@ -80,4 +80,24 @@ describe("normalizeKhmer", () => {
     const result = normalizeKhmer("ក ខ");
     expect(result).toBe("ក ខ");
   });
+
+  it("strips zero-width space (U+200B) between Khmer clusters", () => {
+    const input = "ស\u200Bប្តា\u200Bហ៍";
+    expect(normalizeKhmer(input)).toBe("សប្តាហ៍");
+  });
+
+  it("strips multiple invisible characters", () => {
+    const input = "ក\u200B\u200C\uFEFFខ";
+    expect(normalizeKhmer(input)).toBe("កខ");
+  });
+
+  it("preserves regular spaces while stripping invisible chars", () => {
+    const input = "ក\u200B ខ";
+    expect(normalizeKhmer(input)).toBe("ក ខ");
+  });
+
+  it("strips invisible chars from mixed Khmer and Latin text", () => {
+    const input = "ក\u200Bhello\u200Dខ";
+    expect(normalizeKhmer(input)).toBe("កhelloខ");
+  });
 });

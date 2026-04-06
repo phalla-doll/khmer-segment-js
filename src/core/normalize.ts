@@ -7,6 +7,8 @@ import {
   isKhmerCodePoint,
 } from "../constants/char-categories";
 
+const INVISIBLE_CHARS = /[\u200B\u200C\u200D\u2060\u200E\u200F\uFEFF]/g;
+
 export function normalizeKhmerCluster(cluster: string): string {
   const chars = [...cluster];
   if (chars.length <= 1) return chars.join("");
@@ -48,7 +50,8 @@ export function normalizeKhmerCluster(cluster: string): string {
 }
 
 export function normalizeKhmer(text: string): string {
-  const clusters = splitClusters(text);
+  const cleaned = text.replace(INVISIBLE_CHARS, "");
+  const clusters = splitClusters(cleaned);
   return clusters
     .map((cluster) => {
       const firstCp = cluster.codePointAt(0)!;

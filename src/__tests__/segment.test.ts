@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { segmentWords } from "../core/segment";
 import { createDictionary } from "../dictionary/create-dictionary";
+import { getDefaultDictionary } from "../dictionary/default-dictionary";
 
 describe("segmentWords", () => {
   const dict = createDictionary(["សួស្តី", "អ្នក", "ក្មែរ", "ទាំងអស់គ្នា"]);
@@ -78,5 +79,24 @@ describe("segmentWords", () => {
   it("handles text where no word matches", () => {
     const result = segmentWords("ឥត", { dictionary: dict });
     expect(result.tokens.every((t) => !t.isKnown)).toBe(true);
+  });
+
+  describe("zero-width space handling", () => {
+    const defaultDict = getDefaultDictionary();
+
+    const zwsCases = [
+      { word: "សប្តាហ៍", input: "ស\u200Bប្តា\u200Bហ៍" },
+      { word: "រៀងរាល់", input: "រៀង\u200Bរាល់" },
+      { word: "កែច្នៃ", input: "កែ\u200Bច្នៃ" },
+    ];
+
+    for (const { word, input } of zwsCases) {
+      it(`segments "${word}" with ZWS as known word`, () => {
+        const result = segmentWords(input, { dictionary: defaultDict });
+        const matched = result.tokens.find((t) => t.value === word);
+        expect(matched).toBeDefined();
+        expect(matched!.isKnown).toBe(true);
+      });
+    }
   });
 });
