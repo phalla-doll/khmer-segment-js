@@ -86,32 +86,36 @@
             </div>
         </header>
 
-        <div
-            class="app mx-auto grid min-h-[calc(100vh-3.25rem)] max-w-[1136px] grid-cols-1 md:grid-cols-2"
+        <main
+            class="app mx-auto w-full max-w-3xl px-4 pb-8 pt-4"
         >
-            <div
-                class="panel panel--input border-b border-border bg-white p-4 md:border-b-0 md:border-r md:border-border"
-            >
-                <div class="mb-3 text-xs font-medium text-neutral-500">
+            <section aria-labelledby="input-heading">
+                <div
+                    class="mb-3 text-xs font-medium text-neutral-500"
+                    id="input-heading"
+                >
                     Input
                 </div>
 
-                <div class="mb-3">
-                    <label
-                        for="khmer-input"
-                        class="mb-1.5 block text-[13px] font-medium text-neutral-600"
-                        >Khmer Text</label
-                    >
-                    <textarea
-                        id="khmer-input"
-                        rows="6"
-                        placeholder="Type or paste Khmer text here..."
-                        class="w-full resize-y rounded-2xl border border-border bg-white px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2"
-                    >សួស្តីអ្នកទាំងអស់គ្នា</textarea>
-                </div>
+                <div
+                    class="rounded-2xl border border-border bg-white p-4"
+                >
+                    <div>
+                        <label
+                            for="khmer-input"
+                            class="mb-1.5 block text-[13px] font-medium text-neutral-600"
+                            >Khmer Text</label
+                        >
+                        <textarea
+                            id="khmer-input"
+                            rows="5"
+                            placeholder="Type or paste Khmer text here..."
+                            class="w-full min-h-[7.5rem] resize-y rounded-2xl border border-border bg-white px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2"
+                        >សួស្តីអ្នកទាំងអស់គ្នា</textarea>
+                    </div>
 
                 <details
-                    class="group mt-1 overflow-hidden rounded-2xl border border-border bg-white"
+                    class="group mt-4 overflow-hidden rounded-xl border border-border bg-canvas"
                 >
                     <summary
                         class="flex cursor-pointer list-none items-center gap-2 px-3.5 py-3 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 [&::-webkit-details-marker]:hidden"
@@ -151,9 +155,14 @@
                         ></textarea>
                     </div>
                 </details>
-            </div>
+                </div>
+            </section>
 
-            <div class="panel panel--results bg-white p-4" id="results-panel">
+            <section
+                class="mt-8 border-t border-border pt-8"
+                id="results-panel"
+                aria-label="Segmentation results"
+            >
                 <div class="mb-3 text-xs font-medium text-neutral-500">
                     Results
                 </div>
@@ -290,8 +299,8 @@
                         id="segment-result"
                     ></div>
                 </section>
-            </div>
-        </div>
+            </section>
+        </main>
 
         <script type="module" src="/src/main.ts"></script>
     </body>
