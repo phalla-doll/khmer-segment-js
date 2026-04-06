@@ -273,6 +273,36 @@ npm run lint      # TypeScript type check
 
 ---
 
+## Testing
+
+### Automated Tests
+
+```bash
+npm test              # run 83 tests with vitest
+npm run test:watch    # watch mode — re-runs on changes
+npm run lint          # TypeScript type check
+```
+
+### Manual Testing (Playground)
+
+An interactive playground is available for live manual testing of all library functions.
+
+```bash
+npm run build
+python3 -m http.server 3457
+```
+
+Open **http://localhost:3457/playground/index.html** in your browser.
+
+Features:
+- Live Khmer text input with instant results
+- Editable dictionary (add/remove words on the fly)
+- Strategy selector (FMM) and normalize toggle
+- Detection, normalization, cluster splitting, and segmentation panels
+- JSON output with copy button
+
+---
+
 ## License
 
 MIT
