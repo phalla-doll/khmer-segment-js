@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/khmer-segment-logo.svg" alt="khmer-segment logo" width="128" height="128" />
-</p>
+
 
 # khmer-segment
 
