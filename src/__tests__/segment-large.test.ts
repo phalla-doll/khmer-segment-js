@@ -81,4 +81,29 @@ describe("large text correctness", () => {
     const khmerTokens = result.tokens.filter((t) => /[\u1780-\u17FF]/.test(t.value));
     expect(khmerTokens.length).toBeGreaterThan(0);
   });
+
+  it("segments real-world news text with ZWS as compound known words", () => {
+    const text =
+      "ផលិតផល\u200Bខ្មែរ\u200Bច្រើន\u200Bមុខ \u200Bដាំ\u200Bដុះ និង\u200Bកែ\u200Bច្នៃ\u200Bដោយ\u200Bកសិករ ផលិតករ និង\u200Bសិប្បករ\u200Bខ្មែរ នៅ\u200Bក្នុង\u200Bខេត្តកំពង់ស្ពឺ\u200B នៅ\u200Bតែ\u200Bបន្ត\u200Bដាក់\u200Bលក់\u200Bរៀង\u200Bរាល់\u200Bចុង\u200Bស\u200Bប្តា\u200Bហ៍";
+
+    const result = segmentWords(text, { dictionary: dict });
+
+    const joined = result.tokens.map((t) => t.value).join("");
+    expect(joined).toBe(result.normalized);
+
+    expect(result.tokens[0].start).toBe(0);
+    expect(result.tokens[result.tokens.length - 1].end).toBe(result.normalized.length);
+
+    expect(result.tokens.every((t) => t.value !== "\u200B")).toBe(true);
+
+    const compoundKnown = ["កែច្នៃ", "រៀងរាល់", "សប្តាហ៍"];
+    for (const word of compoundKnown) {
+      const tok = result.tokens.find((t) => t.value === word);
+      expect(tok).toBeDefined();
+      expect(tok!.isKnown).toBe(true);
+    }
+
+    const knownRatio = result.tokens.filter((t) => t.isKnown).length / result.tokens.length;
+    expect(knownRatio).toBeGreaterThan(0.6);
+  });
 });
