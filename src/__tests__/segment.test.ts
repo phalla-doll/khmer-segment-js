@@ -113,14 +113,14 @@ describe("segmentWords", () => {
 
     it("groups digits surrounded by words", () => {
       const result = segmentWords("សួស្តី១៨៤អ្នក", { dictionary: dict });
-      const digitToken = result.tokens.find((t) => /^[\u17E0-\u17E9]+$/.test(t.value));
+      const digitToken = result.tokens.find((t) => /^[\u17E0-\u17E90-9]+$/.test(t.value));
       expect(digitToken).toBeDefined();
       expect(digitToken!.value).toBe("១៨៤");
     });
 
     it("does not group non-adjacent digits", () => {
       const result = segmentWords("១អ្នក៨", { dictionary: dict });
-      const digitTokens = result.tokens.filter((t) => /^[\u17E0-\u17E9]$/.test(t.value));
+      const digitTokens = result.tokens.filter((t) => /^[\u17E0-\u17E90-9]$/.test(t.value));
       expect(digitTokens).toHaveLength(2);
       expect(digitTokens[0].value).toBe("១");
       expect(digitTokens[1].value).toBe("៨");
@@ -130,6 +130,33 @@ describe("segmentWords", () => {
       const result = segmentWords("៥៦៧");
       expect(result.tokens).toHaveLength(1);
       expect(result.tokens[0].value).toBe("៥៦៧");
+    });
+
+    it("groups mixed Arabic and Khmer digits into a single token", () => {
+      const result = segmentWords("២០2៥", { dictionary: dict });
+      expect(result.tokens).toHaveLength(1);
+      expect(result.tokens[0].value).toBe("២០2៥");
+      expect(result.tokens[0].start).toBe(0);
+      expect(result.tokens[0].end).toBe(4);
+    });
+
+    it("groups pure Arabic digits into a single token", () => {
+      const result = segmentWords("2025", { dictionary: dict });
+      expect(result.tokens).toHaveLength(1);
+      expect(result.tokens[0].value).toBe("2025");
+    });
+
+    it("groups mixed digits surrounded by words", () => {
+      const result = segmentWords("សួស្តី២០2៥អ្នក", { dictionary: dict });
+      const digitToken = result.tokens.find((t) => /[\u17E0-\u17E90-9]/.test(t.value));
+      expect(digitToken).toBeDefined();
+      expect(digitToken!.value).toBe("២០2៥");
+    });
+
+    it("groups mixed digits without dictionary", () => {
+      const result = segmentWords("១២3៤");
+      expect(result.tokens).toHaveLength(1);
+      expect(result.tokens[0].value).toBe("១២3៤");
     });
   });
 
@@ -208,6 +235,43 @@ describe("segmentWords", () => {
       expect(result.tokens).toHaveLength(1);
       expect(result.tokens[0].value).toBe("ទាំងអស់គ្នា");
       expect(result.tokens[0].isKnown).toBe(true);
+    });
+  });
+
+  describe("number word recognition", () => {
+    const dict = getDefaultDictionary();
+
+    it("recognizes basic number words", () => {
+      const result = segmentWords("មួយ", { dictionary: dict });
+      expect(result.tokens[0].isKnown).toBe(true);
+    });
+
+    it("recognizes multiple number words", () => {
+      const result = segmentWords("មួយពីរបួន", { dictionary: dict });
+      expect(result.tokens.map((t) => t.value)).toEqual(["មួយ", "ពីរ", "បួន"]);
+      expect(result.tokens.every((t) => t.isKnown)).toBe(true);
+    });
+
+    it("recognizes place value words", () => {
+      const result = segmentWords("រយពាន់ម៉ឺនសែនលាន", { dictionary: dict });
+      expect(result.tokens.every((t) => t.isKnown)).toBe(true);
+    });
+
+    it("recognizes compound number words", () => {
+      const result = segmentWords("ដប់មួយ", { dictionary: dict });
+      expect(result.tokens.every((t) => t.isKnown)).toBe(true);
+    });
+
+    it("recognizes tens place words", () => {
+      const result = segmentWords("សាមសិប", { dictionary: dict });
+      expect(result.tokens[0].value).toBe("សាមសិប");
+      expect(result.tokens[0].isKnown).toBe(true);
+    });
+
+    it("segments mixed text with number words", () => {
+      const result = segmentWords("មានមួយពីរបី", { dictionary: dict });
+      const reconstructed = result.tokens.map((t) => t.value).join("");
+      expect(reconstructed).toBe("មានមួយពីរបី");
     });
   });
 
