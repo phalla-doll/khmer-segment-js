@@ -1,563 +1,278 @@
-Great name.
+# khmer-segment
 
-Here’s a clean architecture for **`khmer-segment`** as a publishable TypeScript npm package.
+A framework-agnostic Khmer text processing library for JavaScript and TypeScript.
 
-## Goal
+Works in **Next.js**, **Angular**, **React**, **Vue**, **Node.js**, and the **browser**.
 
-A framework-agnostic core package for Khmer text processing that works in:
-
-* Next.js
-* Angular
-* React
-* Vue
-* Node.js
-* browser apps
-
-Focus the first version on:
-
-* Khmer detection
-* normalization
-* cluster splitting
-* optional word segmentation
-* typing-safe comparison utilities
+Zero external dependencies. Tree-shakeable. Pure functions.
 
 ---
 
-## Package direction
+## Install
 
-Start with **one package first**:
-
-`khmer-segment`
-
-Later, if it grows, split into:
-
-* `khmer-segment`
-* `khmer-segment/react`
-* `khmer-segment/angular`
-
-For now, keep everything in one repo and one package.
-
----
-
-## Suggested feature modules
-
-### 1. Unicode + detection
-
-Basic helpers to identify Khmer text and code points.
-
-Examples:
-
-* `isKhmerChar(char)`
-* `isKhmerText(text)`
-* `containsKhmer(text)`
-
-### 2. Normalization
-
-Normalize Khmer Unicode ordering before any matching/segmentation.
-
-Examples:
-
-* `normalizeKhmer(text)`
-* `normalizeKhmerCluster(cluster)`
-
-### 3. Cluster utilities
-
-Split text into Khmer-safe units instead of naive JS characters.
-
-Examples:
-
-* `splitClusters(text)`
-* `getClusterAt(text, index)`
-* `countClusters(text)`
-
-### 4. Segmentation
-
-Dictionary-based segmentation with pluggable corpus.
-
-Examples:
-
-* `segmentWords(text, options?)`
-* `tokenize(text, options?)`
-
-### 5. Typing helpers
-
-Useful for MonkeyType-like apps.
-
-Examples:
-
-* `compareTyping(expected, actual)`
-* `deleteBackward(text, cursorIndex)`
-* `getCaretBoundaries(text)`
-
-### 6. Dictionary tools
-
-Allow users to inject custom wordlists instead of bundling huge defaults.
-
-Examples:
-
-* `createDictionary(words)`
-* `loadDictionary(data)`
-* `hasWord(word)`
-
----
-
-## Recommended folder structure
-
-```txt
-khmer-segment/
-├─ src/
-│  ├─ index.ts
-│  ├─ constants/
-│  │  ├─ unicode.ts
-│  │  ├─ char-categories.ts
-│  │  └─ defaults.ts
-│  ├─ core/
-│  │  ├─ detect.ts
-│  │  ├─ normalize.ts
-│  │  ├─ cluster.ts
-│  │  ├─ segment.ts
-│  │  ├─ tokenize.ts
-│  │  ├─ compare.ts
-│  │  ├─ caret.ts
-│  │  └─ delete.ts
-│  ├─ dictionary/
-│  │  ├─ types.ts
-│  │  ├─ create-dictionary.ts
-│  │  ├─ memory-dictionary.ts
-│  │  └─ lookup.ts
-│  ├─ algorithms/
-│  │  ├─ fmm.ts
-│  │  ├─ bmm.ts
-│  │  └─ bimm.ts
-│  ├─ utils/
-│  │  ├─ string.ts
-│  │  ├─ assert.ts
-│  │  └─ ranges.ts
-│  ├─ types/
-│  │  ├─ cluster.ts
-│  │  ├─ segment.ts
-│  │  ├─ typing.ts
-│  │  └─ public.ts
-│  └─ __tests__/
-│     ├─ detect.test.ts
-│     ├─ normalize.test.ts
-│     ├─ cluster.test.ts
-│     ├─ segment.test.ts
-│     └─ compare.test.ts
-├─ data/
-│  ├─ sample-dictionary.json
-│  └─ sample-texts.json
-├─ scripts/
-│  ├─ build-dictionary.ts
-│  └─ validate-data.ts
-├─ examples/
-│  ├─ nextjs-demo/
-│  ├─ angular-demo/
-│  └─ node-demo/
-├─ package.json
-├─ tsconfig.json
-├─ tsup.config.ts
-├─ vitest.config.ts
-├─ README.md
-├─ LICENSE
-├─ .npmignore
-└─ .gitignore
+```bash
+npm install khmer-segment
 ```
 
 ---
 
-## Module responsibilities
-
-### `core/detect.ts`
-
-Responsible for Khmer presence and script checks.
+## Quick Start
 
 ```ts
-export function isKhmerChar(char: string): boolean
-export function containsKhmer(text: string): boolean
-export function isKhmerText(text: string): boolean
-```
-
-### `core/normalize.ts`
-
-Responsible for Khmer character-order normalization.
-
-```ts
-export function normalizeKhmer(text: string): string
-export function normalizeKhmerCluster(cluster: string): string
-```
-
-### `core/cluster.ts`
-
-Responsible for Khmer cluster parsing.
-
-```ts
-export function splitClusters(text: string): string[]
-export function countClusters(text: string): number
-export function getClusterBoundaries(text: string): Array<{ start: number; end: number }>
-```
-
-### `core/segment.ts`
-
-Public segmentation API.
-
-```ts
-export function segmentWords(
-  text: string,
-  options?: SegmentOptions
-): SegmentResult
-```
-
-### `algorithms/fmm.ts`, `bmm.ts`, `bimm.ts`
-
-Keep algorithm implementations isolated so you can switch later.
-
-### `dictionary/`
-
-Abstraction layer for dictionary storage and lookup.
-
-This is important because later you may support:
-
-* in-memory dictionary
-* compressed dictionary
-* remote-loaded dictionary
-
----
-
-## Public API design
-
-Keep the API small and stable.
-
-```ts
-export {
+import {
   containsKhmer,
-  isKhmerChar,
-  isKhmerText,
-} from "./core/detect";
-
-export {
   normalizeKhmer,
-  normalizeKhmerCluster,
-} from "./core/normalize";
-
-export {
   splitClusters,
   countClusters,
-  getClusterBoundaries,
-} from "./core/cluster";
-
-export {
-  segmentWords,
-} from "./core/segment";
-
-export {
-  compareTyping,
-} from "./core/compare";
-
-export {
-  deleteBackward,
-} from "./core/delete";
-
-export {
   createDictionary,
-} from "./dictionary/create-dictionary";
+  segmentWords,
+} from "khmer-segment";
 
-export type {
-  SegmentOptions,
-  SegmentResult,
-  SegmentToken,
-  TypingComparisonResult,
-  KhmerDictionary,
-} from "./types/public";
+// Detect Khmer text
+containsKhmer("Hello សួស្តី"); // true
+isKhmerText("សួស្តីអ្នក");      // true
+
+// Normalize Unicode ordering
+const text = normalizeKhmer("សួស្តីអ្នក");
+
+// Split into grapheme clusters (not naive chars)
+const clusters = splitClusters("សួស្តី"); // ["សួ", "ស្តី"]
+countClusters("សួស្តី"); // 2
+
+// Segment words with a dictionary
+const dict = createDictionary(["សួស្តី", "អ្នក", "ទាំងអស់គ្នា"]);
+const result = segmentWords("សួស្តីអ្នកទាំងអស់គ្នា", { dictionary: dict });
+
+console.log(result.tokens);
+// [
+//   { value: "សួស្តី", start: 0, end: 6, isKnown: true },
+//   { value: "អ្នក", start: 6, end: 9, isKnown: true },
+//   { value: "ទាំងអស់គ្នា", start: 9, end: 19, isKnown: true },
+// ]
 ```
 
 ---
 
-## Suggested TypeScript types
+## API Reference
 
-### `types/public.ts`
+### Detection
+
+| Function | Description |
+|---|---|
+| `isKhmerChar(char)` | Returns `true` if the character is a Khmer code point |
+| `containsKhmer(text)` | Returns `true` if the text contains any Khmer characters |
+| `isKhmerText(text)` | Returns `true` if all non-whitespace characters are Khmer |
+
+### Normalization
+
+| Function | Description |
+|---|---|
+| `normalizeKhmer(text)` | Reorders Khmer characters into canonical order (base → coeng → vowel → sign) |
+| `normalizeKhmerCluster(cluster)` | Normalizes a single cluster |
+
+### Cluster Utilities
+
+| Function | Description |
+|---|---|
+| `splitClusters(text)` | Splits text into Khmer-safe grapheme clusters |
+| `countClusters(text)` | Returns the number of clusters in the text |
+| `getClusterBoundaries(text)` | Returns `{ start, end }` offsets for each cluster |
+
+### Segmentation
+
+| Function | Description |
+|---|---|
+| `segmentWords(text, options?)` | Segments text into word tokens using dictionary-based matching |
+
+#### `SegmentOptions`
 
 ```ts
-export interface SegmentToken {
-  value: string;
-  start: number;
-  end: number;
-  isKnown: boolean;
-}
-
-export interface SegmentOptions {
-  strategy?: "fmm" | "bmm" | "bimm";
+interface SegmentOptions {
+  strategy?: "fmm" | "bmm" | "bimm"; // default: "fmm"
   dictionary?: KhmerDictionary;
-  normalize?: boolean;
+  normalize?: boolean; // default: true
 }
+```
 
-export interface SegmentResult {
+#### `SegmentResult`
+
+```ts
+interface SegmentResult {
   original: string;
   normalized: string;
   tokens: SegmentToken[];
 }
 
-export interface TypingDiffItem {
-  expected?: string;
-  actual?: string;
-  correct: boolean;
+interface SegmentToken {
+  value: string;
+  start: number;
+  end: number;
+  isKnown: boolean;
 }
+```
 
-export interface TypingComparisonResult {
-  expectedClusters: string[];
-  actualClusters: string[];
-  diff: TypingDiffItem[];
-  accuracy: number;
-}
+### Dictionary
 
-export interface KhmerDictionary {
+| Function | Description |
+|---|---|
+| `createDictionary(words)` | Creates an in-memory dictionary from a word list |
+
+```ts
+const dict = createDictionary(["សួស្តី", "អ្នក", "ក្មែរ"]);
+
+dict.has("សួស្តី");        // true
+dict.hasPrefix!("សួ");     // true (trie-based O(k) lookup)
+dict.hasSuffix!("ី");       // true
+```
+
+#### `KhmerDictionary` interface
+
+```ts
+interface KhmerDictionary {
   has(word: string): boolean;
   hasPrefix?(value: string): boolean;
   hasSuffix?(value: string): boolean;
 }
 ```
 
----
-
-## Suggested internal layering
-
-Use this rule:
-
-* `core/` can call `algorithms/`, `dictionary/`, `utils/`
-* `algorithms/` can call `dictionary/`, `utils/`, `constants/`
-* `dictionary/` should not depend on `core/`
-* `types/` depends on nothing
-
-This keeps the package clean.
+You can implement this interface for custom dictionary backends (remote, compressed, etc.).
 
 ---
 
-## Build setup
+## How It Works
 
-Use **tsup**. It is simple and good for libraries.
+### Segmentation Pipeline
 
-### `package.json`
-
-```json
-{
-  "name": "khmer-segment",
-  "version": "0.1.0",
-  "description": "Khmer text segmentation, normalization, and cluster utilities for JavaScript and TypeScript.",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "tsc --noEmit",
-    "prepublishOnly": "npm run build && npm run test && npm run lint"
-  },
-  "keywords": [
-    "khmer",
-    "unicode",
-    "segmentation",
-    "nlp",
-    "typescript",
-    "javascript"
-  ],
-  "author": "Phalla Doll",
-  "license": "MIT",
-  "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
-  }
-}
+```
+input text
+  → normalize (reorder Unicode marks)
+  → split into clusters (not naive chars)
+  → run FMM algorithm (greedy longest match)
+  → return structured tokens
 ```
 
+### Cluster Splitting
+
+Khmer characters combine into grapheme clusters. A naive `text.split("")` breaks them incorrectly.
+
+```
+"ស្តី" → naive split: ["ស", "្", "ត", "ី"] (4 pieces, broken)
+"ស្តី" → splitClusters: ["ស្តី"] (1 cluster, correct)
+```
+
+A cluster starts with a **base** (consonant or independent vowel) and accumulates:
+- `្` (coeng) + consonant → subscript pair
+- dependent vowels
+- diacritic signs
+
+### FMM (Forward Maximum Matching)
+
+Scans left-to-right, greedily matching the **longest** word at each position using trie-based prefix lookup. Falls back to single unknown tokens when no match is found.
+
 ---
 
-## `tsup.config.ts`
+## No Dictionary Provided
+
+When no dictionary is passed to `segmentWords()`, it returns each cluster as an unknown token:
 
 ```ts
-import { defineConfig } from "tsup";
-
-export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["esm", "cjs"],
-  dts: true,
-  sourcemap: true,
-  clean: true,
-  minify: false,
-  target: "es2020"
-});
+const result = segmentWords("កខគ");
+// tokens: [
+//   { value: "ក", isKnown: false },
+//   { value: "ខ", isKnown: false },
+//   { value: "គ", isKnown: false },
+// ]
 ```
 
 ---
 
-## Example implementation flow
+## Dictionary Strategy
 
-### segmentation pipeline
+The library ships with **no bundled dictionary**. This keeps the package small.
 
-1. receive text
-2. detect Khmer
-3. normalize text
-4. split into clusters
-5. run selected algorithm
-6. return structured tokens
+Options:
+- Provide your own word list via `createDictionary(words)`
+- Load a JSON file at runtime
+- Implement the `KhmerDictionary` interface for custom backends
 
-That means your `segmentWords()` becomes your stable entry point, while internals can change later.
+```ts
+import words from "./khmer-words.json";
+const dict = createDictionary(words);
+```
 
 ---
 
-## Suggested MVP scope
+## Framework Compatibility
 
-### v0.1.0
+| Environment | Support |
+|---|---|
+| Node.js (ESM + CJS) | Yes |
+| Browser (ESM) | Yes |
+| Next.js | Yes |
+| React | Yes |
+| Angular | Yes |
+| Vue | Yes |
 
-* `containsKhmer`
-* `normalizeKhmer`
-* `splitClusters`
-* `countClusters`
-* `createDictionary`
-* `segmentWords` with `fmm`
-* basic tests
+No framework-specific code in the core. Tree-shakeable with `sideEffects: false`.
 
-### v0.2.0
+---
 
-* `bmm` and `bimm`
-* typing comparison helpers
-* better token metadata
-* small demo app
+## Limitations
+
+- No default dictionary bundled — you must provide your own word list
+- FMM only (BMM and BiMM coming in v0.2)
+- No frequency-aware segmentation yet
+- Normalization covers basic reordering (base → coeng → vowel → sign), not all edge cases
+- No caret/backspace helpers yet
+
+---
+
+## Roadmap
+
+### v0.1.0 (current)
+
+- [x] `isKhmerChar`, `containsKhmer`, `isKhmerText`
+- [x] `normalizeKhmer`, `normalizeKhmerCluster`
+- [x] `splitClusters`, `countClusters`, `getClusterBoundaries`
+- [x] `createDictionary` (trie-based in-memory)
+- [x] `segmentWords` with FMM
+- [x] 83 tests
+
+### v0.2.0 (next)
+
+- [ ] BMM (Backward Maximum Matching) algorithm
+- [ ] BiMM (Bidirectional Maximum Matching) algorithm
+- [ ] `compareTyping(expected, actual)` for MonkeyType-like apps
+- [ ] Better token metadata (`isKhmer`, `clusterCount`)
 
 ### v0.3.0
 
-* backspace/caret-safe helpers
-* frequency-aware segmentation
-* optional bundled mini dictionary
+- [ ] `deleteBackward(text, cursorIndex)` — cluster-safe backspace
+- [ ] `getCaretBoundaries(text)` — caret-safe navigation
+- [ ] Frequency-aware segmentation
+- [ ] Optional bundled mini dictionary
+
+### Future
+
+- [ ] `khmer-segment/react` — `useKhmerSegments`, `useKhmerTyping`
+- [ ] `khmer-segment/angular` — injectable service, pipe
+- [ ] Compressed dictionary format
+- [ ] ICU-style line-breaking helpers
 
 ---
 
-## Dictionary strategy
+## Development
 
-Do not ship a huge dictionary inside the library by default.
-
-Better options:
-
-* ship with **no default dictionary**
-* optionally offer:
-
-  * `khmer-segment/dictionaries/basic`
-  * separate JSON download
-  * user-provided dictionary
-
-This keeps bundle size small for Next.js and Angular apps.
-
-Example:
-
-```ts
-import { createDictionary, segmentWords } from "khmer-segment";
-import words from "./khmer-words.json";
-
-const dict = createDictionary(words);
-
-const result = segmentWords("សួស្តីអ្នកទាំងអស់គ្នា", {
-  dictionary: dict,
-  strategy: "bimm",
-});
+```bash
+npm install       # install dependencies
+npm run build     # build with tsup (ESM + CJS + types)
+npm test          # run vitest
+npm run test:watch  # watch mode
+npm run lint      # TypeScript type check
 ```
 
 ---
 
-## README structure
+## License
 
-Your README should include:
-
-* what the package does
-* install
-* quick start
-* core APIs
-* dictionary setup
-* framework compatibility
-* limitations
-* roadmap
-
----
-
-## Example README quick start
-
-```ts
-import { createDictionary, normalizeKhmer, splitClusters, segmentWords } from "khmer-segment";
-
-const dictionary = createDictionary([
-  "សួស្តី",
-  "អ្នក",
-  "ទាំងអស់គ្នា"
-]);
-
-const text = normalizeKhmer("សួស្តីអ្នកទាំងអស់គ្នា");
-const clusters = splitClusters(text);
-const result = segmentWords(text, { dictionary });
-
-console.log(clusters);
-console.log(result.tokens);
-```
-
----
-
-## Testing priorities
-
-Most important tests:
-
-* Unicode normalization correctness
-* cluster splitting correctness
-* segmentation with known dictionary
-* segmentation with unknown words
-* mixed Khmer + Latin text
-* punctuation and spaces
-* edge cases with visually same but differently ordered Khmer characters
-
-That part matters a lot for trust.
-
----
-
-## Good future extensions
-
-Later you can add:
-
-* `khmer-segment/react`
-
-  * `useKhmerSegments`
-  * `useKhmerTyping`
-* `khmer-segment/angular`
-
-  * injectable service
-  * pipe for segmentation
-* ICU-style line-breaking helpers
-* editor plugins
-* input method helpers
-
----
-
-## My recommendation
-
-For the first publishable version, keep it focused:
-
-* **core TypeScript package**
-* **small public API**
-* **no framework lock-in**
-* **dictionary injection**
-* **strong tests**
-
-That gives you something real, useful, and easy to maintain.
-
-Next best step is to draft:
-**actual starter files** for `package.json`, `src/index.ts`, types, and first function stubs.
+MIT
