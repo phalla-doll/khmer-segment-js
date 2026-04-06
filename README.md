@@ -142,7 +142,7 @@ You can implement this interface for custom dictionary backends (remote, compres
 
 ### Default Dictionary (`khmer-segment/dictionary`)
 
-A pre-built Khmer dictionary with **34,000+ words** sourced from [khmerlbdict](https://github.com/silnrsi/khmerlbdict) (MIT). Includes frequency data for future frequency-aware segmentation.
+A pre-built Khmer dictionary with **49,113 words** sourced from [khmerlbdict](https://github.com/silnrsi/khmerlbdict) (MIT) and the Royal Academy of Cambodia's Khmer Dictionary. Includes frequency data for future frequency-aware segmentation.
 
 ```ts
 import { getDefaultDictionary, loadFrequencyDictionary } from "khmer-segment/dictionary";
@@ -150,13 +150,13 @@ import { segmentWords } from "khmer-segment";
 
 const dict = getDefaultDictionary();
 
-console.log(dict.size);            // 34398
+console.log(dict.size);            // 49113
 console.log(dict.has("កម្ពុជា"));  // true
 
 const result = segmentWords("សួស្តីអ្នកទាំងអស់គ្នា", { dictionary: dict });
 
 const freqData = loadFrequencyDictionary();
-console.log(freqData.words.length);           // 34398
+console.log(freqData.words.length);           // 49113
 console.log(freqData.frequencies.get("ជា"));  // 701541
 ```
 
@@ -205,7 +205,7 @@ Runs both FMM and BMM, then picks the better result using heuristics: fewer unkn
 
 ### Digit Grouping
 
-Consecutive Khmer digit clusters are automatically merged into a single token after segmentation, so `១៨៤` becomes one token instead of three separate `១`, `៨`, `៤` tokens.
+Consecutive Khmer digit clusters (and ASCII digits) are automatically merged into a single token after segmentation, so `១៨៤` or `184` becomes one token instead of three separate tokens.
 
 ---
 
@@ -226,7 +226,7 @@ const result = segmentWords("កខគ");
 
 ## Dictionary Strategy
 
-The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 34,000+ Khmer words. This keeps the core package small (~8KB).
+The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 49,113 Khmer words. This keeps the core package small (~8KB).
 
 Options:
 - Use the pre-built default: `getDefaultDictionary()` from `khmer-segment/dictionary`
@@ -296,7 +296,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - [x] Digit grouping (consecutive Khmer digits merged into single tokens)
 - [x] Fixed normalization for MUUSIKATOAN (៉) and TRIISAP (៊) — shift signs now placed before vowels
 - [x] Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
-- [x] 139 tests
+- [x] 149 tests
 - [ ] `compareTyping(expected, actual)` for MonkeyType-like apps
 - [ ] Better token metadata (`isKhmer`, `clusterCount`)
 
@@ -343,16 +343,18 @@ npm run lint          # TypeScript type check
 An interactive playground is available for live manual testing of all library functions.
 
 ```bash
-npm run build
-python3 -m http.server 3457
+cd playground
+npm install
+npm run dev
 ```
 
-Open **http://localhost:3457/playground/index.html** in your browser.
+Open the URL shown (typically **http://localhost:5173**) in your browser.
 
 Features:
 - Live Khmer text input with instant results
 - Editable dictionary (add/remove words on the fly)
-- Strategy selector (FMM) and normalize toggle
+- Strategy selector (FMM / BMM / BiMM)
+- Normalize toggle (On/Off)
 - Detection, normalization, cluster splitting, and segmentation panels
 - JSON output with copy button
 
