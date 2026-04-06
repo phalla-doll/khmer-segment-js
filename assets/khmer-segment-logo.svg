@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="khmer-segment logo">
+  <defs>
+    <linearGradient id="ks-bg" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e3a8a"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="ks-shine" x1="256" y1="0" x2="256" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Medium rounded square (squircle-style corner radius ~21% of side) -->
+  <rect width="512" height="512" rx="108" ry="108" fill="url(#ks-bg)"/>
+  <rect width="512" height="512" rx="108" ry="108" fill="url(#ks-shine)"/>
+  <!-- Segmentation motif: three grapheme-like blocks with clear boundaries -->
+  <g fill="#e8c547">
+    <rect x="100" y="156" width="84" height="200" rx="18" ry="18"/>
+    <rect x="214" y="176" width="84" height="160" rx="18" ry="18"/>
+    <rect x="328" y="156" width="84" height="200" rx="18" ry="18"/>
+  </g>
+  <!-- JS hint -->
+  <text
+    x="412"
+    y="468"
+    text-anchor="end"
+    fill="#e8c547"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+    font-size="42"
+    font-weight="600"
+    letter-spacing="-0.02em"
+  >JS</text>
+</svg>

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Khmer Segment Playground</title>
+        <title>khmer-segment · Playground</title>
         <script>
             (function () {
                 try {
@@ -33,16 +33,86 @@
         <header
             class="sticky top-0 z-[100] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border bg-surface px-4 py-2.5"
         >
-            <div class="flex flex-wrap items-center gap-2.5">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-3">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    class="block h-9 w-9 shrink-0"
+                    width="36"
+                    height="36"
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    <defs>
+                        <linearGradient
+                            id="ks-nav-bg"
+                            x1="256"
+                            y1="0"
+                            x2="256"
+                            y2="512"
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stop-color="#1e3a8a" />
+                            <stop offset="1" stop-color="#0f172a" />
+                        </linearGradient>
+                        <linearGradient
+                            id="ks-nav-shine"
+                            x1="256"
+                            y1="0"
+                            x2="256"
+                            y2="180"
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stop-color="#ffffff" stop-opacity="0.14" />
+                            <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+                        </linearGradient>
+                    </defs>
+                    <rect
+                        width="512"
+                        height="512"
+                        rx="108"
+                        ry="108"
+                        fill="url(#ks-nav-bg)"
+                    />
+                    <rect
+                        width="512"
+                        height="512"
+                        rx="108"
+                        ry="108"
+                        fill="url(#ks-nav-shine)"
+                    />
+                    <g fill="#e8c547">
+                        <rect x="100" y="156" width="84" height="200" rx="18" ry="18" />
+                        <rect x="214" y="176" width="84" height="160" rx="18" ry="18" />
+                        <rect x="328" y="156" width="84" height="200" rx="18" ry="18" />
+                    </g>
+                    <text
+                        x="412"
+                        y="468"
+                        text-anchor="end"
+                        fill="#e8c547"
+                        font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+                        font-size="42"
+                        font-weight="600"
+                        letter-spacing="-0.02em"
+                    >
+                        JS
+                    </text>
+                </svg>
                 <h1
-                    class="text-lg font-semibold leading-tight tracking-tight text-neutral-900 dark:text-neutral-100"
+                    class="flex min-w-0 flex-col gap-0.5 leading-none"
                 >
-                    Khmer Segment
+                    <span
+                        class="font-mono text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
+                        >khmer-segment</span
+                    >
+                    <span
+                        class="text-[11px] font-medium uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400"
+                        >Playground</span
+                    >
                 </h1>
-                <span
-                    class="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600 dark:bg-accent-muted/40 dark:text-neutral-300"
-                    >Playground</span
-                >
+                </div>
                 <button
                     type="button"
                     id="theme-toggle"

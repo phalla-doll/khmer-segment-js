@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/khmer-segment-logo.svg" alt="khmer-segment logo" width="128" height="128" />
+</p>
+
 # khmer-segment
 
 A framework-agnostic Khmer text processing library for JavaScript and TypeScript.
