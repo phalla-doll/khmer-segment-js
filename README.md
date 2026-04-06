@@ -57,20 +57,25 @@ console.log(result.tokens);
 
 ### Detection
 
+
 | Function              | Description                                               |
 | --------------------- | --------------------------------------------------------- |
 | `isKhmerChar(char)`   | Returns `true` if the character is a Khmer code point     |
 | `containsKhmer(text)` | Returns `true` if the text contains any Khmer characters  |
 | `isKhmerText(text)`   | Returns `true` if all non-whitespace characters are Khmer |
 
+
 ### Normalization
+
 
 | Function                         | Description                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------ |
 | `normalizeKhmer(text)`           | Reorders Khmer characters into canonical order (base → coeng → shift signs → vowel → sign) |
 | `normalizeKhmerCluster(cluster)` | Normalizes a single cluster                                                                |
 
+
 ### Cluster Utilities
+
 
 | Function                     | Description                                       |
 | ---------------------------- | ------------------------------------------------- |
@@ -78,11 +83,14 @@ console.log(result.tokens);
 | `countClusters(text)`        | Returns the number of clusters in the text        |
 | `getClusterBoundaries(text)` | Returns `{ start, end }` offsets for each cluster |
 
+
 ### Segmentation
+
 
 | Function                       | Description                                                    |
 | ------------------------------ | -------------------------------------------------------------- |
 | `segmentWords(text, options?)` | Segments text into word tokens using dictionary-based matching |
+
 
 #### `SegmentOptions`
 
@@ -113,9 +121,11 @@ interface SegmentToken {
 
 ### Dictionary
 
+
 | Function                                | Description                                      |
 | --------------------------------------- | ------------------------------------------------ |
 | `createDictionary(words, frequencies?)` | Creates an in-memory dictionary from a word list |
+
 
 ```ts
 const dict = createDictionary(['សួស្តី', 'អ្នក', 'ខ្មែរ']);
@@ -260,6 +270,7 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 
 ## Framework Compatibility
 
+
 | Environment         | Support |
 | ------------------- | ------- |
 | Node.js (ESM + CJS) | Yes     |
@@ -268,6 +279,7 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 | React               | Yes     |
 | Angular             | Yes     |
 | Vue                 | Yes     |
+
 
 No framework-specific code in the core. Tree-shakeable with `sideEffects: false`.
 
@@ -287,37 +299,37 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 ### v0.1.0
 
-- [x] `isKhmerChar`, `containsKhmer`, `isKhmerText`
-- [x] `normalizeKhmer`, `normalizeKhmerCluster`
-- [x] `splitClusters`, `countClusters`, `getClusterBoundaries`
-- [x] `createDictionary` (trie-based in-memory)
-- [x] `segmentWords` with FMM
-- [x] Default dictionary (34K+ words, separate import)
+- `isKhmerChar`, `containsKhmer`, `isKhmerText`
+- `normalizeKhmer`, `normalizeKhmerCluster`
+- `splitClusters`, `countClusters`, `getClusterBoundaries`
+- `createDictionary` (trie-based in-memory)
+- `segmentWords` with FMM
+- Default dictionary (34K+ words, separate import)
 
 ### v0.2.0 (current)
 
-- [x] BMM (Backward Maximum Matching) algorithm
-- [x] BiMM (Bidirectional Maximum Matching) algorithm
-- [x] Digit grouping (consecutive Khmer digits merged into single tokens)
-- [x] Fixed normalization for MUUSIKATOAN (៉) and TRIISAP (៊) — shift signs now placed before vowels
-- [x] Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
-- [x] 149 tests
-- [ ] `compareTyping(expected, actual)` for MonkeyType-like apps
-- [ ] Better token metadata (`isKhmer`, `clusterCount`)
+- BMM (Backward Maximum Matching) algorithm
+- BiMM (Bidirectional Maximum Matching) algorithm
+- Digit grouping (consecutive Khmer digits merged into single tokens)
+- Fixed normalization for MUUSIKATOAN (៉) and TRIISAP (៊) — shift signs now placed before vowels
+- Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
+- 149 tests
+- `compareTyping(expected, actual)` for MonkeyType-like apps
+- Better token metadata (`isKhmer`, `clusterCount`)
 
 ### v0.3.0
 
-- [ ] `deleteBackward(text, cursorIndex)` — cluster-safe backspace
-- [ ] `getCaretBoundaries(text)` — caret-safe navigation
-- [ ] Frequency-aware segmentation
-- [ ] Compressed dictionary format
+- `deleteBackward(text, cursorIndex)` — cluster-safe backspace
+- `getCaretBoundaries(text)` — caret-safe navigation
+- Frequency-aware segmentation
+- Compressed dictionary format
 
 ### Future
 
-- [ ] `khmer-segment/react` — `useKhmerSegments`, `useKhmerTyping`
-- [ ] `khmer-segment/angular` — injectable service, pipe
-- [ ] Compressed dictionary format
-- [ ] ICU-style line-breaking helpers
+- `khmer-segment/react` — `useKhmerSegments`, `useKhmerTyping`
+- `khmer-segment/angular` — injectable service, pipe
+- Compressed dictionary format
+- ICU-style line-breaking helpers
 
 ---
 
@@ -353,7 +365,7 @@ npm install
 npm run dev
 ```
 
-Open the URL shown (typically **http://localhost:5173**) in your browser.
+Open the URL shown (typically **[http://localhost:5173](http://localhost:5173)**) in your browser.
 
 Features:
 

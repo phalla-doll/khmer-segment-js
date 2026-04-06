@@ -1,4 +1,4 @@
-import './style.css';
+import './app.css';
 
 import {
     containsKhmer,
@@ -22,22 +22,73 @@ const strategyBtns = document.querySelectorAll(
 const normalizeBtns = document.querySelectorAll('.normalize-btns button');
 const copyBtn = document.getElementById('copy-json') as HTMLButtonElement;
 
+const tabs = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('.tablist [role="tab"]')
+);
+const tabPanels = [
+    document.getElementById('tab-panel-summary')!,
+    document.getElementById('tab-panel-clusters')!,
+    document.getElementById('tab-panel-json')!,
+];
+
 let normalize = true;
 let strategy = 'fmm';
+
+function activateTab(index: number) {
+    const i = Math.max(0, Math.min(index, tabs.length - 1));
+    tabs.forEach((tab, j) => {
+        const selected = j === i;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.setAttribute('data-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+    });
+    tabPanels.forEach((panel, j) => {
+        panel.hidden = j !== i;
+    });
+}
+
+tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => {
+        activateTab(index);
+        tab.focus();
+    });
+});
+
+const tablistEl = document.querySelector('.tablist');
+tablistEl?.addEventListener('keydown', e => {
+    const key = e.key;
+    if (key !== 'ArrowRight' && key !== 'ArrowLeft' && key !== 'Home' && key !== 'End') {
+        return;
+    }
+    const current = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    if (current < 0) return;
+    e.preventDefault();
+    let next = current;
+    if (key === 'ArrowRight') next = (current + 1) % tabs.length;
+    else if (key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+    else if (key === 'Home') next = 0;
+    else if (key === 'End') next = tabs.length - 1;
+    activateTab(next);
+    tabs[next].focus();
+});
 
 for (const btn of normalizeBtns) {
     btn.addEventListener('click', () => {
         normalize = (btn as HTMLElement).dataset.norm === 'on';
-        for (const b of normalizeBtns) b.classList.remove('active');
-        btn.classList.add('active');
+        for (const b of normalizeBtns) {
+            b.setAttribute('data-active', 'false');
+        }
+        btn.setAttribute('data-active', 'true');
         update();
     });
 }
 
 for (const btn of strategyBtns) {
     btn.addEventListener('click', () => {
-        for (const b of strategyBtns) b.classList.remove('active');
-        btn.classList.add('active');
+        for (const b of strategyBtns) {
+            b.setAttribute('data-active', 'false');
+        }
+        btn.setAttribute('data-active', 'true');
         strategy = (btn as HTMLElement).dataset.strategy!;
         update();
     });
@@ -109,15 +160,22 @@ function update() {
 }
 
 function renderEmpty() {
+    activateTab(0);
     document.getElementById('stats-row')!.innerHTML = '';
     document.getElementById('detect-result')!.innerHTML =
-        '<div class="empty-state">Type some text to see results...</div>';
-    document.getElementById('normalize-section')!.style.display = 'none';
+        '<div class="py-1 text-sm italic text-neutral-500">Type some text to see results…</div>';
+    const normalizeSection = document.getElementById('normalize-section')!;
+    normalizeSection.hidden = true;
+    document.getElementById('normalize-result')!.innerHTML = '';
     document.getElementById('cluster-result')!.innerHTML = '';
     document.getElementById('segment-result')!.innerHTML = '';
     document.getElementById('json-output')!.textContent = '';
     document.getElementById('cluster-count')!.textContent = '';
     document.getElementById('token-count')!.textContent = '';
+}
+
+function chip(label: string, value: string) {
+    return `<span class="inline-flex items-baseline gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-medium text-neutral-500"><span class="font-normal">${label}</span><span class="font-semibold tabular-nums text-neutral-900">${escapeHtml(value)}</span></span>`;
 }
 
 function renderStats(
@@ -128,61 +186,48 @@ function renderStats(
     dictSize: number,
     customWordCount: number
 ) {
-    document.getElementById('stats-row')!.innerHTML = `
-      <div class="stat-card">
-        <div class="stat-value">${hasKhmer ? 'Yes' : 'No'}</div>
-        <div class="stat-label">Contains Khmer</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">${isKhmer ? 'Yes' : 'No'}</div>
-        <div class="stat-label">Pure Khmer</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">${clusterCount}</div>
-        <div class="stat-label">Clusters</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">${tokenCount}</div>
-        <div class="stat-label">Tokens</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">${dictSize.toLocaleString()}</div>
-        <div class="stat-label">Dict Words</div>
-      </div>
-      ${
-          customWordCount > 0
-              ? `
-      <div class="stat-card">
-        <div class="stat-value">+${customWordCount}</div>
-        <div class="stat-label">Custom Words</div>
-      </div>`
-              : ''
-      }
-    `;
+    const parts = [
+        chip('Khmer', hasKhmer ? 'Yes' : 'No'),
+        chip('Pure', isKhmer ? 'Yes' : 'No'),
+        chip('Clusters', String(clusterCount)),
+        chip('Tokens', String(tokenCount)),
+        chip('Dict', dictSize.toLocaleString()),
+    ];
+    if (customWordCount > 0) {
+        parts.push(chip('Custom', `+${customWordCount}`));
+    }
+    document.getElementById('stats-row')!.innerHTML = parts.join('');
 }
 
 function renderDetection(hasKhmer: boolean, isKhmer: boolean) {
     document.getElementById('detect-result')!.innerHTML = `
-      <div class="detect-row">
-        <span>containsKhmer: <strong>${hasKhmer}</strong></span>
-        <span>isKhmerText: <strong>${isKhmer}</strong></span>
-      </div>
+      <dl class="flex flex-wrap gap-2 text-sm">
+        <div class="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-1">
+          <dt class="text-neutral-500">containsKhmer</dt>
+          <dd class="font-semibold tabular-nums text-neutral-900">${hasKhmer}</dd>
+        </div>
+        <div class="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-1">
+          <dt class="text-neutral-500">isKhmerText</dt>
+          <dd class="font-semibold tabular-nums text-neutral-900">${isKhmer}</dd>
+        </div>
+      </dl>
     `;
 }
 
 function renderNormalization(original: string, normalized: string) {
     const section = document.getElementById('normalize-section')!;
     if (original !== normalized && normalize) {
-        section.style.display = '';
+        section.hidden = false;
         document.getElementById('normalize-result')!.innerHTML = `
-        <div class="comparison">
-          <span class="before">${escapeHtml(original)}</span>
-          <span class="arrow">&rarr;</span>
-          <span class="after">${escapeHtml(normalized)}</span>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+          <span class="font-khmer text-sm text-neutral-500 line-through decoration-neutral-400 decoration-2">${escapeHtml(original)}</span>
+          <span class="text-neutral-300" aria-hidden="true">&rarr;</span>
+          <span class="font-khmer text-sm font-semibold text-neutral-900">${escapeHtml(normalized)}</span>
         </div>
       `;
     } else {
-        section.style.display = 'none';
+        section.hidden = true;
+        document.getElementById('normalize-result')!.innerHTML = '';
     }
 }
 
@@ -190,8 +235,13 @@ function renderClusters(clusters: string[]) {
     document.getElementById('cluster-count')!.textContent =
         `${clusters.length} clusters`;
     const html = clusters
-        .map(c => `<span>${escapeHtml(c)}</span>`)
-        .join('<span class="cluster-separator">|</span>');
+        .map(
+            c =>
+                `<span class="inline-block rounded-md border border-border bg-neutral-100 px-1.5 py-0.5 font-khmer text-[15px] leading-snug text-neutral-900">${escapeHtml(c)}</span>`
+        )
+        .join(
+            '<span class="mx-0.5 select-none text-xs font-medium tracking-wider text-neutral-400">|</span>'
+        );
     document.getElementById('cluster-result')!.innerHTML = html;
 }
 
@@ -210,11 +260,19 @@ function renderSegmentation(
 
     const html = tokens
         .map(t => {
-            const cls = t.isKnown ? 'known' : 'unknown';
-            return `<span class="token-pill ${cls}">
+            const cls = t.isKnown
+                ? 'bg-neutral-900 text-white'
+                : 'border border-border bg-neutral-100 text-neutral-800';
+            const metaCls = t.isKnown
+                ? 'text-[9px] font-medium uppercase tracking-wide text-white/85'
+                : 'text-[9px] font-medium uppercase tracking-wide text-neutral-500';
+            const rangeCls = t.isKnown
+                ? 'font-sans text-[10px] text-white/50'
+                : 'font-sans text-[10px] text-neutral-400';
+            return `<span class="mx-0.5 my-0.5 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-khmer text-[15px] leading-snug transition-colors duration-150 ${cls}">
           ${escapeHtml(t.value)}
-          <span class="token-status">${t.isKnown ? 'known' : 'unknown'}</span>
-          <span class="token-meta">${t.start}:${t.end}</span>
+          <span class="${metaCls}">${t.isKnown ? 'known' : 'unknown'}</span>
+          <span class="${rangeCls} tabular-nums">${t.start}:${t.end}</span>
         </span>`;
         })
         .join('');

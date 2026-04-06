@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+/* Tailwind v4 uses --font-sans / --font-{name}; wrong names were ignored by the build. */
+@theme {
+    --font-sans:
+        'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        sans-serif;
+    --font-khmer: 'Google Sans', sans-serif;
+
+    /* ChatGPT-like chrome: flat canvas + hairline borders, no elevation */
+    --color-canvas: #f7f7f8;
+    --color-border: #e5e5e5;
+    /* OpenAI accent — focus rings & key selection states */
+    --color-accent: #10a37f;
+    --color-accent-muted: #ecfdf5;
+    --color-accent-foreground: #ffffff;
+}
+
+::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+button,
+.tab,
+textarea,
+summary {
+    transition-property: color, background-color, border-color, box-shadow,
+        transform;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

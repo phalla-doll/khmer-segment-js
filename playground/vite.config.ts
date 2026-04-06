@@ -1,9 +1,11 @@
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import { fileURLToPath, URL } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 
 export default defineConfig({
+    plugins: [tailwindcss()],
     resolve: {
         alias: {
             'khmer-segment/dictionary': new URL(

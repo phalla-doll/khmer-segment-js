@@ -7,129 +7,289 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
             rel="stylesheet"
         />
     </head>
-    <body>
-        <header>
-            <h1>Khmer Segment</h1>
-            <span>Playground</span>
-        </header>
-
-        <div class="app">
-            <div class="panel panel--input">
-                <div class="panel-title">Input</div>
-
-                <div class="input-group">
-                    <label for="khmer-input">Khmer Text</label>
-                    <textarea
-                        id="khmer-input"
-                        rows="5"
-                        placeholder="Type or paste Khmer text here..."
+    <body
+        class="min-h-screen bg-canvas font-sans text-[15px] leading-normal text-neutral-800 antialiased"
+    >
+        <header
+            class="sticky top-0 z-[100] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border bg-white px-4 py-2.5"
+        >
+            <div class="flex items-center gap-2.5">
+                <h1 class="text-lg font-semibold leading-tight tracking-tight text-neutral-900">
+                    Khmer Segment
+                </h1>
+                <span
+                    class="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600"
+                    >Playground</span
+                >
+            </div>
+            <div class="flex flex-wrap items-center gap-3.5">
+                <div class="flex items-center gap-2">
+                    <span class="text-[13px] font-medium text-neutral-500"
+                        >Strategy</span
                     >
-សួស្តីអ្នកទាំងអស់គ្នា</textarea
-                    >
-                </div>
-
-                <div class="controls">
-                    <div class="control-group">
-                        <span class="control-label">Strategy</span>
-                        <div class="strategy-btns">
-                            <button
-                                type="button"
-                                class="active"
-                                data-strategy="fmm"
-                            >
-                                FMM
-                            </button>
-                            <button type="button" data-strategy="bmm">
-                                BMM
-                            </button>
-                            <button type="button" data-strategy="bimm">
-                                BiMM
-                            </button>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <span class="control-label">Normalize</span>
-                        <div class="normalize-btns">
-                            <button type="button" class="active" data-norm="on">
-                                On
-                            </button>
-                            <button type="button" data-norm="off">Off</button>
-                        </div>
+                    <div class="strategy-btns flex gap-1">
+                        <button
+                            type="button"
+                            data-strategy="fmm"
+                            data-active="true"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                        >
+                            FMM
+                        </button>
+                        <button
+                            type="button"
+                            data-strategy="bmm"
+                            data-active="false"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                        >
+                            BMM
+                        </button>
+                        <button
+                            type="button"
+                            data-strategy="bimm"
+                            data-active="false"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                        >
+                            BiMM
+                        </button>
                     </div>
                 </div>
-
-                <div class="input-group">
-                    <label for="dict-input"
-                        >Dictionary (one word per line)
-                        <span style="color: var(--muted-gray); font-weight: 400"
-                            >&mdash; added on top of the built-in 49K word
-                            dictionary</span
-                        ></label
+                <div class="flex items-center gap-2">
+                    <span class="text-[13px] font-medium text-neutral-500"
+                        >Normalize</span
                     >
-                    <textarea
-                        id="dict-input"
-                        rows="4"
-                        style="font-size: 14px"
-                        placeholder="Add custom words here (optional)..."
-                    ></textarea>
+                    <div
+                        class="normalize-btns inline-flex overflow-hidden rounded-lg border border-border bg-white p-px"
+                    >
+                        <button
+                            type="button"
+                            data-norm="on"
+                            data-active="true"
+                            class="px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-white data-[active=false]:text-neutral-600 data-[active=false]:hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35"
+                        >
+                            On
+                        </button>
+                        <button
+                            type="button"
+                            data-norm="off"
+                            data-active="false"
+                            class="px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-white data-[active=false]:text-neutral-600 data-[active=false]:hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35"
+                        >
+                            Off
+                        </button>
+                    </div>
                 </div>
             </div>
+        </header>
 
-            <div class="panel" id="results-panel">
-                <div class="panel-title">Results</div>
+        <div
+            class="app mx-auto grid min-h-[calc(100vh-3.25rem)] max-w-[1136px] grid-cols-1 md:grid-cols-2"
+        >
+            <div
+                class="panel panel--input border-b border-border bg-white p-4 md:border-b-0 md:border-r md:border-border"
+            >
+                <div class="mb-3 text-xs font-medium text-neutral-500">
+                    Input
+                </div>
 
-                <div class="stats-row" id="stats-row"></div>
+                <div class="mb-3">
+                    <label
+                        for="khmer-input"
+                        class="mb-1.5 block text-[13px] font-medium text-neutral-600"
+                        >Khmer Text</label
+                    >
+                    <textarea
+                        id="khmer-input"
+                        rows="6"
+                        placeholder="Type or paste Khmer text here..."
+                        class="w-full resize-y rounded-2xl border border-border bg-white px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2"
+                    >សួស្តីអ្នកទាំងអស់គ្នា</textarea>
+                </div>
 
-                <div class="section" id="detect-section">
-                    <div class="section-header">
-                        <div class="section-title">Detection</div>
+                <details
+                    class="group mt-1 overflow-hidden rounded-2xl border border-border bg-white"
+                >
+                    <summary
+                        class="flex cursor-pointer list-none items-center gap-2 px-3.5 py-3 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 [&::-webkit-details-marker]:hidden"
+                    >
+                        <span
+                            class="inline-flex h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200 group-open:rotate-90"
+                            aria-hidden="true"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                class="h-4 w-4"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </span>
+                        Custom dictionary
+                        <span class="font-normal text-neutral-400"
+                            >(optional, one word per line)</span
+                        >
+                    </summary>
+                    <div class="border-t border-border px-3.5 pb-3.5 pt-2">
+                        <p class="mb-2 text-xs leading-snug text-neutral-500">
+                            Words are added on top of the built-in 49K word
+                            dictionary.
+                        </p>
+                        <textarea
+                            id="dict-input"
+                            rows="4"
+                            placeholder="Add custom words here..."
+                            class="w-full resize-y rounded-2xl border border-border bg-white px-3 py-2.5 font-khmer text-sm leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2"
+                        ></textarea>
                     </div>
-                    <div class="result-box" id="detect-result"></div>
+                </details>
+            </div>
+
+            <div class="panel panel--results bg-white p-4" id="results-panel">
+                <div class="mb-3 text-xs font-medium text-neutral-500">
+                    Results
                 </div>
 
                 <div
-                    class="section"
-                    id="normalize-section"
-                    style="display: none"
+                    class="tablist mb-3 flex flex-wrap gap-0.5 border-b border-border"
+                    role="tablist"
+                    aria-label="More result details"
                 >
-                    <div class="section-header">
-                        <div class="section-title">Normalization</div>
-                        <span class="section-meta">Changed</span>
-                    </div>
-                    <div class="result-box" id="normalize-result"></div>
+                    <button
+                        type="button"
+                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                        role="tab"
+                        id="tab-summary"
+                        data-selected="true"
+                        aria-selected="true"
+                        aria-controls="tab-panel-summary"
+                        tabindex="0"
+                    >
+                        Summary
+                    </button>
+                    <button
+                        type="button"
+                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                        role="tab"
+                        id="tab-clusters"
+                        data-selected="false"
+                        aria-selected="false"
+                        aria-controls="tab-panel-clusters"
+                        tabindex="-1"
+                    >
+                        Clusters
+                    </button>
+                    <button
+                        type="button"
+                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                        role="tab"
+                        id="tab-json"
+                        data-selected="false"
+                        aria-selected="false"
+                        aria-controls="tab-panel-json"
+                        tabindex="-1"
+                    >
+                        JSON
+                    </button>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">
-                        <div class="section-title">Clusters</div>
-                        <span class="section-meta" id="cluster-count"></span>
+                <div class="tab-panels min-h-[120px]" id="tab-panels">
+                    <div
+                        class="tab-panel pt-1"
+                        role="tabpanel"
+                        id="tab-panel-summary"
+                        aria-labelledby="tab-summary"
+                    >
+                        <div
+                            class="stats-strip mb-3 flex flex-wrap gap-1.5"
+                            id="stats-row"
+                        ></div>
+                        <div
+                            class="result-box result-box--plain rounded-2xl border border-border bg-white px-3.5 py-3 text-sm text-neutral-800"
+                            id="detect-result"
+                        ></div>
+                        <div
+                            class="normalize-block mt-3 border-t border-border pt-3"
+                            id="normalize-section"
+                            hidden
+                        >
+                            <div
+                                class="normalize-label mb-2 text-[11px] font-medium uppercase tracking-wide text-neutral-500"
+                            >
+                                Normalization
+                            </div>
+                            <div id="normalize-result"></div>
+                        </div>
                     </div>
-                    <div class="result-box" id="cluster-result"></div>
+
+                    <div
+                        class="tab-panel pt-1"
+                        role="tabpanel"
+                        id="tab-panel-clusters"
+                        aria-labelledby="tab-clusters"
+                        hidden
+                    >
+                        <div
+                            class="tab-panel-meta mb-2 min-h-[1.2em] text-xs text-neutral-500"
+                            id="cluster-count"
+                        ></div>
+                        <div
+                            class="result-box rounded-2xl border border-border bg-white px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900"
+                            id="cluster-result"
+                        ></div>
+                    </div>
+
+                    <div
+                        class="tab-panel pt-1"
+                        role="tabpanel"
+                        id="tab-panel-json"
+                        aria-labelledby="tab-json"
+                        hidden
+                    >
+                        <div class="json-wrapper relative pt-1">
+                            <button
+                                type="button"
+                                class="copy-btn absolute right-2.5 top-2.5 z-10 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                                id="copy-json"
+                            >
+                                Copy
+                            </button>
+                            <div
+                                class="json-output max-h-[min(360px,50vh)] overflow-y-auto overflow-x-auto whitespace-pre rounded-2xl border border-border bg-[#f4f4f4] px-3.5 pb-3 pt-9 font-mono text-[11px] leading-relaxed text-neutral-800"
+                                id="json-output"
+                            ></div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">
-                        <div class="section-title">Segmentation</div>
-                        <span class="section-meta" id="token-count"></span>
+                <section
+                    class="tokens-section mt-4 rounded-2xl border border-border bg-white p-3.5"
+                    aria-label="Word tokens"
+                >
+                    <div
+                        class="mb-2 flex flex-wrap items-baseline justify-between gap-2"
+                    >
+                        <h2 class="text-xs font-medium text-neutral-500">
+                            Tokens
+                        </h2>
+                        <div
+                            class="min-h-[1.2em] text-xs text-neutral-500"
+                            id="token-count"
+                        ></div>
                     </div>
-                    <div class="result-box" id="segment-result"></div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">
-                        <div class="section-title">JSON Output</div>
-                    </div>
-                    <div class="json-wrapper">
-                        <button type="button" class="copy-btn" id="copy-json">
-                            Copy
-                        </button>
-                        <div class="json-output" id="json-output"></div>
-                    </div>
-                </div>
+                    <div
+                        class="min-h-12 rounded-2xl border border-border bg-canvas px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900"
+                        id="segment-result"
+                    ></div>
+                </section>
             </div>
         </div>
 
