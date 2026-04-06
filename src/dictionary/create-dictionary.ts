@@ -1,9 +1,9 @@
-import type { KhmerDictionary } from "../types/public";
-import { MemoryDictionary } from "./memory-dictionary";
+import type { KhmerDictionary } from '../types/public';
+import { MemoryDictionary } from './memory-dictionary';
 
 export function createDictionary(
-  words: string[],
-  frequencies?: Map<string, number>
+    words: string[],
+    frequencies?: Map<string, number>
 ): KhmerDictionary {
-  return new MemoryDictionary(words, frequencies);
+    return new MemoryDictionary(words, frequencies);
 }

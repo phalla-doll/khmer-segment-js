@@ -1,101 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khmer Segment Playground</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet" />
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Khmer Segment Playground</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <header>
+            <h1>Khmer Segment</h1>
+            <span>Playground</span>
+        </header>
 
-<header>
-  <h1>Khmer Segment</h1>
-  <span>Playground</span>
-</header>
+        <div class="app">
+            <div class="panel panel--input">
+                <div class="panel-title">Input</div>
 
-<div class="app">
-  <div class="panel panel--input">
-    <div class="panel-title">Input</div>
+                <div class="input-group">
+                    <label for="khmer-input">Khmer Text</label>
+                    <textarea
+                        id="khmer-input"
+                        rows="5"
+                        placeholder="Type or paste Khmer text here..."
+                    >
+សួស្តីអ្នកទាំងអស់គ្នា</textarea
+                    >
+                </div>
 
-    <div class="input-group">
-      <label for="khmer-input">Khmer Text</label>
-      <textarea id="khmer-input" rows="5" placeholder="Type or paste Khmer text here...">សួស្តីអ្នកទាំងអស់គ្នា</textarea>
-    </div>
+                <div class="controls">
+                    <div class="control-group">
+                        <span class="control-label">Strategy</span>
+                        <div class="strategy-btns">
+                            <button
+                                type="button"
+                                class="active"
+                                data-strategy="fmm"
+                            >
+                                FMM
+                            </button>
+                            <button type="button" data-strategy="bmm">
+                                BMM
+                            </button>
+                            <button type="button" data-strategy="bimm">
+                                BiMM
+                            </button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <span class="control-label">Normalize</span>
+                        <div class="normalize-btns">
+                            <button type="button" class="active" data-norm="on">
+                                On
+                            </button>
+                            <button type="button" data-norm="off">Off</button>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="controls">
-      <div class="control-group">
-        <span class="control-label">Strategy</span>
-        <div class="strategy-btns">
-          <button type="button" class="active" data-strategy="fmm">FMM</button>
-          <button type="button" data-strategy="bmm">BMM</button>
-          <button type="button" data-strategy="bimm">BiMM</button>
+                <div class="input-group">
+                    <label for="dict-input"
+                        >Dictionary (one word per line)
+                        <span style="color: var(--muted-gray); font-weight: 400"
+                            >&mdash; added on top of the built-in 49K word
+                            dictionary</span
+                        ></label
+                    >
+                    <textarea
+                        id="dict-input"
+                        rows="4"
+                        style="font-size: 14px"
+                        placeholder="Add custom words here (optional)..."
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="panel" id="results-panel">
+                <div class="panel-title">Results</div>
+
+                <div class="stats-row" id="stats-row"></div>
+
+                <div class="section" id="detect-section">
+                    <div class="section-header">
+                        <div class="section-title">Detection</div>
+                    </div>
+                    <div class="result-box" id="detect-result"></div>
+                </div>
+
+                <div
+                    class="section"
+                    id="normalize-section"
+                    style="display: none"
+                >
+                    <div class="section-header">
+                        <div class="section-title">Normalization</div>
+                        <span class="section-meta">Changed</span>
+                    </div>
+                    <div class="result-box" id="normalize-result"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Clusters</div>
+                        <span class="section-meta" id="cluster-count"></span>
+                    </div>
+                    <div class="result-box" id="cluster-result"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Segmentation</div>
+                        <span class="section-meta" id="token-count"></span>
+                    </div>
+                    <div class="result-box" id="segment-result"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">JSON Output</div>
+                    </div>
+                    <div class="json-wrapper">
+                        <button type="button" class="copy-btn" id="copy-json">
+                            Copy
+                        </button>
+                        <div class="json-output" id="json-output"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="control-group">
-        <span class="control-label">Normalize</span>
-        <div class="normalize-btns">
-          <button type="button" class="active" data-norm="on">On</button>
-          <button type="button" data-norm="off">Off</button>
-        </div>
-      </div>
-    </div>
 
-    <div class="input-group">
-      <label for="dict-input">Dictionary (one word per line) <span style="color:var(--muted-gray);font-weight:400;">&mdash; added on top of the built-in 49K word dictionary</span></label>
-      <textarea id="dict-input" rows="4" style="font-size:14px;" placeholder="Add custom words here (optional)..."></textarea>
-    </div>
-  </div>
-
-  <div class="panel" id="results-panel">
-    <div class="panel-title">Results</div>
-
-    <div class="stats-row" id="stats-row"></div>
-
-    <div class="section" id="detect-section">
-      <div class="section-header">
-        <div class="section-title">Detection</div>
-      </div>
-      <div class="result-box" id="detect-result"></div>
-    </div>
-
-    <div class="section" id="normalize-section" style="display:none;">
-      <div class="section-header">
-        <div class="section-title">Normalization</div>
-        <span class="section-meta">Changed</span>
-      </div>
-      <div class="result-box" id="normalize-result"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">Clusters</div>
-        <span class="section-meta" id="cluster-count"></span>
-      </div>
-      <div class="result-box" id="cluster-result"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">Segmentation</div>
-        <span class="section-meta" id="token-count"></span>
-      </div>
-      <div class="result-box" id="segment-result"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">JSON Output</div>
-      </div>
-      <div class="json-wrapper">
-        <button type="button" class="copy-btn" id="copy-json">Copy</button>
-        <div class="json-output" id="json-output"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script type="module" src="/src/main.ts"></script>
-</body>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
 </html>
