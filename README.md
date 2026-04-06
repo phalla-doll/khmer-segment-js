@@ -192,7 +192,7 @@ A cluster starts with a **base** (consonant or independent vowel) and accumulate
 
 ### FMM (Forward Maximum Matching)
 
-Scans left-to-right, greedily matching the **longest** word at each position using trie-based prefix lookup. Falls back to single unknown tokens when no match is found.
+Scans left-to-right, greedily matching the **longest** word at each position using trie-based prefix lookup. Falls back to single unknown tokens when no match is found. This is a baseline approach — bidirectional (BiMM) and frequency-aware methods generally produce better results.
 
 ---
 
@@ -261,6 +261,8 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - No frequency-aware segmentation yet
 - Normalization covers basic reordering (base → coeng → vowel → sign), not all edge cases
 - No caret/backspace helpers yet
+- Dictionary-based approaches have an inherent accuracy ceiling compared to statistical/ML methods (e.g. CRF achieves ~99.7% accuracy vs ~95–97% for dictionary-based matching)
+- `splitClusters` uses a simplified Khmer Character Cluster (KCC) model — it groups base + coeng + vowel + sign but does not enforce the full KCC specification
 
 ---
 
@@ -338,6 +340,15 @@ Features:
 - Strategy selector (FMM) and normalize toggle
 - Detection, normalization, cluster splitting, and segmentation panels
 - JSON output with copy button
+
+---
+
+## References & Further Reading
+
+- **[Word Segmentation of Khmer Text Using Conditional Random Fields](https://medium.com/@phylypo/segmentation-of-khmer-text-using-conditional-random-fields-3a2d4d73956a)** — Phylypo Tum (2019). Comprehensive overview of Khmer segmentation approaches from dictionary-based to CRF, achieving 99.7% accuracy with Linear Chain CRF.
+- **[Khmer Word Segmentation Using Conditional Random Fields](https://www.niptict.edu.kh/khmer-word-segmentation-tool/)** — Vichea Chea, Ye Kyaw Thu, et al. (2015). The prior state-of-the-art CRF model for Khmer segmentation (98.5% accuracy, 5-tag system).
+- **[Benchmark dataset and Python notebooks](https://github.com/phylypo/segmentation-crf-khmer)** — 10K+ segmented Khmer news articles useful for evaluating segmentation quality.
+- **[khmerlbdict](https://github.com/silnrsi/khmerlbdict)** — Source of the default dictionary used by this library (MIT license, 34K+ words).
 
 ---
 
