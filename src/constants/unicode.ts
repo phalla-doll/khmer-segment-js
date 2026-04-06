@@ -19,3 +19,6 @@ export const KHMER_COENG = 0x17d2;
 
 export const DIGIT_START = 0x17e0;
 export const DIGIT_END = 0x17e9;
+
+export const ASCII_DIGIT_START = 0x30;
+export const ASCII_DIGIT_END = 0x39;

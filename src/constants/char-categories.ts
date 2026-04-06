@@ -12,6 +12,8 @@ import {
   KHMER_RANGE_END,
   DIGIT_START,
   DIGIT_END,
+  ASCII_DIGIT_START,
+  ASCII_DIGIT_END,
 } from "./unicode";
 
 export function isKhmerCodePoint(cp: number): boolean {
@@ -45,6 +47,14 @@ export function isCoeng(cp: number): boolean {
 
 export function isKhmerDigit(cp: number): boolean {
   return cp >= DIGIT_START && cp <= DIGIT_END;
+}
+
+export function isAsciiDigit(cp: number): boolean {
+  return cp >= ASCII_DIGIT_START && cp <= ASCII_DIGIT_END;
+}
+
+export function isDigit(cp: number): boolean {
+  return isKhmerDigit(cp) || isAsciiDigit(cp);
 }
 
 export function isClusterBase(cp: number): boolean {
