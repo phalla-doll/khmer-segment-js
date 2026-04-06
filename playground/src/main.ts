@@ -14,6 +14,24 @@ import {
     loadFrequencyDictionary,
 } from 'khmer-segment/dictionary';
 
+const THEME_KEY = 'khmer-segment-theme';
+
+function getStoredTheme(): 'light' | 'dark' | null {
+    const v = localStorage.getItem(THEME_KEY);
+    if (v === 'light' || v === 'dark') return v;
+    return null;
+}
+
+function applyThemeClass(dark: boolean) {
+    document.documentElement.classList.toggle('dark', dark);
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.setAttribute('aria-pressed', String(dark));
+}
+
+function syncThemeUi() {
+    applyThemeClass(document.documentElement.classList.contains('dark'));
+}
+
 const inputEl = document.getElementById('khmer-input') as HTMLTextAreaElement;
 const dictEl = document.getElementById('dict-input') as HTMLTextAreaElement;
 const strategyBtns = document.querySelectorAll(
@@ -94,6 +112,19 @@ for (const btn of strategyBtns) {
     });
 }
 
+document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const nextDark = !document.documentElement.classList.contains('dark');
+    localStorage.setItem(THEME_KEY, nextDark ? 'dark' : 'light');
+    applyThemeClass(nextDark);
+});
+
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (getStoredTheme() !== null) return;
+    applyThemeClass(matchMedia('(prefers-color-scheme: dark)').matches);
+});
+
+syncThemeUi();
+
 copyBtn.addEventListener('click', () => {
     const jsonText = document.getElementById('json-output')!.textContent;
     navigator.clipboard.writeText(jsonText!).then(() => {
@@ -163,7 +194,7 @@ function renderEmpty() {
     activateTab(0);
     document.getElementById('stats-row')!.innerHTML = '';
     document.getElementById('detect-result')!.innerHTML =
-        '<div class="py-1 text-sm italic text-neutral-500">Type some text to see results…</div>';
+        '<div class="py-1 text-sm italic text-neutral-500 dark:text-neutral-400">Type some text to see results…</div>';
     const normalizeSection = document.getElementById('normalize-section')!;
     normalizeSection.hidden = true;
     document.getElementById('normalize-result')!.innerHTML = '';
@@ -175,7 +206,7 @@ function renderEmpty() {
 }
 
 function chip(label: string, value: string) {
-    return `<span class="inline-flex items-baseline gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1 text-xs font-medium text-neutral-500"><span class="font-normal">${label}</span><span class="font-semibold tabular-nums text-neutral-900">${escapeHtml(value)}</span></span>`;
+    return `<span class="inline-flex items-baseline gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-medium text-neutral-500 dark:text-neutral-400"><span class="font-normal">${label}</span><span class="font-semibold tabular-nums text-neutral-900 dark:text-neutral-100">${escapeHtml(value)}</span></span>`;
 }
 
 function renderStats(
@@ -202,13 +233,13 @@ function renderStats(
 function renderDetection(hasKhmer: boolean, isKhmer: boolean) {
     document.getElementById('detect-result')!.innerHTML = `
       <dl class="flex flex-wrap gap-2 text-sm">
-        <div class="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-1">
-          <dt class="text-neutral-500">containsKhmer</dt>
-          <dd class="font-semibold tabular-nums text-neutral-900">${hasKhmer}</dd>
+        <div class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-1">
+          <dt class="text-neutral-500 dark:text-neutral-400">containsKhmer</dt>
+          <dd class="font-semibold tabular-nums text-neutral-900 dark:text-neutral-100">${hasKhmer}</dd>
         </div>
-        <div class="inline-flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-1">
-          <dt class="text-neutral-500">isKhmerText</dt>
-          <dd class="font-semibold tabular-nums text-neutral-900">${isKhmer}</dd>
+        <div class="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-1">
+          <dt class="text-neutral-500 dark:text-neutral-400">isKhmerText</dt>
+          <dd class="font-semibold tabular-nums text-neutral-900 dark:text-neutral-100">${isKhmer}</dd>
         </div>
       </dl>
     `;
@@ -220,9 +251,9 @@ function renderNormalization(original: string, normalized: string) {
         section.hidden = false;
         document.getElementById('normalize-result')!.innerHTML = `
         <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-          <span class="font-khmer text-sm text-neutral-500 line-through decoration-neutral-400 decoration-2">${escapeHtml(original)}</span>
-          <span class="text-neutral-300" aria-hidden="true">&rarr;</span>
-          <span class="font-khmer text-sm font-semibold text-neutral-900">${escapeHtml(normalized)}</span>
+          <span class="font-khmer text-sm text-neutral-500 line-through decoration-neutral-400 decoration-2 dark:text-neutral-500 dark:decoration-neutral-500">${escapeHtml(original)}</span>
+          <span class="text-neutral-300 dark:text-neutral-600" aria-hidden="true">&rarr;</span>
+          <span class="font-khmer text-sm font-semibold text-neutral-900 dark:text-neutral-100">${escapeHtml(normalized)}</span>
         </div>
       `;
     } else {
@@ -237,10 +268,10 @@ function renderClusters(clusters: string[]) {
     const html = clusters
         .map(
             c =>
-                `<span class="inline-block rounded-md border border-border bg-neutral-100 px-1.5 py-0.5 font-khmer text-[15px] leading-snug text-neutral-900">${escapeHtml(c)}</span>`
+                `<span class="inline-block rounded-md border border-border bg-neutral-100 px-1.5 py-0.5 font-khmer text-[15px] leading-snug text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100">${escapeHtml(c)}</span>`
         )
         .join(
-            '<span class="mx-0.5 select-none text-xs font-medium tracking-wider text-neutral-400">|</span>'
+            '<span class="mx-0.5 select-none text-xs font-medium tracking-wider text-neutral-400 dark:text-neutral-500">|</span>'
         );
     document.getElementById('cluster-result')!.innerHTML = html;
 }
@@ -261,14 +292,14 @@ function renderSegmentation(
     const html = tokens
         .map(t => {
             const cls = t.isKnown
-                ? 'bg-neutral-900 text-white'
-                : 'border border-border bg-neutral-100 text-neutral-800';
+                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                : 'border border-border bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200';
             const metaCls = t.isKnown
-                ? 'text-[9px] font-medium uppercase tracking-wide text-white/85'
-                : 'text-[9px] font-medium uppercase tracking-wide text-neutral-500';
+                ? 'text-[9px] font-medium uppercase tracking-wide text-white/85 dark:text-neutral-600'
+                : 'text-[9px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400';
             const rangeCls = t.isKnown
-                ? 'font-sans text-[10px] text-white/50'
-                : 'font-sans text-[10px] text-neutral-400';
+                ? 'font-sans text-[10px] text-white/50 dark:text-neutral-500'
+                : 'font-sans text-[10px] text-neutral-400 dark:text-neutral-500';
             return `<span class="mx-0.5 my-0.5 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-khmer text-[15px] leading-snug transition-colors duration-150 ${cls}">
           ${escapeHtml(t.value)}
           <span class="${metaCls}">${t.isKnown ? 'known' : 'unknown'}</span>

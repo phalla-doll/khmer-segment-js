@@ -4,6 +4,22 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Khmer Segment Playground</title>
+        <script>
+            (function () {
+                try {
+                    var k = 'khmer-segment-theme';
+                    var s = localStorage.getItem(k);
+                    var d =
+                        s === 'dark' ||
+                        (s !== 'light' &&
+                            window.matchMedia('(prefers-color-scheme: dark)')
+                                .matches);
+                    document.documentElement.classList.toggle('dark', d);
+                } catch (e) {
+                    /* ignore */
+                }
+            })();
+        </script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -12,23 +28,42 @@
         />
     </head>
     <body
-        class="min-h-screen bg-canvas font-sans text-[15px] leading-normal text-neutral-800 antialiased"
+        class="min-h-screen bg-canvas font-sans text-[15px] leading-normal text-neutral-800 antialiased dark:text-neutral-200"
     >
         <header
-            class="sticky top-0 z-[100] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border bg-white px-4 py-2.5"
+            class="sticky top-0 z-[100] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border bg-surface px-4 py-2.5"
         >
-            <div class="flex items-center gap-2.5">
-                <h1 class="text-lg font-semibold leading-tight tracking-tight text-neutral-900">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <h1
+                    class="text-lg font-semibold leading-tight tracking-tight text-neutral-900 dark:text-neutral-100"
+                >
                     Khmer Segment
                 </h1>
                 <span
-                    class="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600"
+                    class="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600 dark:bg-accent-muted/40 dark:text-neutral-300"
                     >Playground</span
                 >
+                <button
+                    type="button"
+                    id="theme-toggle"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-canvas px-2.5 py-1.5 text-xs font-medium text-neutral-600 outline-none transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                    aria-label="Toggle dark mode"
+                    aria-pressed="false"
+                >
+                    <span class="theme-icon-light inline dark:hidden" aria-hidden="true"
+                        >🌙</span
+                    >
+                    <span class="theme-icon-dark hidden dark:inline" aria-hidden="true"
+                        >☀️</span
+                    >
+                    <span class="theme-label-light inline dark:hidden">Dark</span>
+                    <span class="theme-label-dark hidden dark:inline">Light</span>
+                </button>
             </div>
             <div class="flex flex-wrap items-center gap-3.5">
                 <div class="flex items-center gap-2">
-                    <span class="text-[13px] font-medium text-neutral-500"
+                    <span
+                        class="text-[13px] font-medium text-neutral-500 dark:text-neutral-400"
                         >Strategy</span
                     >
                     <div class="strategy-btns flex gap-1">
@@ -36,7 +71,7 @@
                             type="button"
                             data-strategy="fmm"
                             data-active="true"
-                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         >
                             FMM
                         </button>
@@ -44,7 +79,7 @@
                             type="button"
                             data-strategy="bmm"
                             data-active="false"
-                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         >
                             BMM
                         </button>
@@ -52,24 +87,25 @@
                             type="button"
                             data-strategy="bimm"
                             data-active="false"
-                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         >
                             BiMM
                         </button>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-[13px] font-medium text-neutral-500"
+                    <span
+                        class="text-[13px] font-medium text-neutral-500 dark:text-neutral-400"
                         >Normalize</span
                     >
                     <div
-                        class="normalize-btns inline-flex overflow-hidden rounded-lg border border-border bg-white p-px"
+                        class="normalize-btns inline-flex overflow-hidden rounded-lg border border-border bg-surface p-px dark:bg-neutral-800"
                     >
                         <button
                             type="button"
                             data-norm="on"
                             data-active="true"
-                            class="px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-white data-[active=false]:text-neutral-600 data-[active=false]:hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35"
+                            class="px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-surface data-[active=false]:text-neutral-600 data-[active=false]:hover:bg-neutral-50 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35"
                         >
                             On
                         </button>
@@ -77,7 +113,7 @@
                             type="button"
                             data-norm="off"
                             data-active="false"
-                            class="px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white data-[active=false]:bg-white data-[active=false]:text-neutral-600 data-[active=false]:hover:bg-neutral-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35"
+                            class="px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-surface data-[active=false]:text-neutral-600 data-[active=false]:hover:bg-neutral-50 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35"
                         >
                             Off
                         </button>
@@ -86,75 +122,71 @@
             </div>
         </header>
 
-        <main
-            class="app mx-auto w-full max-w-3xl px-4 pb-8 pt-4"
-        >
+        <main class="app mx-auto w-full max-w-3xl px-4 pb-8 pt-4">
             <section aria-labelledby="input-heading">
                 <div
-                    class="mb-3 text-xs font-medium text-neutral-500"
+                    class="mb-3 text-xs font-medium text-neutral-500 dark:text-neutral-400"
                     id="input-heading"
                 >
                     Input
                 </div>
 
-                <div
-                    class="rounded-2xl border border-border bg-white p-4"
-                >
+                <div class="rounded-2xl border border-border bg-surface p-4">
                     <div>
                         <label
                             for="khmer-input"
-                            class="mb-1.5 block text-[13px] font-medium text-neutral-600"
+                            class="mb-1.5 block text-[13px] font-medium text-neutral-600 dark:text-neutral-300"
                             >Khmer Text</label
                         >
                         <textarea
                             id="khmer-input"
                             rows="5"
                             placeholder="Type or paste Khmer text here..."
-                            class="w-full min-h-[7.5rem] resize-y rounded-2xl border border-border bg-white px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2"
+                            class="w-full min-h-[7.5rem] resize-y rounded-2xl border border-border bg-surface px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus-visible:ring-offset-zinc-950"
                         >សួស្តីអ្នកទាំងអស់គ្នា</textarea>
                     </div>
 
-                <details
-                    class="group mt-4 overflow-hidden rounded-xl border border-border bg-canvas"
-                >
-                    <summary
-                        class="flex cursor-pointer list-none items-center gap-2 px-3.5 py-3 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 [&::-webkit-details-marker]:hidden"
+                    <details
+                        class="group mt-4 overflow-hidden rounded-xl border border-border bg-canvas"
                     >
-                        <span
-                            class="inline-flex h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200 group-open:rotate-90"
-                            aria-hidden="true"
+                        <summary
+                            class="flex cursor-pointer list-none items-center gap-2 px-3.5 py-3 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:text-neutral-100 dark:hover:bg-neutral-800/60 [&::-webkit-details-marker]:hidden"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                class="h-4 w-4"
+                            <span
+                                class="inline-flex h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-200 group-open:rotate-90"
+                                aria-hidden="true"
                             >
-                                <path
-                                    fill-rule="evenodd"
-                                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                                    clip-rule="evenodd"
-                                />
-                            </svg>
-                        </span>
-                        Custom dictionary
-                        <span class="font-normal text-neutral-400"
-                            >(optional, one word per line)</span
-                        >
-                    </summary>
-                    <div class="border-t border-border px-3.5 pb-3.5 pt-2">
-                        <p class="mb-2 text-xs leading-snug text-neutral-500">
-                            Words are added on top of the built-in 49K word
-                            dictionary.
-                        </p>
-                        <textarea
-                            id="dict-input"
-                            rows="4"
-                            placeholder="Add custom words here..."
-                            class="w-full resize-y rounded-2xl border border-border bg-white px-3 py-2.5 font-khmer text-sm leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2"
-                        ></textarea>
-                    </div>
-                </details>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    class="h-4 w-4"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </span>
+                            Custom dictionary
+                            <span class="font-normal text-neutral-400 dark:text-neutral-500"
+                                >(optional, one word per line)</span
+                            >
+                        </summary>
+                        <div class="border-t border-border px-3.5 pb-3.5 pt-2">
+                            <p class="mb-2 text-xs leading-snug text-neutral-500 dark:text-neutral-400">
+                                Words are added on top of the built-in 49K word
+                                dictionary.
+                            </p>
+                            <textarea
+                                id="dict-input"
+                                rows="4"
+                                placeholder="Add custom words here..."
+                                class="w-full resize-y rounded-2xl border border-border bg-surface px-3 py-2.5 font-khmer text-sm leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus-visible:ring-offset-zinc-950"
+                            ></textarea>
+                        </div>
+                    </details>
                 </div>
             </section>
 
@@ -163,7 +195,9 @@
                 id="results-panel"
                 aria-label="Segmentation results"
             >
-                <div class="mb-3 text-xs font-medium text-neutral-500">
+                <div
+                    class="mb-3 text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                >
                     Results
                 </div>
 
@@ -174,7 +208,7 @@
                 >
                     <button
                         type="button"
-                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-200 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 dark:data-[selected=true]:text-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         role="tab"
                         id="tab-summary"
                         data-selected="true"
@@ -186,7 +220,7 @@
                     </button>
                     <button
                         type="button"
-                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-200 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 dark:data-[selected=true]:text-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         role="tab"
                         id="tab-clusters"
                         data-selected="false"
@@ -198,7 +232,7 @@
                     </button>
                     <button
                         type="button"
-                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                        class="tab -mb-px rounded-t-lg border-b-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-500 outline-none transition-all duration-150 hover:bg-neutral-50 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-200 data-[selected=true]:border-accent data-[selected=true]:font-semibold data-[selected=true]:text-neutral-900 dark:data-[selected=true]:text-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         role="tab"
                         id="tab-json"
                         data-selected="false"
@@ -222,7 +256,7 @@
                             id="stats-row"
                         ></div>
                         <div
-                            class="result-box result-box--plain rounded-2xl border border-border bg-white px-3.5 py-3 text-sm text-neutral-800"
+                            class="result-box result-box--plain rounded-2xl border border-border bg-surface px-3.5 py-3 text-sm text-neutral-800 dark:text-neutral-200"
                             id="detect-result"
                         ></div>
                         <div
@@ -231,7 +265,7 @@
                             hidden
                         >
                             <div
-                                class="normalize-label mb-2 text-[11px] font-medium uppercase tracking-wide text-neutral-500"
+                                class="normalize-label mb-2 text-[11px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400"
                             >
                                 Normalization
                             </div>
@@ -247,11 +281,11 @@
                         hidden
                     >
                         <div
-                            class="tab-panel-meta mb-2 min-h-[1.2em] text-xs text-neutral-500"
+                            class="tab-panel-meta mb-2 min-h-[1.2em] text-xs text-neutral-500 dark:text-neutral-400"
                             id="cluster-count"
                         ></div>
                         <div
-                            class="result-box rounded-2xl border border-border bg-white px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900"
+                            class="result-box rounded-2xl border border-border bg-surface px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 dark:text-neutral-100"
                             id="cluster-result"
                         ></div>
                     </div>
@@ -266,13 +300,13 @@
                         <div class="json-wrapper relative pt-1">
                             <button
                                 type="button"
-                                class="copy-btn absolute right-2.5 top-2.5 z-10 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2"
+                                class="copy-btn absolute right-2.5 top-2.5 z-10 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus-visible:ring-offset-zinc-950"
                                 id="copy-json"
                             >
                                 Copy
                             </button>
                             <div
-                                class="json-output max-h-[min(360px,50vh)] overflow-y-auto overflow-x-auto whitespace-pre rounded-2xl border border-border bg-[#f4f4f4] px-3.5 pb-3 pt-9 font-mono text-[11px] leading-relaxed text-neutral-800"
+                                class="json-output max-h-[min(360px,50vh)] overflow-y-auto overflow-x-auto whitespace-pre rounded-2xl border border-border bg-[#f4f4f4] px-3.5 pb-3 pt-9 font-mono text-[11px] leading-relaxed text-neutral-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
                                 id="json-output"
                             ></div>
                         </div>
@@ -280,22 +314,24 @@
                 </div>
 
                 <section
-                    class="tokens-section mt-4 rounded-2xl border border-border bg-white p-3.5"
+                    class="tokens-section mt-4 rounded-2xl border border-border bg-surface p-3.5"
                     aria-label="Word tokens"
                 >
                     <div
                         class="mb-2 flex flex-wrap items-baseline justify-between gap-2"
                     >
-                        <h2 class="text-xs font-medium text-neutral-500">
+                        <h2
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                        >
                             Tokens
                         </h2>
                         <div
-                            class="min-h-[1.2em] text-xs text-neutral-500"
+                            class="min-h-[1.2em] text-xs text-neutral-500 dark:text-neutral-400"
                             id="token-count"
                         ></div>
                     </div>
                     <div
-                        class="min-h-12 rounded-2xl border border-border bg-canvas px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900"
+                        class="min-h-12 rounded-2xl border border-border bg-canvas px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 dark:text-neutral-100"
                         id="segment-result"
                     ></div>
                 </section>
