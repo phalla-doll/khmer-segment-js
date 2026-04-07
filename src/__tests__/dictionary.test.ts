@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createDictionary } from '../dictionary/create-dictionary';
+import { loadFrequencyDictionary } from '../dictionary/load-frequency-dictionary';
 
 describe('createDictionary', () => {
     it('creates a dictionary from word list', () => {
@@ -24,6 +25,7 @@ describe('createDictionary', () => {
         const dict = createDictionary(['ក', 'ក', 'ខ']);
         expect(dict.has('ក')).toBe(true);
         expect(dict.has('ខ')).toBe(true);
+        expect(dict.size).toBe(2);
     });
 
     it('filters out empty strings', () => {
@@ -77,5 +79,34 @@ describe('hasSuffix', () => {
     it('returns false for empty dictionary', () => {
         const dict = createDictionary([]);
         expect(dict.hasSuffix!('ក')).toBe(false);
+    });
+});
+
+describe('loadFrequencyDictionary', () => {
+    it('returns independent word and entry snapshots', () => {
+        const first = loadFrequencyDictionary();
+        const originalWord = first.words[0];
+        const originalEntry = { ...first.entries[0] };
+
+        first.words.push('custom_word');
+        first.entries[0].word = 'changed';
+
+        const second = loadFrequencyDictionary();
+        expect(second.words[0]).toBe(originalWord);
+        expect(second.entries[0]).toEqual(originalEntry);
+        expect(second.words).not.toBe(first.words);
+        expect(second.entries).not.toBe(first.entries);
+    });
+
+    it('returns independent frequency maps', () => {
+        const first = loadFrequencyDictionary();
+        const sampleWord = first.words[0];
+
+        expect(first.frequencies.get(sampleWord)).toBe(first.entries[0].freq);
+        first.frequencies.set('custom_word', 1);
+
+        const second = loadFrequencyDictionary();
+        expect(second.frequencies.get('custom_word')).toBeUndefined();
+        expect(second.frequencies).not.toBe(first.frequencies);
     });
 });

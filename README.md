@@ -106,11 +106,13 @@ interface SegmentResult {
 
 interface SegmentToken {
     value: string;
-    start: number;
-    end: number;
+    start: number; // zero-based offset into result.normalized
+    end: number; // exclusive offset into result.normalized
     isKnown: boolean;
 }
 ```
+
+When normalization is enabled, token offsets always refer to `result.normalized`. Invisible characters such as ZWS/ZWJ/BOM may be stripped during normalization, so offsets may not line up with the original input string.
 
 ### Dictionary
 
@@ -124,7 +126,7 @@ const dict = createDictionary(['សួស្តី', 'អ្នក', 'ខ្ម�
 dict.has('សួស្តី'); // true
 dict.hasPrefix!('សួ'); // true (trie-based O(k) lookup)
 dict.hasSuffix!('ី'); // true
-dict.size; // 3
+dict.size; // 3 unique words
 ```
 
 #### `KhmerDictionary` interface
@@ -165,6 +167,8 @@ console.log(freqData.frequencies.get('ជា')); // 701541
 ```
 
 This is a **separate import** — the core `khmer-segment` package stays small (~11KB). The dictionary module is ~3.9MB. Only import the dictionary when you need it.
+
+`loadFrequencyDictionary()` builds its return value from cached dictionary data, but each call returns fresh arrays and a fresh `Map`. You can safely extend or mutate the returned data without affecting later calls.
 
 ---
 
@@ -295,15 +299,22 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - `segmentWords` with FMM
 - Default dictionary (34K+ words, separate import)
 
-### v0.2.0 (current)
+### v0.2.1
 
 - BMM (Backward Maximum Matching) algorithm
 - BiMM (Bidirectional Maximum Matching) algorithm
 - Digit grouping (consecutive Khmer digits merged into single tokens)
 - Fixed normalization for MUUSIKATOAN (៉) and TRIISAP (៊) — shift signs now placed before vowels
 - Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
-- 149 tests
 - Rebuilt dictionary with 49,113 words (merged from 10 sources)
+
+### Next Patch Release
+
+- Clarified that token offsets are measured against `result.normalized`
+- Expanded Vitest coverage across normalization, dictionary, and segmentation behavior
+- Made `loadFrequencyDictionary()` safe to reuse across calls without shared-state pollution
+- Corrected custom dictionary `size` to report unique non-empty words
+- Added changelog, CI checks, and stricter prepublish formatting verification
 
 ### v0.3.0
 
@@ -327,6 +338,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 npm install       # install dependencies
 npm run build     # build with tsup (ESM + CJS + types)
 npm test          # run vitest
+npm run test:perf # optional performance-focused checks
 npm run test:watch  # watch mode
 npm run lint      # TypeScript type check
 ```
@@ -338,7 +350,8 @@ npm run lint      # TypeScript type check
 ### Automated Tests
 
 ```bash
-npm test              # run 149 tests with vitest
+npm test              # run the main Vitest correctness suite
+npm run test:perf     # optional performance-focused checks
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check
 ```

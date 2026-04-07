@@ -1,6 +1,8 @@
 export interface SegmentToken {
     value: string;
+    /** Zero-based start offset into `SegmentResult.normalized`. */
     start: number;
+    /** Zero-based exclusive end offset into `SegmentResult.normalized`. */
     end: number;
     isKnown: boolean;
 }
@@ -13,6 +15,7 @@ export interface SegmentOptions {
 
 export interface SegmentResult {
     original: string;
+    /** Normalized text used to compute token boundaries and offsets. */
     normalized: string;
     tokens: SegmentToken[];
 }

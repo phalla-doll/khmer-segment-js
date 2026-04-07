@@ -7,16 +7,37 @@ export interface FrequencyDictionary {
     frequencies: Map<string, number>;
 }
 
-let cached: FrequencyDictionary | null = null;
+interface CachedFrequencyDictionary {
+    readonly words: readonly string[];
+    readonly entries: readonly Readonly<DictionaryEntry>[];
+    readonly frequencies: ReadonlyMap<string, number>;
+}
+
+let cached: CachedFrequencyDictionary | null = null;
 
 export function loadFrequencyDictionary(): FrequencyDictionary {
     if (!cached) {
-        const entries = dictionaryData as DictionaryEntry[];
-        const words = entries.map(e => e.word);
+        const entries = Object.freeze(
+            (dictionaryData as DictionaryEntry[]).map(entry =>
+                Object.freeze({
+                    word: entry.word,
+                    freq: entry.freq,
+                })
+            )
+        ) as readonly Readonly<DictionaryEntry>[];
+        const words = Object.freeze(entries.map(entry => entry.word));
         const frequencies = new Map<string, number>(
-            entries.map(e => [e.word, e.freq])
+            entries.map(entry => [entry.word, entry.freq])
         );
-        cached = { words, entries, frequencies };
+        cached = Object.freeze({ words, entries, frequencies });
     }
-    return cached;
+
+    return {
+        words: [...cached.words],
+        entries: cached.entries.map(entry => ({
+            word: entry.word,
+            freq: entry.freq,
+        })),
+        frequencies: new Map(cached.frequencies),
+    };
 }
