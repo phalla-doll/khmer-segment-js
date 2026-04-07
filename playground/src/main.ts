@@ -75,15 +75,23 @@ tabs.forEach((tab, index) => {
 const tablistEl = document.querySelector('.tablist');
 tablistEl?.addEventListener('keydown', e => {
     const key = e.key;
-    if (key !== 'ArrowRight' && key !== 'ArrowLeft' && key !== 'Home' && key !== 'End') {
+    if (
+        key !== 'ArrowRight' &&
+        key !== 'ArrowLeft' &&
+        key !== 'Home' &&
+        key !== 'End'
+    ) {
         return;
     }
-    const current = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    const current = tabs.findIndex(
+        t => t.getAttribute('aria-selected') === 'true'
+    );
     if (current < 0) return;
     e.preventDefault();
     let next = current;
     if (key === 'ArrowRight') next = (current + 1) % tabs.length;
-    else if (key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+    else if (key === 'ArrowLeft')
+        next = (current - 1 + tabs.length) % tabs.length;
     else if (key === 'Home') next = 0;
     else if (key === 'End') next = tabs.length - 1;
     activateTab(next);

@@ -82,10 +82,15 @@ describe('loadFrequencyDictionary', () => {
         expect(data.frequencies.get(first.word)).toBe(first.freq);
     });
 
-    it('returns the same cached instance on repeated calls', () => {
+    it('returns equivalent data on repeated calls', () => {
         const a = loadFrequencyDictionary();
         const b = loadFrequencyDictionary();
-        expect(a).toBe(b);
+        expect(a).not.toBe(b);
+        expect(a.words).toEqual(b.words);
+        expect(a.entries).toEqual(b.entries);
+        expect([...a.frequencies.entries()]).toEqual([
+            ...b.frequencies.entries(),
+        ]);
     });
 });
 

@@ -98,6 +98,25 @@ describe('segmentWords', () => {
                 expect(matched!.isKnown).toBe(true);
             });
         }
+
+        it('keeps token offsets relative to normalized text', () => {
+            const input = 'ស\u200Bប្តា\u200Bហ៍';
+            const result = segmentWords(input, { dictionary: defaultDict });
+
+            expect(result.original.length).toBeGreaterThan(
+                result.normalized.length
+            );
+            expect(result.tokens[0].start).toBe(0);
+            expect(result.tokens[result.tokens.length - 1].end).toBe(
+                result.normalized.length
+            );
+            expect(result.tokens.map(t => t.value).join('')).toBe(
+                result.normalized
+            );
+            expect(result.tokens[result.tokens.length - 1].end).not.toBe(
+                result.original.length
+            );
+        });
     });
 
     describe('digit grouping', () => {

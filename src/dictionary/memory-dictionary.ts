@@ -4,22 +4,28 @@ import { Trie } from './trie';
 export class MemoryDictionary implements KhmerDictionary {
     private trie: Trie;
     private reverseTrie: Trie;
-    private freqMap: Map<string, number>;
+    private freqMap: ReadonlyMap<string, number>;
     readonly size: number;
 
-    constructor(words: string[], frequencies?: Map<string, number>) {
+    constructor(words: string[], frequencies?: ReadonlyMap<string, number>) {
         this.trie = new Trie();
         this.reverseTrie = new Trie();
         this.freqMap = frequencies ?? new Map();
-        let count = 0;
+        const uniqueWords = new Set<string>();
+
         for (const word of words) {
+            if (word.length > 0) {
+                uniqueWords.add(word);
+            }
+        }
+
+        for (const word of uniqueWords) {
             if (word.length > 0) {
                 this.trie.insert(word);
                 this.reverseTrie.insert([...word].reverse().join(''));
-                count++;
             }
         }
-        this.size = count;
+        this.size = uniqueWords.size;
     }
 
     has(word: string): boolean {

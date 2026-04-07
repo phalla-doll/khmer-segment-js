@@ -35,83 +35,109 @@
         >
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center gap-3">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    class="block h-9 w-9 shrink-0"
-                    width="36"
-                    height="36"
-                    aria-hidden="true"
-                    focusable="false"
-                >
-                    <defs>
-                        <linearGradient
-                            id="ks-nav-bg"
-                            x1="256"
-                            y1="0"
-                            x2="256"
-                            y2="512"
-                            gradientUnits="userSpaceOnUse"
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        class="block h-9 w-9 shrink-0"
+                        width="36"
+                        height="36"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <defs>
+                            <linearGradient
+                                id="ks-nav-bg"
+                                x1="256"
+                                y1="0"
+                                x2="256"
+                                y2="512"
+                                gradientUnits="userSpaceOnUse"
+                            >
+                                <stop stop-color="#1e3a8a" />
+                                <stop offset="1" stop-color="#0f172a" />
+                            </linearGradient>
+                            <linearGradient
+                                id="ks-nav-shine"
+                                x1="256"
+                                y1="0"
+                                x2="256"
+                                y2="180"
+                                gradientUnits="userSpaceOnUse"
+                            >
+                                <stop
+                                    stop-color="#ffffff"
+                                    stop-opacity="0.14"
+                                />
+                                <stop
+                                    offset="1"
+                                    stop-color="#ffffff"
+                                    stop-opacity="0"
+                                />
+                            </linearGradient>
+                        </defs>
+                        <rect
+                            width="512"
+                            height="512"
+                            rx="108"
+                            ry="108"
+                            fill="url(#ks-nav-bg)"
+                        />
+                        <rect
+                            width="512"
+                            height="512"
+                            rx="108"
+                            ry="108"
+                            fill="url(#ks-nav-shine)"
+                        />
+                        <g fill="#e8c547">
+                            <rect
+                                x="100"
+                                y="156"
+                                width="84"
+                                height="200"
+                                rx="18"
+                                ry="18"
+                            />
+                            <rect
+                                x="214"
+                                y="176"
+                                width="84"
+                                height="160"
+                                rx="18"
+                                ry="18"
+                            />
+                            <rect
+                                x="328"
+                                y="156"
+                                width="84"
+                                height="200"
+                                rx="18"
+                                ry="18"
+                            />
+                        </g>
+                        <text
+                            x="412"
+                            y="468"
+                            text-anchor="end"
+                            fill="#e8c547"
+                            font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+                            font-size="42"
+                            font-weight="600"
+                            letter-spacing="-0.02em"
                         >
-                            <stop stop-color="#1e3a8a" />
-                            <stop offset="1" stop-color="#0f172a" />
-                        </linearGradient>
-                        <linearGradient
-                            id="ks-nav-shine"
-                            x1="256"
-                            y1="0"
-                            x2="256"
-                            y2="180"
-                            gradientUnits="userSpaceOnUse"
+                            JS
+                        </text>
+                    </svg>
+                    <h1 class="flex min-w-0 flex-col gap-0.5 leading-none">
+                        <span
+                            class="font-mono text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
+                            >khmer-segment</span
                         >
-                            <stop stop-color="#ffffff" stop-opacity="0.14" />
-                            <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
-                        </linearGradient>
-                    </defs>
-                    <rect
-                        width="512"
-                        height="512"
-                        rx="108"
-                        ry="108"
-                        fill="url(#ks-nav-bg)"
-                    />
-                    <rect
-                        width="512"
-                        height="512"
-                        rx="108"
-                        ry="108"
-                        fill="url(#ks-nav-shine)"
-                    />
-                    <g fill="#e8c547">
-                        <rect x="100" y="156" width="84" height="200" rx="18" ry="18" />
-                        <rect x="214" y="176" width="84" height="160" rx="18" ry="18" />
-                        <rect x="328" y="156" width="84" height="200" rx="18" ry="18" />
-                    </g>
-                    <text
-                        x="412"
-                        y="468"
-                        text-anchor="end"
-                        fill="#e8c547"
-                        font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-                        font-size="42"
-                        font-weight="600"
-                        letter-spacing="-0.02em"
-                    >
-                        JS
-                    </text>
-                </svg>
-                <h1
-                    class="flex min-w-0 flex-col gap-0.5 leading-none"
-                >
-                    <span
-                        class="font-mono text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
-                        >khmer-segment</span
-                    >
-                    <span
-                        class="text-[11px] font-medium uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400"
-                        >Playground</span
-                    >
-                </h1>
+                        <span
+                            class="text-[11px] font-medium uppercase tracking-[0.12em] text-neutral-500 dark:text-neutral-400"
+                            >Playground</span
+                        >
+                    </h1>
                 </div>
                 <button
                     type="button"
@@ -120,14 +146,22 @@
                     aria-label="Toggle dark mode"
                     aria-pressed="false"
                 >
-                    <span class="theme-icon-light inline dark:hidden" aria-hidden="true"
+                    <span
+                        class="theme-icon-light inline dark:hidden"
+                        aria-hidden="true"
                         >🌙</span
                     >
-                    <span class="theme-icon-dark hidden dark:inline" aria-hidden="true"
+                    <span
+                        class="theme-icon-dark hidden dark:inline"
+                        aria-hidden="true"
                         >☀️</span
                     >
-                    <span class="theme-label-light inline dark:hidden">Dark</span>
-                    <span class="theme-label-dark hidden dark:inline">Light</span>
+                    <span class="theme-label-light inline dark:hidden"
+                        >Dark</span
+                    >
+                    <span class="theme-label-dark hidden dark:inline"
+                        >Light</span
+                    >
                 </button>
             </div>
             <div class="flex flex-wrap items-center gap-3.5">
@@ -213,7 +247,9 @@
                             rows="5"
                             placeholder="Type or paste Khmer text here..."
                             class="w-full min-h-[7.5rem] resize-y rounded-2xl border border-border bg-surface px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus-visible:ring-offset-zinc-950"
-                        >សួស្តីអ្នកទាំងអស់គ្នា</textarea>
+                        >
+សួស្តីអ្នកទាំងអស់គ្នា</textarea
+                        >
                     </div>
 
                     <details
@@ -240,12 +276,15 @@
                                 </svg>
                             </span>
                             Custom dictionary
-                            <span class="font-normal text-neutral-400 dark:text-neutral-500"
+                            <span
+                                class="font-normal text-neutral-400 dark:text-neutral-500"
                                 >(optional, one word per line)</span
                             >
                         </summary>
                         <div class="border-t border-border px-3.5 pb-3.5 pt-2">
-                            <p class="mb-2 text-xs leading-snug text-neutral-500 dark:text-neutral-400">
+                            <p
+                                class="mb-2 text-xs leading-snug text-neutral-500 dark:text-neutral-400"
+                            >
                                 Words are added on top of the built-in 49K word
                                 dictionary.
                             </p>
