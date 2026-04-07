@@ -19,7 +19,8 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "!dist/**/*.map"
     ],
     "sideEffects": false,
     "scripts": {
@@ -44,6 +45,14 @@
     ],
     "author": "Phalla Doll",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/phalla-doll/khmer-segment-js.git"
+    },
+    "homepage": "https://github.com/phalla-doll/khmer-segment-js#readme",
+    "bugs": {
+        "url": "https://github.com/phalla-doll/khmer-segment-js/issues"
+    },
     "devDependencies": {
         "@huggingface/hub": "^2.11.0",
         "@types/node": "^25.5.2",
