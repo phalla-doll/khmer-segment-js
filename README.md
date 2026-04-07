@@ -1,5 +1,3 @@
-
-
 # khmer-segment
 
 A framework-agnostic Khmer text processing library for JavaScript and TypeScript.
@@ -23,6 +21,7 @@ npm install khmer-segment
 ```ts
 import {
     containsKhmer,
+    isKhmerText,
     normalizeKhmer,
     splitClusters,
     countClusters,
@@ -59,25 +58,20 @@ console.log(result.tokens);
 
 ### Detection
 
-
 | Function              | Description                                               |
 | --------------------- | --------------------------------------------------------- |
 | `isKhmerChar(char)`   | Returns `true` if the character is a Khmer code point     |
 | `containsKhmer(text)` | Returns `true` if the text contains any Khmer characters  |
 | `isKhmerText(text)`   | Returns `true` if all non-whitespace characters are Khmer |
 
-
 ### Normalization
-
 
 | Function                         | Description                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------ |
 | `normalizeKhmer(text)`           | Reorders Khmer characters into canonical order (base → coeng → shift signs → vowel → sign) |
 | `normalizeKhmerCluster(cluster)` | Normalizes a single cluster                                                                |
 
-
 ### Cluster Utilities
-
 
 | Function                     | Description                                       |
 | ---------------------------- | ------------------------------------------------- |
@@ -85,14 +79,11 @@ console.log(result.tokens);
 | `countClusters(text)`        | Returns the number of clusters in the text        |
 | `getClusterBoundaries(text)` | Returns `{ start, end }` offsets for each cluster |
 
-
 ### Segmentation
-
 
 | Function                       | Description                                                    |
 | ------------------------------ | -------------------------------------------------------------- |
 | `segmentWords(text, options?)` | Segments text into word tokens using dictionary-based matching |
-
 
 #### `SegmentOptions`
 
@@ -123,11 +114,9 @@ interface SegmentToken {
 
 ### Dictionary
 
-
 | Function                                | Description                                      |
 | --------------------------------------- | ------------------------------------------------ |
 | `createDictionary(words, frequencies?)` | Creates an in-memory dictionary from a word list |
-
 
 ```ts
 const dict = createDictionary(['សួស្តី', 'អ្នក', 'ខ្មែរ']);
@@ -175,7 +164,7 @@ console.log(freqData.words.length); // 49113
 console.log(freqData.frequencies.get('ជា')); // 701541
 ```
 
-This is a **separate import** — the core `khmer-segment` package stays small (~8KB). Only import the dictionary when you need it.
+This is a **separate import** — the core `khmer-segment` package stays small (~11KB). The dictionary module is ~3.9MB. Only import the dictionary when you need it.
 
 ---
 
@@ -242,7 +231,7 @@ const result = segmentWords('កខគ');
 
 ## Dictionary Strategy
 
-The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 49,113 Khmer words. This keeps the core package small (~8KB).
+The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 49,113 Khmer words. This keeps the core package small (~11KB).
 
 Options:
 
@@ -272,7 +261,6 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 
 ## Framework Compatibility
 
-
 | Environment         | Support |
 | ------------------- | ------- |
 | Node.js (ESM + CJS) | Yes     |
@@ -281,7 +269,6 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 | React               | Yes     |
 | Angular             | Yes     |
 | Vue                 | Yes     |
-
 
 No framework-specific code in the core. Tree-shakeable with `sideEffects: false`.
 
@@ -316,8 +303,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - Fixed normalization for MUUSIKATOAN (៉) and TRIISAP (៊) — shift signs now placed before vowels
 - Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
 - 149 tests
-- `compareTyping(expected, actual)` for MonkeyType-like apps
-- Better token metadata (`isKhmer`, `clusterCount`)
+- Rebuilt dictionary with 49,113 words (merged from 10 sources)
 
 ### v0.3.0
 
@@ -352,7 +338,7 @@ npm run lint      # TypeScript type check
 ### Automated Tests
 
 ```bash
-npm test              # run 98 tests with vitest
+npm test              # run 149 tests with vitest
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check
 ```
@@ -385,7 +371,7 @@ Features:
 - **[Word Segmentation of Khmer Text Using Conditional Random Fields](https://medium.com/@phylypo/segmentation-of-khmer-text-using-conditional-random-fields-3a2d4d73956a)** — Phylypo Tum (2019). Comprehensive overview of Khmer segmentation approaches from dictionary-based to CRF, achieving 99.7% accuracy with Linear Chain CRF.
 - **[Khmer Word Segmentation Using Conditional Random Fields](https://www.niptict.edu.kh/khmer-word-segmentation-tool/)** — Vichea Chea, Ye Kyaw Thu, et al. (2015). The prior state-of-the-art CRF model for Khmer segmentation (98.5% accuracy, 5-tag system).
 - **[Benchmark dataset and Python notebooks](https://github.com/phylypo/segmentation-crf-khmer)** — 10K+ segmented Khmer news articles useful for evaluating segmentation quality.
-- **[khmerlbdict](https://github.com/silnrsi/khmerlbdict)** — Source of the default dictionary used by this library (MIT license, 34K+ words).
+- **[khmerlbdict](https://github.com/silnrsi/khmerlbdict)** — Source of the default dictionary used by this library (MIT license). Merged with Royal Academy of Cambodia's Khmer Dictionary for a total of 49,113 words.
 
 ---
 
