@@ -308,7 +308,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
 - Rebuilt dictionary with 49,113 words (merged from 10 sources)
 
-### Next Patch Release
+### v0.2.2 (current)
 
 - Clarified that token offsets are measured against `result.normalized`
 - Expanded Vitest coverage across normalization, dictionary, and segmentation behavior
