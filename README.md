@@ -52,6 +52,12 @@ console.log(result.tokens);
 //   { value: "អ្នក", start: 6, end: 9, isKnown: true },
 //   { value: "ទាំងអស់គ្នា", start: 9, end: 19, isKnown: true },
 // ]
+
+// Get valid caret positions
+getCaretBoundaries('ក្កក'); // [0, 3, 4]
+
+// Cluster-safe backspace
+deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 }
 ```
 
 ---
@@ -80,6 +86,13 @@ console.log(result.tokens);
 | `splitClusters(text)`        | Splits text into Khmer-safe grapheme clusters     |
 | `countClusters(text)`        | Returns the number of clusters in the text        |
 | `getClusterBoundaries(text)` | Returns `{ start, end }` offsets for each cluster |
+
+### Text Editing
+
+| Function                              | Description                                               |
+| ------------------------------------- | --------------------------------------------------------- |
+| `getCaretBoundaries(text, options?)`  | Returns valid caret positions based on cluster boundaries |
+| `deleteBackward(text, cursor, opts?)` | Deletes the cluster before the cursor, returning new text |
 
 ### Segmentation
 
