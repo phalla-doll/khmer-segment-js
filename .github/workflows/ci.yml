@@ -34,3 +34,13 @@ jobs:
 
             - name: Check formatting
               run: npm run format:check
+
+            - name: Run performance tests
+              run: npm run test:perf
+              continue-on-error: true
+
+            - name: Download benchmark corpus
+              run: npm run download:benchmark
+
+            - name: Run accuracy benchmark regression check
+              run: npm run test:accuracy:check
