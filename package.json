@@ -1,6 +1,6 @@
 {
     "name": "khmer-segment",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "description": "Khmer text segmentation, normalization, and cluster utilities for JavaScript and TypeScript.",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -33,6 +33,10 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "prepublishOnly": "npm run build && npm run test && npm run lint && npm run format:check",
+        "download:benchmark": "npx tsx scripts/download-benchmark-data.ts",
+        "test:accuracy": "npx tsx scripts/benchmark-accuracy.ts",
+        "test:accuracy:check": "npm run test:accuracy && npx tsx scripts/check-benchmark-regression.ts",
+        "test:accuracy:sweep": "npx tsx scripts/benchmark-viterbi-penalty.ts",
         "playground:dev": "npm run dev --prefix playground",
         "playground:build": "npm run build --prefix playground"
     },

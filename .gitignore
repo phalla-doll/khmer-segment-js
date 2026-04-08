@@ -29,3 +29,6 @@ yarn-error.log*
 # playground build output
 /playground/dist/
 /playground/node_modules/
+
+# benchmark gold data (download via npm run download:benchmark)
+/benchmark/data/
