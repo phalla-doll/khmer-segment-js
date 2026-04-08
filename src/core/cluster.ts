@@ -6,6 +6,10 @@ import {
     isClusterBase,
 } from '../constants/char-categories';
 
+function isRobat(cp: number): boolean {
+    return cp === 0x17cc;
+}
+
 export function splitClusters(text: string): string[] {
     if (!text) return [];
 
@@ -33,6 +37,9 @@ export function splitClusters(text: string): string[] {
                         cluster += chars[i];
                         i++;
                     }
+                } else if (isRobat(nextCp)) {
+                    cluster += chars[i];
+                    i++;
                 } else if (isDependentVowel(nextCp) || isSign(nextCp)) {
                     cluster += chars[i];
                     i++;

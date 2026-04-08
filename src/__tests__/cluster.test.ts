@@ -79,6 +79,36 @@ describe('splitClusters', () => {
         const result = splitClusters('ក។ខ');
         expect(result).toEqual(['ក', '។', 'ខ']);
     });
+
+    it('keeps ROBAT (U+17CC) as part of the cluster', () => {
+        const ka = '\u1780';
+        const robat = '\u17CC';
+        expect(splitClusters(ka + robat)).toEqual([ka + robat]);
+    });
+
+    it('keeps consonant + coeng + consonant + ROBAT as one cluster', () => {
+        const ka = '\u1780';
+        const coeng = '\u17D2';
+        const no = '\u1793';
+        const robat = '\u17CC';
+        expect(splitClusters(ka + coeng + no + robat)).toEqual([
+            ka + coeng + no + robat,
+        ]);
+    });
+
+    it('handles independent vowels as cluster bases', () => {
+        const result = splitClusters('ឥត');
+        expect(result).toEqual(['ឥ', 'ត']);
+    });
+
+    it('handles stacked subscripts', () => {
+        const ka = '\u1780';
+        const coeng = '\u17D2';
+        const ta = '\u178F';
+        const no = '\u1793';
+        const cluster = ka + coeng + ta + coeng + no;
+        expect(splitClusters(cluster)).toEqual([cluster]);
+    });
 });
 
 describe('countClusters', () => {
