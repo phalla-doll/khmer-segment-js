@@ -149,3 +149,116 @@ describe('normalizeKhmer', () => {
         expect(normalizeKhmer(input)).toBe(input);
     });
 });
+
+describe('normalizeKhmerCluster edge cases', () => {
+    it('fixes composite vowel េ + ី → ើ', () => {
+        const ka = '\u1780';
+        const e = '\u17C1';
+        const ii = '\u17B8';
+        const oe = '\u17BE';
+
+        const canonical = ka + oe;
+        const split = ka + e + ii;
+
+        expect(normalizeKhmerCluster(split)).toBe(canonical);
+    });
+
+    it('fixes composite vowel េ + ា → ោ', () => {
+        const ka = '\u1780';
+        const e = '\u17C1';
+        const aa = '\u17B6';
+        const oo = '\u17C4';
+
+        const canonical = ka + oo;
+        const split = ka + e + aa;
+
+        expect(normalizeKhmerCluster(split)).toBe(canonical);
+    });
+
+    it('places ROBAT (U+17CC) after coeng pairs but before shift signs', () => {
+        const ka = '\u1780';
+        const coeng = '\u17D2';
+        const no = '\u1793';
+        const robat = '\u17CC';
+        const muusikatoan = '\u17C9';
+        const vowel = '\u17B6';
+
+        const canonical = ka + coeng + no + robat + muusikatoan + vowel;
+        const reordered = ka + muusikatoan + vowel + robat + coeng + no;
+
+        expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+    });
+
+    it('places coeng+RO after non-RO coeng pairs', () => {
+        const ka = '\u1780';
+        const coeng = '\u17D2';
+        const no = '\u1793';
+        const ro = '\u179A';
+        const vowel = '\u17B6';
+
+        const canonical = ka + coeng + no + coeng + ro + vowel;
+        const reordered = ka + coeng + ro + coeng + no + vowel;
+
+        expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+    });
+
+    it('handles multiple coeng pairs preserving relative order', () => {
+        const ka = '\u1780';
+        const coeng = '\u17D2';
+        const ta = '\u178F';
+        const no = '\u1793';
+        const vowel = '\u17C1';
+
+        const canonical = ka + coeng + ta + coeng + no + vowel;
+        const reordered = ka + vowel + coeng + ta + coeng + no;
+
+        expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+    });
+
+    it('handles SAMYOK SANNYA (U+17D0) as a sign', () => {
+        const ka = '\u1780';
+        const vowel = '\u17B6';
+        const samyok = '\u17D0';
+
+        const canonical = ka + vowel + samyok;
+        const reordered = ka + samyok + vowel;
+
+        expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+    });
+
+    it('handles BANTOC (U+17CB) ordering after vowels', () => {
+        const ka = '\u1780';
+        const vowel = '\u17B6';
+        const bantoc = '\u17CB';
+
+        const canonical = ka + vowel + bantoc;
+        const reordered = ka + bantoc + vowel;
+
+        expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+    });
+
+    it('handles NIKAHIT (U+17C6) as a sign after vowels', () => {
+        const ka = '\u1780';
+        const vowel = '\u17B6';
+        const nikahit = '\u17C6';
+
+        const canonical = ka + vowel + nikahit;
+        const reordered = ka + nikahit + vowel;
+
+        expect(normalizeKhmerCluster(reordered)).toBe(canonical);
+    });
+
+    it('normalization is idempotent', () => {
+        const input = 'ខ្មែរ';
+        const first = normalizeKhmerCluster(input);
+        const second = normalizeKhmerCluster(first);
+        expect(second).toBe(first);
+    });
+
+    it('handles ROBAT alone without coeng', () => {
+        const ka = '\u1780';
+        const robat = '\u17CC';
+        const input = ka + robat;
+        expect(normalizeKhmerCluster(input)).toBe(input);
+    });
+});

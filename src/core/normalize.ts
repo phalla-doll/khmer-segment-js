@@ -10,13 +10,47 @@ import {
 
 const INVISIBLE_CHARS = /[\u200B\u200C\u200D\u2060\u200E\u200F\uFEFF]/g;
 
+const RO = 0x179a;
+
+function isRobat(cp: number): boolean {
+    return cp === 0x17cc;
+}
+
+function fixCompositeVowels(chars: string[]): string[] {
+    const result: string[] = [];
+    let i = 0;
+    while (i < chars.length) {
+        const cp = chars[i].codePointAt(0)!;
+        if (cp === 0x17c1 && i + 1 < chars.length) {
+            const nextCp = chars[i + 1].codePointAt(0)!;
+            if (nextCp === 0x17b8) {
+                result.push('\u17be');
+                i += 2;
+                continue;
+            }
+            if (nextCp === 0x17b6) {
+                result.push('\u17c4');
+                i += 2;
+                continue;
+            }
+        }
+        result.push(chars[i]);
+        i++;
+    }
+    return result;
+}
+
 export function normalizeKhmerCluster(cluster: string): string {
-    const chars = [...cluster];
-    if (chars.length <= 1) return chars.join('');
+    const rawChars = [...cluster];
+    if (rawChars.length <= 1) return rawChars.join('');
+
+    const chars = fixCompositeVowels(rawChars);
 
     let i = 0;
     const base: string[] = [];
-    const coengPairs: string[] = [];
+    const coengNonRo: string[] = [];
+    const coengRo: string[] = [];
+    const robat: string[] = [];
     const shiftSigns: string[] = [];
     const vowels: string[] = [];
     const otherSigns: string[] = [];
@@ -32,10 +66,20 @@ export function normalizeKhmerCluster(cluster: string): string {
             let pair = chars[i];
             i++;
             if (i < chars.length && isConsonant(chars[i].codePointAt(0)!)) {
+                const subCp = chars[i].codePointAt(0)!;
                 pair += chars[i];
                 i++;
+                if (subCp === RO) {
+                    coengRo.push(pair);
+                } else {
+                    coengNonRo.push(pair);
+                }
+            } else {
+                coengNonRo.push(pair);
             }
-            coengPairs.push(pair);
+        } else if (isRobat(cp)) {
+            robat.push(chars[i]);
+            i++;
         } else if (isShiftSign(cp)) {
             shiftSigns.push(chars[i]);
             i++;
@@ -53,7 +97,9 @@ export function normalizeKhmerCluster(cluster: string): string {
 
     return [
         ...base,
-        ...coengPairs,
+        ...coengNonRo,
+        ...coengRo,
+        ...robat,
         ...shiftSigns,
         ...vowels,
         ...otherSigns,
