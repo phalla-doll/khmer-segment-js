@@ -1,0 +1,36 @@
+{
+    "generatedAt": "2026-04-08T02:25:56.283Z",
+    "dataset": "kh_data_10000b",
+    "dictionarySize": 101107,
+    "sentences": 87875,
+    "results": [
+        {
+            "strategy": "fmm",
+            "boundaryMetrics": { "f1": 0.8024 },
+            "tokenMetrics": { "f1": 0.6304 },
+            "exactMatchRate": 0.0195,
+            "oovBoundaryF1": 0.5353
+        },
+        {
+            "strategy": "bmm",
+            "boundaryMetrics": { "f1": 0.7981 },
+            "tokenMetrics": { "f1": 0.6239 },
+            "exactMatchRate": 0.0179,
+            "oovBoundaryF1": 0.5352
+        },
+        {
+            "strategy": "bimm",
+            "boundaryMetrics": { "f1": 0.8041 },
+            "tokenMetrics": { "f1": 0.6327 },
+            "exactMatchRate": 0.0201,
+            "oovBoundaryF1": 0.535
+        },
+        {
+            "strategy": "viterbi",
+            "boundaryMetrics": { "f1": 0.7268 },
+            "tokenMetrics": { "f1": 0.4219 },
+            "exactMatchRate": 0.0012,
+            "oovBoundaryF1": 0.9621
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+[
+    {
+        "penalty": 0.25,
+        "bimmBoundaryF1": 0.8041263100480274,
+        "viterbiBoundaryF1": 0.7281074598304096,
+        "bimmOovBoundaryF1": 0.5350108715346983,
+        "viterbiOovBoundaryF1": 0.9620961889388656,
+        "bimmElapsedMs": 16864,
+        "viterbiElapsedMs": 27032,
+        "viterbiVsBimmTimeRatio": 1.6029411764705883
+    },
+    {
+        "penalty": 0.5,
+        "bimmBoundaryF1": 0.8041263100480274,
+        "viterbiBoundaryF1": 0.7312646202410501,
+        "bimmOovBoundaryF1": 0.5350108715346983,
+        "viterbiOovBoundaryF1": 0.962139084203137,
+        "bimmElapsedMs": 16462,
+        "viterbiElapsedMs": 23838,
+        "viterbiVsBimmTimeRatio": 1.448062203863443
+    },
+    {
+        "penalty": 0.75,
+        "bimmBoundaryF1": 0.8041263100480274,
+        "viterbiBoundaryF1": 0.7347974894678261,
+        "bimmOovBoundaryF1": 0.5350108715346983,
+        "viterbiOovBoundaryF1": 0.962269399061195,
+        "bimmElapsedMs": 16598,
+        "viterbiElapsedMs": 24546,
+        "viterbiVsBimmTimeRatio": 1.4788528738402218
+    },
+    {
+        "penalty": 1,
+        "bimmBoundaryF1": 0.8041263100480274,
+        "viterbiBoundaryF1": 0.7392201177583337,
+        "bimmOovBoundaryF1": 0.5350108715346983,
+        "viterbiOovBoundaryF1": 0.962625933104335,
+        "bimmElapsedMs": 16484,
+        "viterbiElapsedMs": 22535,
+        "viterbiVsBimmTimeRatio": 1.367083232225188
+    },
+    {
+        "penalty": 1.25,
+        "bimmBoundaryF1": 0.8041263100480274,
+        "viterbiBoundaryF1": 0.7422384946836272,
+        "bimmOovBoundaryF1": 0.5350108715346983,
+        "viterbiOovBoundaryF1": 0.9630177117209128,
+        "bimmElapsedMs": 16456,
+        "viterbiElapsedMs": 24592,
+        "viterbiVsBimmTimeRatio": 1.4944093339815265
+    },
+    {
+        "penalty": 1.5,
+        "bimmBoundaryF1": 0.8041263100480274,
+        "viterbiBoundaryF1": 0.7464273998466555,
+        "bimmOovBoundaryF1": 0.5350108715346983,
+        "viterbiOovBoundaryF1": 0.9630361997204773,
+        "bimmElapsedMs": 17757,
+        "viterbiElapsedMs": 25434,
+        "viterbiVsBimmTimeRatio": 1.4323365433350228
+    }
+]
