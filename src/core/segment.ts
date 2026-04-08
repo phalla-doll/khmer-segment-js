@@ -10,6 +10,7 @@ import { bmmSegment } from '../algorithms/bmm';
 import { bimmSegment } from '../algorithms/bimm';
 import { viterbiSegment } from '../algorithms/viterbi';
 import { groupDigitTokens } from '../algorithms/group-digits';
+import { isKhmerSentencePunctuationToken } from '../constants/char-categories';
 
 export function segmentWords(
     text: string,
@@ -50,10 +51,21 @@ export function segmentWords(
     }
 
     tokens = groupDigitTokens(tokens) as SegmentToken[];
+    tokens = markKhmerSentencePunctuationKnown(tokens);
 
     return {
         original: text,
         normalized,
         tokens,
     };
+}
+
+function markKhmerSentencePunctuationKnown(
+    tokens: SegmentToken[]
+): SegmentToken[] {
+    return tokens.map(token =>
+        isKhmerSentencePunctuationToken(token.value)
+            ? { ...token, isKnown: true }
+            : token
+    );
 }

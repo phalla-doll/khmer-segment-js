@@ -14,6 +14,9 @@ import {
     DIGIT_END,
     ASCII_DIGIT_START,
     ASCII_DIGIT_END,
+    KHMER_PUNCT_KHAN,
+    KHMER_PUNCT_BARIYOOSAN,
+    KHMER_PUNCT_CAMNUC_PII_KUUH,
 } from './unicode';
 
 export function isKhmerCodePoint(cp: number): boolean {
@@ -55,6 +58,20 @@ export function isAsciiDigit(cp: number): boolean {
 
 export function isDigit(cp: number): boolean {
     return isKhmerDigit(cp) || isAsciiDigit(cp);
+}
+
+export function isKhmerSentencePunctuation(cp: number): boolean {
+    return (
+        cp === KHMER_PUNCT_KHAN ||
+        cp === KHMER_PUNCT_BARIYOOSAN ||
+        cp === KHMER_PUNCT_CAMNUC_PII_KUUH
+    );
+}
+
+export function isKhmerSentencePunctuationToken(value: string): boolean {
+    return (
+        value.length === 1 && isKhmerSentencePunctuation(value.codePointAt(0)!)
+    );
 }
 
 export function isClusterBase(cp: number): boolean {

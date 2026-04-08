@@ -203,6 +203,54 @@ describe('segmentWords', () => {
         });
     });
 
+    describe('Khmer sentence punctuation knownness', () => {
+        const dict = createDictionary(['សួស្តី', 'អ្នក', 'ក្មែរ']);
+
+        it('marks ។, ៕, and ៖ as known in default strategy', () => {
+            const result = segmentWords('សួស្តី។អ្នក៕ក្មែរ៖', {
+                dictionary: dict,
+            });
+            const punctuation = result.tokens.filter(t =>
+                /[។៕៖]/.test(t.value)
+            );
+            expect(punctuation.map(t => t.value)).toEqual(['។', '៕', '៖']);
+            expect(punctuation.every(t => t.isKnown)).toBe(true);
+        });
+
+        it('marks ។, ៕, and ៖ as known in Viterbi', () => {
+            const result = segmentWords('សួស្តី។អ្នក៕ក្មែរ៖', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            const punctuation = result.tokens.filter(t =>
+                /[។៕៖]/.test(t.value)
+            );
+            expect(punctuation.map(t => t.value)).toEqual(['។', '៕', '៖']);
+            expect(punctuation.every(t => t.isKnown)).toBe(true);
+        });
+
+        it('marks Khmer sentence punctuation as known without dictionary', () => {
+            const result = segmentWords('គ។៕៖');
+            expect(result.tokens).toHaveLength(4);
+            expect(result.tokens[0]).toMatchObject({
+                value: 'គ',
+                isKnown: false,
+            });
+            expect(result.tokens[1]).toMatchObject({
+                value: '។',
+                isKnown: true,
+            });
+            expect(result.tokens[2]).toMatchObject({
+                value: '៕',
+                isKnown: true,
+            });
+            expect(result.tokens[3]).toMatchObject({
+                value: '៖',
+                isKnown: true,
+            });
+        });
+    });
+
     describe('BMM strategy', () => {
         const dict = createDictionary([
             'សួស្តី',

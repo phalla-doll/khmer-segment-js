@@ -19,6 +19,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Accuracy benchmark script now also writes `docs/benchmark-results.json` for machine-readable regression checks.
 - CI now runs accuracy benchmark regression checks in addition to build/test/lint/format/perf steps.
 
+## [0.3.2] - 2026-04-08
+
+### Changed
+
+- Khmer sentence punctuation (`។`, `៕`, `៖`; U+17D4–U+17D6) is emitted with `isKnown: true` for all segmentation strategies and when no dictionary is provided. Viterbi marks only these Khmer separators as known; other separators remain unchanged.
+
 ## [0.3.1] - 2026-04-08
 
 ### Changed

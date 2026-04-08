@@ -1,4 +1,5 @@
 import type { KhmerDictionary, SegmentToken } from '../types/public';
+import { isKhmerSentencePunctuation } from '../constants/char-categories';
 
 const DEFAULT_COST = 10.0;
 const UNKNOWN_COST = 20.0;
@@ -142,7 +143,7 @@ export function viterbiSegment(
             if (cost < dp[i + 1]) {
                 dp[i + 1] = cost;
                 from[i + 1] = i;
-                fromKnown[i + 1] = false;
+                fromKnown[i + 1] = isKhmerSentencePunctuation(cp);
             }
             continue;
         }

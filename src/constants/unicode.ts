@@ -14,6 +14,9 @@ export const DEPENDENT_VOWEL_END = 0x17c5;
 
 export const SIGN_START = 0x17c6;
 export const SIGN_END = 0x17d3;
+export const KHMER_PUNCT_KHAN = 0x17d4;
+export const KHMER_PUNCT_BARIYOOSAN = 0x17d5;
+export const KHMER_PUNCT_CAMNUC_PII_KUUH = 0x17d6;
 
 export const KHMER_COENG = 0x17d2;
 
