@@ -1,76 +1,76 @@
 {
-  "generatedAt": "2026-04-08T04:30:21.804Z",
-  "dataset": "kh_data_10000b",
-  "dictionarySize": 101107,
-  "sentences": 87875,
-  "results": [
-    {
-      "strategy": "fmm",
-      "boundaryMetrics": {
-        "precision": 0.7389590880931359,
-        "recall": 0.8777328403908118,
-        "f1": 0.8023899271060564
-      },
-      "tokenMetrics": {
-        "precision": 0.5805834190709648,
-        "recall": 0.6896148132097119,
-        "f1": 0.630419592658994
-      },
-      "exactMatchRate": 0.0195049786628734,
-      "oovRate": 0.32844131110227565,
-      "oovBoundaryF1": 0.5353071886698355,
-      "elapsedMs": 7673
-    },
-    {
-      "strategy": "bmm",
-      "boundaryMetrics": {
-        "precision": 0.7343977103762669,
-        "recall": 0.8739485022492605,
-        "f1": 0.7981189298675725
-      },
-      "tokenMetrics": {
-        "precision": 0.5740953639060494,
-        "recall": 0.683185386262814,
-        "f1": 0.6239076879037041
-      },
-      "exactMatchRate": 0.017923186344238975,
-      "oovRate": 0.3258892458873601,
-      "oovBoundaryF1": 0.5351516619001578,
-      "elapsedMs": 10931
-    },
-    {
-      "strategy": "bimm",
-      "boundaryMetrics": {
-        "precision": 0.7411968864397788,
-        "recall": 0.8787328745267351,
-        "f1": 0.8041263100480274
-      },
-      "tokenMetrics": {
-        "precision": 0.5831673557397034,
-        "recall": 0.6913794920277777,
-        "f1": 0.6326796867211796
-      },
-      "exactMatchRate": 0.020051209103840683,
-      "oovRate": 0.32610409630614623,
-      "oovBoundaryF1": 0.5350108715346983,
-      "elapsedMs": 15326
-    },
-    {
-      "strategy": "viterbi",
-      "boundaryMetrics": {
-        "precision": 0.6128232969727927,
-        "recall": 0.9173919560922976,
-        "f1": 0.7347974894678261
-      },
-      "tokenMetrics": {
-        "precision": 0.3619478600474778,
-        "recall": 0.5418332771822131,
-        "f1": 0.43398868841134547
-      },
-      "exactMatchRate": 0.0013200568990042675,
-      "oovRate": 0.05538273745458237,
-      "oovBoundaryF1": 0.962269399061195,
-      "elapsedMs": 22683
-    }
-  ]
+    "generatedAt": "2026-04-08T04:30:21.804Z",
+    "dataset": "kh_data_10000b",
+    "dictionarySize": 101107,
+    "sentences": 87875,
+    "results": [
+        {
+            "strategy": "fmm",
+            "boundaryMetrics": {
+                "precision": 0.7389590880931359,
+                "recall": 0.8777328403908118,
+                "f1": 0.8023899271060564
+            },
+            "tokenMetrics": {
+                "precision": 0.5805834190709648,
+                "recall": 0.6896148132097119,
+                "f1": 0.630419592658994
+            },
+            "exactMatchRate": 0.0195049786628734,
+            "oovRate": 0.32844131110227565,
+            "oovBoundaryF1": 0.5353071886698355,
+            "elapsedMs": 7673
+        },
+        {
+            "strategy": "bmm",
+            "boundaryMetrics": {
+                "precision": 0.7343977103762669,
+                "recall": 0.8739485022492605,
+                "f1": 0.7981189298675725
+            },
+            "tokenMetrics": {
+                "precision": 0.5740953639060494,
+                "recall": 0.683185386262814,
+                "f1": 0.6239076879037041
+            },
+            "exactMatchRate": 0.017923186344238975,
+            "oovRate": 0.3258892458873601,
+            "oovBoundaryF1": 0.5351516619001578,
+            "elapsedMs": 10931
+        },
+        {
+            "strategy": "bimm",
+            "boundaryMetrics": {
+                "precision": 0.7411968864397788,
+                "recall": 0.8787328745267351,
+                "f1": 0.8041263100480274
+            },
+            "tokenMetrics": {
+                "precision": 0.5831673557397034,
+                "recall": 0.6913794920277777,
+                "f1": 0.6326796867211796
+            },
+            "exactMatchRate": 0.020051209103840683,
+            "oovRate": 0.32610409630614623,
+            "oovBoundaryF1": 0.5350108715346983,
+            "elapsedMs": 15326
+        },
+        {
+            "strategy": "viterbi",
+            "boundaryMetrics": {
+                "precision": 0.6128232969727927,
+                "recall": 0.9173919560922976,
+                "f1": 0.7347974894678261
+            },
+            "tokenMetrics": {
+                "precision": 0.3619478600474778,
+                "recall": 0.5418332771822131,
+                "f1": 0.43398868841134547
+            },
+            "exactMatchRate": 0.0013200568990042675,
+            "oovRate": 0.05538273745458237,
+            "oovBoundaryF1": 0.962269399061195,
+            "elapsedMs": 22683
+        }
+    ]
 }
