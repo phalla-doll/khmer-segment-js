@@ -132,7 +132,7 @@ export function viterbiSegment(
             if (cost < dp[j]) {
                 dp[j] = cost;
                 from[j] = i;
-                fromKnown[j] = false;
+                fromKnown[j] = true;
             }
             continue;
         }

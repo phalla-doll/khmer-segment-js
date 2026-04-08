@@ -19,6 +19,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Accuracy benchmark script now also writes `docs/benchmark-results.json` for machine-readable regression checks.
 - CI now runs accuracy benchmark regression checks in addition to build/test/lint/format/perf steps.
 
+## [0.3.1] - 2026-04-08
+
+### Changed
+
+- Decimal digit spans (Khmer `០–៩`, U+17E0–U+17E9, and ASCII `0–9`) are emitted with `isKnown: true` after digit grouping and in the Viterbi strategy. Code or metrics that treat `!isKnown` as dictionary-only out-of-vocabulary will no longer count those numeric tokens as unknown.
+
 ## [0.3.0]
 
 ### Added

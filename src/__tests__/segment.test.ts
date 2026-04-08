@@ -128,6 +128,7 @@ describe('segmentWords', () => {
             expect(result.tokens[0].value).toBe('១៨៤');
             expect(result.tokens[0].start).toBe(0);
             expect(result.tokens[0].end).toBe(3);
+            expect(result.tokens[0].isKnown).toBe(true);
         });
 
         it('groups digits surrounded by words', () => {
@@ -153,6 +154,7 @@ describe('segmentWords', () => {
             const result = segmentWords('៥៦៧');
             expect(result.tokens).toHaveLength(1);
             expect(result.tokens[0].value).toBe('៥៦៧');
+            expect(result.tokens[0].isKnown).toBe(true);
         });
 
         it('groups mixed Arabic and Khmer digits into a single token', () => {
@@ -161,12 +163,14 @@ describe('segmentWords', () => {
             expect(result.tokens[0].value).toBe('២០2៥');
             expect(result.tokens[0].start).toBe(0);
             expect(result.tokens[0].end).toBe(4);
+            expect(result.tokens[0].isKnown).toBe(true);
         });
 
         it('groups pure Arabic digits into a single token', () => {
             const result = segmentWords('2025', { dictionary: dict });
             expect(result.tokens).toHaveLength(1);
             expect(result.tokens[0].value).toBe('2025');
+            expect(result.tokens[0].isKnown).toBe(true);
         });
 
         it('groups mixed digits surrounded by words', () => {
@@ -182,6 +186,20 @@ describe('segmentWords', () => {
             const result = segmentWords('១២3៤');
             expect(result.tokens).toHaveLength(1);
             expect(result.tokens[0].value).toBe('១២3៤');
+            expect(result.tokens[0].isKnown).toBe(true);
+        });
+
+        it('keeps non-digit unknown tokens as unknown', () => {
+            const result = segmentWords('គ៥៦', { dictionary: dict });
+            expect(result.tokens).toHaveLength(2);
+            expect(result.tokens[0]).toMatchObject({
+                value: 'គ',
+                isKnown: false,
+            });
+            expect(result.tokens[1]).toMatchObject({
+                value: '៥៦',
+                isKnown: true,
+            });
         });
     });
 
@@ -464,6 +482,18 @@ describe('segmentWords', () => {
             expect(result.tokens[0].isKnown).toBe(true);
             const unknowns = result.tokens.filter(t => !t.isKnown);
             expect(unknowns.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('marks Khmer and ASCII digit runs as known with Viterbi', () => {
+            const result = segmentWords('១២3៤', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0]).toMatchObject({
+                value: '១២3៤',
+                isKnown: true,
+            });
         });
 
         it('prefers common words over rare words with frequency weighting', () => {

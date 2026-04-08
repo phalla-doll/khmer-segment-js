@@ -18,17 +18,15 @@ export function groupDigitTokens(tokens: FmmToken[]): FmmToken[] {
             const start = tokens[i].start;
             let combined = tokens[i].value;
             let end = tokens[i].end;
-            let known = tokens[i].isKnown;
 
             i++;
             while (i < tokens.length && isDigitStr(tokens[i].value)) {
                 combined += tokens[i].value;
                 end = tokens[i].end;
-                known = known || tokens[i].isKnown;
                 i++;
             }
 
-            result.push({ value: combined, start, end, isKnown: known });
+            result.push({ value: combined, start, end, isKnown: true });
         } else {
             result.push(tokens[i]);
             i++;
