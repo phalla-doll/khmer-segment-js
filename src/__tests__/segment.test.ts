@@ -360,7 +360,7 @@ describe('segmentWords', () => {
             const dict = getDefaultDictionary();
             const text = 'ក្រោយពីមានការផ្សព្វផ្សាយ';
 
-            for (const strategy of ['fmm', 'bmm', 'bimm'] as const) {
+            for (const strategy of ['fmm', 'bmm', 'bimm', 'viterbi'] as const) {
                 const result = segmentWords(text, {
                     dictionary: dict,
                     strategy,
@@ -381,7 +381,7 @@ describe('segmentWords', () => {
             const dict = getDefaultDictionary();
             const text = 'ខ្ញុំសរសេរភាសាខ្មែរនៅក្នុងប្រទេសកម្ពុជា';
 
-            for (const strategy of ['fmm', 'bmm', 'bimm'] as const) {
+            for (const strategy of ['fmm', 'bmm', 'bimm', 'viterbi'] as const) {
                 const result = segmentWords(text, {
                     dictionary: dict,
                     strategy,
@@ -389,6 +389,178 @@ describe('segmentWords', () => {
                 expect(result.tokens.map(t => t.value).join('')).toBe(
                     result.normalized
                 );
+            }
+        });
+    });
+
+    describe('Viterbi strategy', () => {
+        const dict = createDictionary(
+            ['សួស្តី', 'អ្នក', 'ក្មែរ', 'ទាំងអស់គ្នា'],
+            new Map([
+                ['សួស្តី', 100],
+                ['អ្នក', 200],
+                ['ក្មែរ', 150],
+                ['ទាំងអស់គ្នា', 50],
+            ])
+        );
+
+        it('segments known words with Viterbi', () => {
+            const result = segmentWords('សួស្តី', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0].value).toBe('សួស្តី');
+            expect(result.tokens[0].isKnown).toBe(true);
+        });
+
+        it('segments multiple known words with Viterbi', () => {
+            const result = segmentWords('សួស្តីអ្នក', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens).toHaveLength(2);
+            expect(result.tokens[0].value).toBe('សួស្តី');
+            expect(result.tokens[1].value).toBe('អ្នក');
+            expect(result.tokens.every(t => t.isKnown)).toBe(true);
+        });
+
+        it('computes correct offsets with Viterbi', () => {
+            const result = segmentWords('សួស្តីអ្នក', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens[0].start).toBe(0);
+            expect(result.tokens[0].end).toBe('សួស្តី'.length);
+            expect(result.tokens[1].start).toBe('សួស្តី'.length);
+            expect(result.tokens[1].end).toBe('សួស្តីអ្នក'.length);
+        });
+
+        it('reconstructs text from Viterbi tokens', () => {
+            const text = 'សួស្តីអ្នកក្មែរ';
+            const result = segmentWords(text, {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
+        });
+
+        it('matches long compound words with Viterbi', () => {
+            const result = segmentWords('ទាំងអស់គ្នា', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0].value).toBe('ទាំងអស់គ្នា');
+            expect(result.tokens[0].isKnown).toBe(true);
+        });
+
+        it('handles unknown words with Viterbi', () => {
+            const result = segmentWords('សួស្តីគ', {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens[0].value).toBe('សួស្តី');
+            expect(result.tokens[0].isKnown).toBe(true);
+            const unknowns = result.tokens.filter(t => !t.isKnown);
+            expect(unknowns.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('prefers common words over rare words with frequency weighting', () => {
+            const freqDict = createDictionary(
+                ['ក', 'កន្ត្រក', 'ន្ត្រក'],
+                new Map([
+                    ['ក', 10],
+                    ['កន្ត្រក', 500],
+                    ['ន្ត្រក', 5],
+                ])
+            );
+            const result = segmentWords('កន្ត្រក', {
+                dictionary: freqDict,
+                strategy: 'viterbi',
+            });
+            const word = result.tokens.find(t => t.value === 'កន្ត្រក');
+            expect(word).toBeDefined();
+            expect(word!.isKnown).toBe(true);
+        });
+
+        it('supports boundary penalty to reduce over-segmentation', () => {
+            const freqDict = createDictionary(
+                ['ក', 'ម្ពុជា', 'កម្ពុជា'],
+                new Map([
+                    ['ក', 1000],
+                    ['ម្ពុជា', 1000],
+                    ['កម្ពុជា', 100],
+                ])
+            );
+
+            const noPenalty = segmentWords('កម្ពុជា', {
+                dictionary: freqDict,
+                strategy: 'viterbi',
+                viterbiBoundaryPenalty: 0,
+            });
+            expect(noPenalty.tokens.map(t => t.value)).toEqual(['ក', 'ម្ពុជា']);
+
+            const highPenalty = segmentWords('កម្ពុជា', {
+                dictionary: freqDict,
+                strategy: 'viterbi',
+                viterbiBoundaryPenalty: 10,
+            });
+            expect(highPenalty.tokens.map(t => t.value)).toEqual(['កម្ពុជា']);
+        });
+
+        it('ignores invalid boundary penalty values', () => {
+            const result = segmentWords('សួស្តីអ្នក', {
+                dictionary: dict,
+                strategy: 'viterbi',
+                viterbiBoundaryPenalty: -1,
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe('សួស្តីអ្នក');
+        });
+
+        it('offsets are contiguous for Viterbi on real text', () => {
+            const defaultDict = getDefaultDictionary();
+            const text = 'ខ្ញុំសរសេរភាសាខ្មែរនៅក្នុងប្រទេសកម្ពុជា';
+            const result = segmentWords(text, {
+                dictionary: defaultDict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens[0].start).toBe(0);
+            expect(result.tokens[result.tokens.length - 1].end).toBe(
+                result.normalized.length
+            );
+            for (let i = 1; i < result.tokens.length; i++) {
+                expect(result.tokens[i].start).toBe(result.tokens[i - 1].end);
+            }
+        });
+
+        it('reconstructs real-world text with Viterbi', () => {
+            const defaultDict = getDefaultDictionary();
+            const text =
+                'កម្ពុជាជាប្រទេសមួយស្ថិតនៅទ្វីបអាស៊ី។ ' +
+                'ខ្ញុំសរសេរភាសាខ្មែរនៅក្នុងប្រទេសកម្ពុជា។';
+            const result = segmentWords(text, {
+                dictionary: defaultDict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
+        });
+
+        it('is deterministic across repeated runs', () => {
+            const defaultDict = getDefaultDictionary();
+            const text = 'ខ្ញុំសរសេរភាសាខ្មែរនៅក្នុងប្រទេសកម្ពុជា';
+            const results = [];
+            for (let i = 0; i < 5; i++) {
+                results.push(
+                    segmentWords(text, {
+                        dictionary: defaultDict,
+                        strategy: 'viterbi',
+                    })
+                );
+            }
+            const expected = results[0].tokens.map(t => t.value);
+            for (const r of results) {
+                expect(r.tokens.map(t => t.value)).toEqual(expected);
             }
         });
     });

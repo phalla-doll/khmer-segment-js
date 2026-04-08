@@ -8,9 +8,14 @@ export interface SegmentToken {
 }
 
 export interface SegmentOptions {
-    strategy?: 'fmm' | 'bmm' | 'bimm';
+    strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi';
     dictionary?: KhmerDictionary;
     normalize?: boolean;
+    /**
+     * Optional additive transition penalty used by Viterbi to discourage
+     * excessive splitting. Ignored by non-Viterbi strategies.
+     */
+    viterbiBoundaryPenalty?: number;
 }
 
 export interface SegmentResult {

@@ -8,6 +8,7 @@ import { splitClusters } from './cluster';
 import { fmmSegment } from '../algorithms/fmm';
 import { bmmSegment } from '../algorithms/bmm';
 import { bimmSegment } from '../algorithms/bimm';
+import { viterbiSegment } from '../algorithms/viterbi';
 import { groupDigitTokens } from '../algorithms/group-digits';
 
 export function segmentWords(
@@ -28,6 +29,11 @@ export function segmentWords(
                 break;
             case 'bimm':
                 tokens = bimmSegment(clusters, dictionary);
+                break;
+            case 'viterbi':
+                tokens = viterbiSegment(clusters, dictionary, {
+                    boundaryPenalty: options?.viterbiBoundaryPenalty,
+                });
                 break;
             default:
                 tokens = fmmSegment(clusters, dictionary);
