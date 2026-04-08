@@ -89,9 +89,10 @@ console.log(result.tokens);
 
 ```ts
 interface SegmentOptions {
-    strategy?: 'fmm' | 'bmm' | 'bimm'; // default: "fmm"
+    strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi'; // default: "fmm"
     dictionary?: KhmerDictionary;
     normalize?: boolean; // default: true
+    viterbiBoundaryPenalty?: number; // default: 0.75 (Viterbi only)
 }
 ```
 
@@ -145,7 +146,7 @@ You can implement this interface for custom dictionary backends (remote, compres
 
 ### Default Dictionary (`khmer-segment/dictionary`)
 
-A pre-built Khmer dictionary with **49,113 words** sourced from [khmerlbdict](https://github.com/silnrsi/khmerlbdict) (MIT) and the Royal Academy of Cambodia's Khmer Dictionary. Includes frequency data for future frequency-aware segmentation.
+A pre-built Khmer dictionary with **101,107 words** sourced from [khmerlbdict](https://github.com/silnrsi/khmerlbdict) (MIT), the Royal Academy of Cambodia's Khmer Dictionary, and [Sovichea's Khmer Segmenter dictionary](https://github.com/Sovichea/khmer_segmenter). Includes frequency data for frequency-aware segmentation.
 
 ```ts
 import {
@@ -156,13 +157,13 @@ import { segmentWords } from 'khmer-segment';
 
 const dict = getDefaultDictionary();
 
-console.log(dict.size); // 49113
+console.log(dict.size); // 101107
 console.log(dict.has('កម្ពុជា')); // true
 
 const result = segmentWords('សួស្តីអ្នកទាំងអស់គ្នា', { dictionary: dict });
 
 const freqData = loadFrequencyDictionary();
-console.log(freqData.words.length); // 49113
+console.log(freqData.words.length); // 101107
 console.log(freqData.frequencies.get('ជា')); // 701541
 ```
 
@@ -180,7 +181,7 @@ This is a **separate import** — the core `khmer-segment` package stays small (
 input text
   → normalize (reorder Unicode marks into canonical order)
   → split into clusters (not naive chars)
-  → run segmentation algorithm (FMM, BMM, or BiMM)
+  → run segmentation algorithm (FMM, BMM, BiMM, or Viterbi)
   → group consecutive digits into single tokens
   → return structured tokens
 ```
@@ -212,6 +213,12 @@ Same idea as FMM, but scans right-to-left. Can produce different segmentation on
 
 Runs both FMM and BMM, then picks the better result using heuristics: fewer unknown tokens wins; if tied, fewer total tokens (longer matches) wins; if still tied, FMM is preferred. This generally produces better results than either FMM or BMM alone.
 
+### Viterbi (Experimental)
+
+Frequency-weighted dynamic programming segmentation. Finds the globally lowest-cost path through all possible word boundaries using `-log(frequency)` as word cost. Requires a dictionary with frequency data.
+
+**Note:** The current cost model still over-segments on real-world text (Boundary F1 = 0.735 vs BiMM's 0.804). Use `strategy: 'bimm'` for best results until the Viterbi cost model is tuned further.
+
 ### Digit Grouping
 
 Consecutive Khmer digit clusters (and ASCII digits) are automatically merged into a single token after segmentation, so `១៨៤` or `184` becomes one token instead of three separate tokens.
@@ -235,7 +242,7 @@ const result = segmentWords('កខគ');
 
 ## Dictionary Strategy
 
-The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 49,113 Khmer words. This keeps the core package small (~11KB).
+The library ships a **separate optional dictionary** via `khmer-segment/dictionary` with 101,107 Khmer words. This keeps the core package small (~11KB).
 
 Options:
 
@@ -280,11 +287,24 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 ## Limitations
 
-- No frequency-aware segmentation yet
-- Normalization covers canonical reordering (base → coeng → shift signs → vowel → sign), not all edge cases
+- Viterbi strategy is experimental — cost model over-segments; BiMM recommended for best accuracy
 - No caret/backspace helpers yet
-- Dictionary-based approaches have an inherent accuracy ceiling compared to statistical/ML methods (e.g. CRF achieves ~99.7% accuracy vs ~95–97% for dictionary-based matching)
-- `splitClusters` uses a simplified Khmer Character Cluster (KCC) model — it groups base + coeng + vowel + sign but does not enforce the full KCC specification
+- Dictionary-based approaches have an inherent accuracy ceiling compared to statistical/ML methods (e.g. CRF achieves ~99.7% accuracy vs ~80% boundary F1 for dictionary-based matching)
+
+---
+
+## Benchmark
+
+Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segmentation-crf-khmer](https://github.com/phylypo/segmentation-crf-khmer)) with the default 101,107-word dictionary.
+
+| Strategy | Boundary F1 | Token F1   | Exact Match | OOV Rate | Relative Speed  |
+| -------- | ----------- | ---------- | ----------- | -------- | --------------- |
+| **BiMM** | **0.8041**  | **0.6327** | **2.0%**    | 32.6%    | 1.0x (baseline) |
+| FMM      | 0.8024      | 0.6304     | 2.0%        | 32.8%    | 0.5x            |
+| BMM      | 0.7981      | 0.6239     | 1.8%        | 32.6%    | 0.7x            |
+| Viterbi  | 0.7348      | 0.4340     | 0.1%        | 5.4%     | 1.4x            |
+
+**Recommended:** `strategy: 'bimm'` for best accuracy. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) for methodology.
 
 ---
 
@@ -308,7 +328,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - Fixed Unicode range constants (NIKAHIT, REAHMUK, YUUKEALAKHMOU are signs, not vowels)
 - Rebuilt dictionary with 49,113 words (merged from 10 sources)
 
-### v0.2.2 (current)
+### v0.2.2
 
 - Clarified that token offsets are measured against `result.normalized`
 - Expanded Vitest coverage across normalization, dictionary, and segmentation behavior
@@ -316,18 +336,27 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 - Corrected custom dictionary `size` to report unique non-empty words
 - Added changelog, CI checks, and stricter prepublish formatting verification
 
-### v0.3.0
+### v0.3.0 (current)
+
+- **Viterbi algorithm** — frequency-weighted DP segmentation (experimental; cost model needs tuning)
+- **Dictionary expansion** — 49,113 → 101,107 words (merged from Sovichea/khmer_segmenter + SIL + Royal Academy)
+- **Full Unicode normalization** — composite vowel fixing, ROBAT ordering, stacked coeng support
+- **Full KCC cluster model** — ROBAT continuation, independent vowel bases
+- **Accuracy benchmarking** — 87,875-sentence gold standard, per-strategy metrics
+- Benchmark results: BiMM Boundary F1 = 0.804, Viterbi = 0.735 (still needs cost model work)
+
+### v0.4.0 (planned)
 
 - `deleteBackward(text, cursorIndex)` — cluster-safe backspace
 - `getCaretBoundaries(text)` — caret-safe navigation
-- Frequency-aware segmentation
+- Viterbi cost model tuning (boundary penalty)
+- Switch default strategy to Viterbi after tuning
 - Compressed dictionary format
 
 ### Future
 
 - `khmer-segment/react` — `useKhmerSegments`, `useKhmerTyping`
 - `khmer-segment/angular` — injectable service, pipe
-- Compressed dictionary format
 - ICU-style line-breaking helpers
 
 ---
@@ -352,6 +381,8 @@ npm run lint      # TypeScript type check
 ```bash
 npm test              # run the main Vitest correctness suite
 npm run test:perf     # optional performance-focused checks
+npm run test:accuracy # run full accuracy benchmark and write docs/benchmark-results.*
+npm run test:accuracy:check # accuracy benchmark + baseline regression gate
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check
 ```
@@ -384,7 +415,7 @@ Features:
 - **[Word Segmentation of Khmer Text Using Conditional Random Fields](https://medium.com/@phylypo/segmentation-of-khmer-text-using-conditional-random-fields-3a2d4d73956a)** — Phylypo Tum (2019). Comprehensive overview of Khmer segmentation approaches from dictionary-based to CRF, achieving 99.7% accuracy with Linear Chain CRF.
 - **[Khmer Word Segmentation Using Conditional Random Fields](https://www.niptict.edu.kh/khmer-word-segmentation-tool/)** — Vichea Chea, Ye Kyaw Thu, et al. (2015). The prior state-of-the-art CRF model for Khmer segmentation (98.5% accuracy, 5-tag system).
 - **[Benchmark dataset and Python notebooks](https://github.com/phylypo/segmentation-crf-khmer)** — 10K+ segmented Khmer news articles useful for evaluating segmentation quality.
-- **[khmerlbdict](https://github.com/silnrsi/khmerlbdict)** — Source of the default dictionary used by this library (MIT license). Merged with Royal Academy of Cambodia's Khmer Dictionary for a total of 49,113 words.
+- **[khmerlbdict](https://github.com/silnrsi/khmerlbdict)** — Source of the default dictionary used by this library (MIT license). Merged with Royal Academy of Cambodia's Khmer Dictionary and Sovichea's Khmer Segmenter dictionary for a total of 101,107 words.
 
 ---
 
