@@ -5,7 +5,7 @@ const DATA_DIR = join(import.meta.dirname, '..', 'src', 'dictionary', 'data');
 const SCRIPTS_DIR = import.meta.dirname;
 const OUTPUT = join(DATA_DIR, 'khmer-words.json');
 
-const SOURCES: { file: string; weight: number }[] = [
+const SOURCES: { file: string; weight: number; url?: string }[] = [
     { file: 'seafreq.txt', weight: 1 },
     { file: 'KHSV.txt', weight: 1 },
     { file: 'KHOV.txt', weight: 20 },
@@ -16,19 +16,28 @@ const SOURCES: { file: string; weight: number }[] = [
     { file: 'places.txt', weight: 10 },
     { file: 'names.txt', weight: 5 },
     { file: 'royal-academy.txt', weight: 5 },
+    {
+        file: 'sovichea-dictionary.txt',
+        weight: 5,
+        url: 'https://raw.githubusercontent.com/Sovichea/khmer_segmenter/main/khmer_segmenter/dictionary_data/khmer_dictionary_words.txt',
+    },
 ];
 
 const BASE_URL =
     'https://raw.githubusercontent.com/silnrsi/khmerlbdict/master/src';
 
-async function readFileContent(name: string): Promise<string> {
+async function readFileContent(
+    name: string,
+    customUrl?: string
+): Promise<string> {
     const localPath = join(SCRIPTS_DIR, name);
     if (existsSync(localPath)) {
         console.log(`  Using local file: ${localPath}`);
         return readFileSync(localPath, 'utf-8');
     }
-    console.log(`  Downloading from ${BASE_URL}/${name}...`);
-    const res = await fetch(`${BASE_URL}/${name}`);
+    const url = customUrl ?? `${BASE_URL}/${name}`;
+    console.log(`  Downloading from ${url}...`);
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`Failed to download ${name}: ${res.status}`);
     return await res.text();
 }
@@ -63,9 +72,9 @@ async function main() {
 
     const merged = new Map<string, number>();
 
-    for (const { file, weight } of SOURCES) {
+    for (const { file, weight, url } of SOURCES) {
         console.log(`Processing ${file}...`);
-        const content = await readFileContent(file);
+        const content = await readFileContent(file, url);
         console.log(`  Parsing ${file} (weight: ${weight})...`);
         const words = parseLines(content, weight);
         console.log(`  Found ${words.size} unique words`);
@@ -87,7 +96,9 @@ async function main() {
     console.log(`Written to ${OUTPUT}`);
     console.log(`File size: ${sizeKB} KB`);
     console.log(`Top 10 words:`);
-    entries.slice(0, 10).forEach(e => console.log(`  ${e.word}: ${e.freq}`));
+    for (const e of entries.slice(0, 10)) {
+        console.log(`  ${e.word}: ${e.freq}`);
+    }
 }
 
 main().catch(err => {
