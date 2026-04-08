@@ -10,6 +10,8 @@ export {
 
 export { segmentWords } from './core/segment';
 
+export { getCaretBoundaries, deleteBackward } from './core/caret';
+
 export { createDictionary } from './dictionary/create-dictionary';
 
 export type {
@@ -18,4 +20,6 @@ export type {
     SegmentToken,
     TypingComparisonResult,
     KhmerDictionary,
+    CaretOptions,
+    DeleteResult,
 } from './types/public';

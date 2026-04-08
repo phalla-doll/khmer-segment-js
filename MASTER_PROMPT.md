@@ -22,32 +22,43 @@ Your job is to help me START implementation in a practical, production-ready way
 ## Step-by-step execution plan
 
 1. Bootstrap the project
-  - Generate initial files:
-  - src/index.ts
-  - tsconfig.json
-  - tsup.config.ts
-  - vitest.config.ts
+
+- Generate initial files:
+- src/index.ts
+- tsconfig.json
+- tsup.config.ts
+- vitest.config.ts
     - Ensure it builds and exports correctly
+
 2. Implement core v0.1 features ONLY:
-  - containsKhmer(text)
+
+- containsKhmer(text)
     - isKhmerChar(char)
     - normalizeKhmer(text) (basic version, not perfect)
     - splitClusters(text) (important: do NOT use naive char split)
     - countClusters(text)
+
 3. Create minimal internal constants:
-  - Khmer Unicode range
+
+- Khmer Unicode range
     - basic character categories (consonant, vowel, diacritic)
+
 4. Write unit tests for ALL functions
-  - include edge cases:
-  - mixed Khmer + Latin
-  - empty string
-  - combining characters
-  - visually identical but different unicode order
+
+- include edge cases:
+- mixed Khmer + Latin
+- empty string
+- combining characters
+- visually identical but different unicode order
+
 5. Keep segmentation (FMM/BMM/BiMM) as TODO for now
-  - only stub the API:
-    segmentWords(text, options)
+
+- only stub the API:
+  segmentWords(text, options)
+
 6. DO NOT over-engineer
-  - no dictionary yet
+
+- no dictionary yet
     - no performance optimization yet
     - no advanced normalization yet
 

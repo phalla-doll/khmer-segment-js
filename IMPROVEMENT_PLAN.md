@@ -2,9 +2,9 @@
 
 Based on analysis of [awesome-khmer-language](https://github.com/seanghay/awesome-khmer-language) resources.
 
-Current state: **v0.3.0** — dictionary-based FMM/BMM/BiMM/Viterbi segmentation, 101,107 words, benchmarking infrastructure in place.
+Current state: **v0.4.0** — Viterbi is the default strategy, caret/text-editing APIs available, 101,107 words, benchmarking infrastructure in place.
 
-> **Progress**: Phases 1–5 implemented. Viterbi cost model needs tuning. Phase 6 (future) remaining. See status markers `[DONE]` below.
+> **Progress**: Phases 1–5 implemented and tuned. Viterbi is now the default strategy (Boundary F1 = 0.8572, +5.3% over BiMM). Phase 6 (future) remaining. See status markers `[DONE]` below.
 > **Execution checklist**: See `[docs/remaining-tasks-plan.md](docs/remaining-tasks-plan.md)` for prioritized remaining tasks and release sequencing.
 
 ---
@@ -19,13 +19,13 @@ To keep results comparable across phases, all accuracy reporting must follow thi
 - **Input normalization**: run the same preprocessing on gold and predictions before scoring
 - **Primary metric**: boundary-level precision/recall/F1
 - **Secondary metrics**:
-  - Token-level precision/recall/F1
-  - Exact-sentence-match rate
-  - OOV token rate and OOV boundary F1
+    - Token-level precision/recall/F1
+    - Exact-sentence-match rate
+    - OOV token rate and OOV boundary F1
 - **Reporting**:
-  - Per-strategy table (fmm, bmm, bimm, viterbi)
-  - Aggregate macro scores
-  - At least 20 representative error examples (ambiguous phrases, unknown words, proper nouns)
+    - Per-strategy table (fmm, bmm, bimm, viterbi)
+    - Aggregate macro scores
+    - At least 20 representative error examples (ambiguous phrases, unknown words, proper nouns)
 
 ### Performance Budget (Default Strategy Guardrails)
 
@@ -58,16 +58,16 @@ Before integrating any external lexicon/corpus:
 ### Implementation Summary
 
 - `**src/algorithms/viterbi.ts` — Viterbi segmentation with:
-  - DAG construction via trie `hasPrefix()` optimization
-  - DP shortest-path using `-log(frequency)` as word cost
-  - `DEFAULT_COST` (10.0) for known words missing frequency data
-  - `UNKNOWN_COST` (20.0) + `SINGLE_CONSONANT_PENALTY` (10.0) for unknowns
-  - Orphan sign recovery (`+50` penalty for misplaced coeng/vowel/sign)
-  - Digit grouping (Arabic + Khmer digits) at cost `1.0`
-  - Separator detection at cost `0.1`
-  - Post-processing: consecutive unknown token merging
+    - DAG construction via trie `hasPrefix()` optimization
+    - DP shortest-path using `-log(frequency)` as word cost
+    - `DEFAULT_COST` (10.0) for known words missing frequency data
+    - `UNKNOWN_COST` (20.0) + `SINGLE_CONSONANT_PENALTY` (10.0) for unknowns
+    - Orphan sign recovery (`+50` penalty for misplaced coeng/vowel/sign)
+    - Digit grouping (Arabic + Khmer digits) at cost `1.0`
+    - Separator detection at cost `0.1`
+    - Post-processing: consecutive unknown token merging
 - `**src/types/public.ts` — `strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi'`
-- `**src/core/segment.ts`** — `case 'viterbi'` branch integrated
+- `**src/core/segment.ts`\*\* — `case 'viterbi'` branch integrated
 - **10 new unit tests** + **4 performance tests** including latency guardrail (<= 1.8x BiMM)
 - Default strategy remains `'fmm'`; Viterbi is opt-in via `strategy: 'viterbi'`
 
@@ -86,36 +86,36 @@ BiMM picks between FMM/BMM using simple heuristics (fewer unknowns → fewer tok
 
 - Read and understand [Sovichea's porting guide](https://github.com/Sovichea/khmer_segmenter/blob/main/port/README.md) for the Viterbi algorithm details
 - Implement `viterbiSegment()` in `src/algorithms/viterbi.ts`
-  - Convert word frequencies to log-probabilities
-  - Build a DAG (directed acyclic graph) of all possible segmentations using trie prefix lookup
-  - Find shortest path using dynamic programming (Viterbi)
-  - Handle unknown words with a penalty/insertion cost
+    - Convert word frequencies to log-probabilities
+    - Build a DAG (directed acyclic graph) of all possible segmentations using trie prefix lookup
+    - Find shortest path using dynamic programming (Viterbi)
+    - Handle unknown words with a penalty/insertion cost
 - Add `'viterbi'` as a 4th strategy option in `SegmentOptions`
 - Integrate into `segmentWords()` in `src/core/segment.ts`
 - Add unit tests in `src/__tests__/segment.test.ts`
-  - Known words segmented correctly
-  - Unknown words handled with penalty
-  - Frequency-weighted disambiguation (prefer common words over rare words)
-  - Offsets are contiguous and correct
-  - Text reconstruction from tokens matches input
+    - Known words segmented correctly
+    - Unknown words handled with penalty
+    - Frequency-weighted disambiguation (prefer common words over rare words)
+    - Offsets are contiguous and correct
+    - Text reconstruction from tokens matches input
 - Add performance tests in `src/__tests__/segment-perf.test.ts`
 - Add staged rollout controls:
-  - Keep current default strategy unchanged in first release
-  - Add feature flag / option-level recommendation for `viterbi`
-  - Switch default only after Phase 2 benchmarks pass guardrails in two consecutive runs
+    - Keep current default strategy unchanged in first release
+    - Add feature flag / option-level recommendation for `viterbi`
+    - Switch default only after Phase 2 benchmarks pass guardrails in two consecutive runs
 
 ### Expected Outcome
 
-- Significant accuracy improvement over BiMM on ambiguous text — **not yet achieved** (Viterbi F1 = 0.727 vs BiMM F1 = 0.804). Cost model needs boundary penalty.
-- `strategy: 'viterbi'` becomes the recommended default — **deferred until cost model is tuned**
+- Significant accuracy improvement over BiMM on ambiguous text — **achieved** (Viterbi F1 = 0.8572 vs BiMM F1 = 0.8041 at penalty=10.0, +5.3% absolute).
+- `strategy: 'viterbi'` is now the **recommended default** — switched in v0.4.0.
 - Still deterministic, zero-dependency, tree-shakeable
 
 ### Phase 1 Acceptance Criteria
 
-- ~~Boundary-F1 improves by at least **+1.5 absolute** vs BiMM on baseline dataset~~ **FAILED** — Viterbi F1 = 0.7268 vs BiMM F1 = 0.8041 (−7.7 absolute). Cost model over-segments; needs boundary penalty tuning.
-- ~~OOV boundary-F1 is not worse than BiMM by more than 0.5 absolute~~ **PASSED** — Viterbi OOV Boundary F1 = 0.9621 vs BiMM = 0.5350 (+4.3 absolute).
-- Meets all performance guardrails in "Cross-Phase Execution Rules" *(latency within 1.8x BiMM, deterministic)*
-- All new segmentation tests and perf tests pass in CI *(173 tests pass)*
+- Boundary-F1 improves by at least **+1.5 absolute** vs BiMM on baseline dataset **PASSED** — Viterbi F1 = 0.8572 vs BiMM F1 = 0.8041 (+5.3 absolute) at penalty=10.0.
+- OOV boundary-F1 is not worse than BiMM by more than 0.5 absolute **PASSED** — Viterbi OOV Boundary F1 = 0.8875 vs BiMM = 0.4186 (+4.7 absolute).
+- Meets all performance guardrails in "Cross-Phase Execution Rules" _(latency within 1.8x BiMM, deterministic)_ **PASSED** — 1.40x BiMM at penalty=10.0.
+- All new segmentation tests and perf tests pass in CI _(211 tests pass)_
 
 ---
 
@@ -134,18 +134,18 @@ We currently have no way to measure segmentation accuracy. We need a gold-standa
 
 - Download the `kh_data_10000b` segmented corpus from phylypo's repo
 - Create a benchmark script `scripts/benchmark-accuracy.ts`
-  - Parse the gold-standard segmented text (words separated by spaces)
-  - Run each strategy (fmm, bmm, bimm, viterbi) on the unsegmented text
-  - Compare against gold standard
-  - Compute precision, recall, F1 score
+    - Parse the gold-standard segmented text (words separated by spaces)
+    - Run each strategy (fmm, bmm, bimm, viterbi) on the unsegmented text
+    - Compare against gold standard
+    - Compute precision, recall, F1 score
 - Add `npm run test:accuracy` script to `package.json`
 - Document baseline accuracy numbers in the README
 - Create `docs/benchmark-results.md` with per-strategy comparison table
 - Add evaluation protocol implementation notes in `docs/benchmark-methodology.md`:
-  - Tokenization alignment rules
-  - Boundary extraction logic
-  - Exact-match sentence criteria
-  - OOV definition and calculation
+    - Tokenization alignment rules
+    - Boundary extraction logic
+    - Exact-match sentence criteria
+    - OOV definition and calculation
 
 ### Expected Outcome
 
@@ -158,7 +158,7 @@ We currently have no way to measure segmentation accuracy. We need a gold-standa
 - Benchmark script is deterministic and reproducible on a clean checkout
 - Methodology doc is complete enough for third-party reproduction
 - Baseline report includes all primary/secondary metrics and runtime stats
-- CI job fails on unexpected metric regressions beyond configured thresholds *(future)*
+- CI job fails on unexpected metric regressions beyond configured thresholds _(future)_
 
 ---
 
@@ -180,12 +180,12 @@ More words in the dictionary directly improves segmentation coverage. Cross-refe
 
 ### Tasks
 
-- ~~Download Google's Khmer lexicon from `google/language-resources/km/data/`~~ *(skipped — pronunciation lexicon, low signal for segmentation)*
-- Download seanghay's 44k dictionary from HuggingFace *(deferred — current dictionary already exceeds target)*
-- Extract unique words from khPOS corpus *(deferred)*
+- ~~Download Google's Khmer lexicon from `google/language-resources/km/data/`~~ _(skipped — pronunciation lexicon, low signal for segmentation)_
+- Download seanghay's 44k dictionary from HuggingFace _(deferred — current dictionary already exceeds target)_
+- Extract unique words from khPOS corpus _(deferred)_
 - Review Sovichea's curated dictionary for gaps
 - Update `scripts/build-dictionary.ts` to add new sources with appropriate weights
-- Rebuild dictionary and verify new word count *(101,107 words)*
+- Rebuild dictionary and verify new word count _(101,107 words)_
 - Run accuracy benchmark (Phase 2) to measure improvement — BiMM F1 = 0.8041 on 87,875-sentence benchmark
 - Verify no duplicates or invalid entries
 - Record each imported source and licensing decision in `docs/data-sources.md`
@@ -198,7 +198,7 @@ More words in the dictionary directly improves segmentation coverage. Cross-refe
 
 ### Phase 3 Acceptance Criteria
 
-- Dictionary size reaches **55,000+** valid entries *(achieved: 101,107)*
+- Dictionary size reaches **55,000+** valid entries _(achieved: 101,107)_
 - No duplicate entries after normalization pipeline
 - ~~Boundary-F1 improves by at least **+0.5 absolute** over pre-expansion dictionary~~ **No pre-expansion baseline available** — benchmark was first run after expansion. BiMM F1 = 0.8041 is the baseline for future comparison.
 - Added/changed data sources are license-reviewed and documented
@@ -232,12 +232,12 @@ Current normalization handles canonical reordering (base → coeng → shift sig
 - Study the [Unicode Khmer encoding structure PDF](https://www.unicode.org/L2/L2021/21241-khmer-structure.pdf)
 - Study sillsdev/khmer-normalizer's normalization rules
 - Identify gaps in our current `normalizeKhmerCluster()`:
-  - ROBAT (U+17CC) ordering
-  - Consonant-shifter interactions with multiple coeng
-  - BANTOC (U+17CB) placement
-  - NIKAHIT/REAHMUK as vowels vs signs in specific contexts
-  - SAMYOK SANNYA (U+17D0) ordering
-  - Multiple subscript consonants (coeng stacking)
+    - ROBAT (U+17CC) ordering
+    - Consonant-shifter interactions with multiple coeng
+    - BANTOC (U+17CB) placement
+    - NIKAHIT/REAHMUK as vowels vs signs in specific contexts
+    - SAMYOK SANNYA (U+17D0) ordering
+    - Multiple subscript consonants (coeng stacking)
 - Implement missing normalization rules in `src/core/normalize.ts`
 - Add edge-case tests in `src/__tests__/normalize.test.ts`
 - Run full test suite to ensure no regressions
@@ -251,7 +251,7 @@ Current normalization handles canonical reordering (base → coeng → shift sig
 ### Phase 4 Acceptance Criteria
 
 - Edge-case suite covers ROBAT, BANTOC, SAMYOK SANNYA, NIKAHIT/REAHMUK behavior, and stacked coeng cases
-- No segmentation regressions exceeding agreed threshold on baseline corpus *(173 tests pass)*
+- No segmentation regressions exceeding agreed threshold on baseline corpus _(173 tests pass)_
 - Normalization remains deterministic and idempotent
 
 ---
@@ -284,10 +284,10 @@ Our simplified KCC model groups base + coeng + vowel + sign but doesn't enforce 
 - Define valid cluster structures (which combinations of base + subscript + vowel + sign are legal)
 - Refactor `splitClusters()` in `src/core/cluster.ts` to enforce the full KCC spec
 - Handle edge cases:
-  - Independent vowels as cluster bases
-  - Multiple coeng sequences (stacked subscripts)
-  - ROBAT as part of a cluster
-  - Invalid cluster detection *(deferred — current behavior passes all tests)*
+    - Independent vowels as cluster bases
+    - Multiple coeng sequences (stacked subscripts)
+    - ROBAT as part of a cluster
+    - Invalid cluster detection _(deferred — current behavior passes all tests)_
 - Add comprehensive cluster tests
 - Run segmentation tests to verify no regressions
 
@@ -300,8 +300,8 @@ Our simplified KCC model groups base + coeng + vowel + sign but doesn't enforce 
 ### Phase 5 Acceptance Criteria
 
 - Cluster parser passes comprehensive valid/invalid pattern tests
-- Existing segmentation behavior does not regress beyond threshold on baseline corpus *(173 tests pass)*
-- Invalid cluster handling behavior is explicitly documented (reject/repair/fallback) *(deferred)*
+- Existing segmentation behavior does not regress beyond threshold on baseline corpus _(173 tests pass)_
+- Invalid cluster handling behavior is explicitly documented (reject/repair/fallback) _(deferred)_
 
 ---
 
@@ -338,25 +338,24 @@ Our simplified KCC model groups base + coeng + vowel + sign but doesn't enforce 
 
 ## Summary
 
-
-| Phase | Focus                  | Impact     | Effort | Depends On                | Status                             |
-| ----- | ---------------------- | ---------- | ------ | ------------------------- | ---------------------------------- |
-| 1     | Viterbi algorithm      | Critical   | Medium | Phase 2 baseline          | **Done** (cost model needs tuning) |
-| 2     | Accuracy benchmarking  | High       | Low    | None                      | **Done**                           |
-| 3     | Dictionary expansion   | High       | Low    | Phase 2 (for measurement) | **Done**                           |
-| 4     | Full normalization     | Medium     | Medium | Phase 2 baseline          | **Done**                           |
-| 5     | Full KCC cluster model | Medium     | Medium | Phase 2 baseline          | **Done**                           |
-| 6     | Compressed dict / CRF  | Low-Medium | High   | Phase 1, 2                | Future                             |
-
+| Phase | Focus                  | Impact     | Effort | Depends On                | Status                                      |
+| ----- | ---------------------- | ---------- | ------ | ------------------------- | ------------------------------------------- |
+| 1     | Viterbi algorithm      | Critical   | Medium | Phase 2 baseline          | **Done** (penalty=10.0, F1=0.8572, default) |
+| 2     | Accuracy benchmarking  | High       | Low    | None                      | **Done**                                    |
+| 3     | Dictionary expansion   | High       | Low    | Phase 2 (for measurement) | **Done**                                    |
+| 4     | Full normalization     | Medium     | Medium | Phase 2 baseline          | **Done**                                    |
+| 5     | Full KCC cluster model | Medium     | Medium | Phase 2 baseline          | **Done**                                    |
+| 6     | Compressed dict / CRF  | Low-Medium | High   | Phase 1, 2                | Future                                      |
 
 ### Recommended Execution Order
 
 1. ~~**Phase 2 first** — establish baseline metrics so we can measure improvement~~ **Done**
-2. ~~**Phase 1** — implement Viterbi for the biggest accuracy jump~~ **Done** (cost model needs tuning)
+2. ~~**Phase 1** — implement Viterbi for the biggest accuracy jump~~ **Done** (tuned: penalty=10.0, F1=0.8572)
 3. ~~**Phase 3** — expand dictionary, re-benchmark to see gains~~ **Done** (49k → 101k words)
 4. ~~**Phase 4 & 5** — improve foundation (normalization + clusters)~~ **Done**
-5. **Viterbi cost model tuning** — add boundary penalty to fix over-segmentation
-6. **Phase 6** — explore advanced topics (CRF, compression)
+5. ~~**Viterbi cost model tuning** — add boundary penalty to fix over-segmentation~~ **Done** (penalty=10.0, default switched in v0.4.0)
+6. ~~**Caret/text-editing APIs** — getCaretBoundaries, deleteBackward~~ **Done** (v0.4.0)
+7. **Phase 6** — explore advanced topics (CRF, compression)
 
 ### Release Rollout Policy for Default Strategy
 

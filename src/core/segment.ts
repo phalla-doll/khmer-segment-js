@@ -23,7 +23,7 @@ export function segmentWords(
 
     let tokens: SegmentToken[];
     if (dictionary) {
-        const strategy = options?.strategy ?? 'fmm';
+        const strategy = options?.strategy ?? 'viterbi';
         switch (strategy) {
             case 'bmm':
                 tokens = bmmSegment(clusters, dictionary);

@@ -7,17 +7,40 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-08
+
+### Added
+
+- `getCaretBoundaries(text, options?)` — returns valid caret positions based on Khmer cluster boundaries.
+- `deleteBackward(text, cursorIndex, options?)` — cluster-safe backspace for text editors.
+- `CaretOptions` and `DeleteResult` types exported from the public API.
+- Caret boundary visualization in the interactive playground.
+- Viterbi strategy button in the playground.
+
+### Changed
+
+- **Default strategy switched from `fmm` to `viterbi`**. Viterbi with penalty=10.0 achieves Boundary F1 = 0.8572 (+5.3% over BiMM), Token F1 = 0.6744 (+4.2% over BiMM).
+- **Default Viterbi boundary penalty changed from 0.75 to 10.0** based on extended penalty sweep results.
+- Playground now shows Viterbi as the default strategy.
+- Updated playground dictionary description from 49K to 101K words.
+
+## [0.3.3] - 2026-04-08
+
 ### Added
 
 - `viterbiBoundaryPenalty` option in `SegmentOptions` for tuning Viterbi transition cost.
 - Accuracy regression tooling: `docs/benchmark-baseline.json`, `scripts/check-benchmark-regression.ts`, and `npm run test:accuracy:check`.
 - Viterbi boundary-penalty sweep tooling: `scripts/benchmark-viterbi-penalty.ts` and generated sweep reports.
+- Extended Viterbi boundary penalty sweep to range [0.25–10.0] (previously [0.25–1.5]).
+- Sweep reports now include Viterbi Token F1 column.
 
 ### Changed
 
 - Viterbi now applies a default per-boundary penalty (`0.75`) to reduce over-segmentation.
 - Accuracy benchmark script now also writes `docs/benchmark-results.json` for machine-readable regression checks.
 - CI now runs accuracy benchmark regression checks in addition to build/test/lint/format/perf steps.
+- Viterbi with penalty=10.0 achieves Boundary F1=0.8572 (+5.3% over BiMM) and Token F1=0.6744 (+4.2% over BiMM) while maintaining OOV Boundary F1 advantage (0.8875 vs BiMM's 0.4186).
+- Go/no-go decision: Viterbi qualifies as default strategy at penalty ≥ 6.0. Default switch planned for v0.4.0.
 
 ## [0.3.2] - 2026-04-08
 

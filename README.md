@@ -27,6 +27,8 @@ import {
     countClusters,
     createDictionary,
     segmentWords,
+    getCaretBoundaries,
+    deleteBackward,
 } from 'khmer-segment';
 
 // Detect Khmer text
@@ -89,10 +91,10 @@ console.log(result.tokens);
 
 ```ts
 interface SegmentOptions {
-    strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi'; // default: "fmm"
+    strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi'; // default: "viterbi"
     dictionary?: KhmerDictionary;
     normalize?: boolean; // default: true
-    viterbiBoundaryPenalty?: number; // default: 0.75 (Viterbi only)
+    viterbiBoundaryPenalty?: number; // default: 10.0 (Viterbi only)
 }
 ```
 
@@ -213,11 +215,51 @@ Same idea as FMM, but scans right-to-left. Can produce different segmentation on
 
 Runs both FMM and BMM, then picks the better result using heuristics: fewer unknown tokens wins; if tied, fewer total tokens (longer matches) wins; if still tied, FMM is preferred. This generally produces better results than either FMM or BMM alone.
 
-### Viterbi (Experimental)
+### Viterbi
 
 Frequency-weighted dynamic programming segmentation. Finds the globally lowest-cost path through all possible word boundaries using `-log(frequency)` as word cost. Requires a dictionary with frequency data.
 
-**Note:** The current cost model still over-segments on real-world text (Boundary F1 = 0.735 vs BiMM's 0.804). Use `strategy: 'bimm'` for best results until the Viterbi cost model is tuned further.
+**Default strategy** as of v0.4.0. With a boundary penalty of 10.0, Viterbi achieves Boundary F1 = 0.8572 (+5.3% over BiMM) and Token F1 = 0.6744 (+4.2% over BiMM) while maintaining superior OOV handling (OOV Boundary F1 = 0.8875 vs BiMM's 0.4186).
+
+### Text Editing
+
+#### `getCaretBoundaries(text, options?)`
+
+Returns an array of valid caret positions (indices where the cursor can rest) based on Khmer cluster boundaries.
+
+```ts
+import { getCaretBoundaries } from 'khmer-segment';
+
+getCaretBoundaries(''); // [0]
+getCaretBoundaries('ក'); // [0, 1]
+getCaretBoundaries('ក្ក'); // [0, 3] — coeng+subscript is one cluster
+getCaretBoundaries('កក'); // [0, 1, 2] — two clusters
+```
+
+#### `deleteBackward(text, cursorIndex, options?)`
+
+Deletes the cluster (or character) before the cursor, respecting cluster boundaries.
+
+```ts
+import { deleteBackward } from 'khmer-segment';
+
+deleteBackward('កក', 2); // { text: 'ក', cursorIndex: 1 }
+deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 } — deletes last cluster
+deleteBackward('ក', 0); // { text: 'ក', cursorIndex: 0 } — no-op at start
+```
+
+#### `CaretOptions`
+
+```ts
+interface CaretOptions {
+    normalize?: boolean; // default: false — operate on raw text
+}
+
+interface DeleteResult {
+    text: string;
+    cursorIndex: number;
+}
+```
 
 ### Digit Grouping
 
@@ -287,9 +329,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 ## Limitations
 
-- Viterbi strategy is experimental — cost model over-segments; BiMM recommended for best accuracy
-- No caret/backspace helpers yet
-- Dictionary-based approaches have an inherent accuracy ceiling compared to statistical/ML methods (e.g. CRF achieves ~99.7% accuracy vs ~80% boundary F1 for dictionary-based matching)
+- Dictionary-based approaches have an inherent accuracy ceiling compared to statistical/ML methods (e.g. CRF achieves ~99.7% accuracy vs ~86% boundary F1 for dictionary-based matching)
 
 ---
 
@@ -297,14 +337,14 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segmentation-crf-khmer](https://github.com/phylypo/segmentation-crf-khmer)) with the default 101,107-word dictionary.
 
-| Strategy | Boundary F1 | Token F1   | Exact Match | OOV Rate | Relative Speed  |
-| -------- | ----------- | ---------- | ----------- | -------- | --------------- |
-| **BiMM** | **0.8041**  | **0.6327** | **2.0%**    | 32.6%    | 1.0x (baseline) |
-| FMM      | 0.8024      | 0.6304     | 2.0%        | 32.8%    | 0.5x            |
-| BMM      | 0.7981      | 0.6239     | 1.8%        | 32.6%    | 0.7x            |
-| Viterbi  | 0.7348      | 0.4340     | 0.1%        | 5.4%     | 1.4x            |
+| Strategy    | Boundary F1 | Token F1   | Exact Match | OOV Rate | OOV Boundary F1 | Relative Speed  |
+| ----------- | ----------- | ---------- | ----------- | -------- | --------------- | --------------- |
+| **Viterbi** | **0.8572**  | **0.6744** | **1.4%**    | 5.4%     | **0.8875**      | 1.4x            |
+| BiMM        | 0.8041      | 0.6327     | 2.0%        | 32.6%    | 0.4186          | 1.0x (baseline) |
+| FMM         | 0.8024      | 0.6304     | 2.0%        | 32.8%    | —               | 0.5x            |
+| BMM         | 0.7981      | 0.6239     | 1.8%        | 32.6%    | —               | 0.7x            |
 
-**Recommended:** `strategy: 'bimm'` for best accuracy. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) for methodology.
+**Recommended:** `strategy: 'viterbi'` (default) for best accuracy. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) for methodology.
 
 ---
 
@@ -336,22 +376,20 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - Corrected custom dictionary `size` to report unique non-empty words
 - Added changelog, CI checks, and stricter prepublish formatting verification
 
-### v0.3.0 (current)
+### v0.3.0
 
-- **Viterbi algorithm** — frequency-weighted DP segmentation (experimental; cost model needs tuning)
+- **Viterbi algorithm** — frequency-weighted DP segmentation
 - **Dictionary expansion** — 49,113 → 101,107 words (merged from Sovichea/khmer_segmenter + SIL + Royal Academy)
 - **Full Unicode normalization** — composite vowel fixing, ROBAT ordering, stacked coeng support
 - **Full KCC cluster model** — ROBAT continuation, independent vowel bases
 - **Accuracy benchmarking** — 87,875-sentence gold standard, per-strategy metrics
-- Benchmark results: BiMM Boundary F1 = 0.804, Viterbi = 0.735 (still needs cost model work)
 
-### v0.4.0 (planned)
+### v0.4.0 (current)
 
-- `deleteBackward(text, cursorIndex)` — cluster-safe backspace
-- `getCaretBoundaries(text)` — caret-safe navigation
-- Viterbi cost model tuning (boundary penalty)
-- Switch default strategy to Viterbi after tuning
-- Compressed dictionary format
+- **Default strategy switched to Viterbi** (penalty=10.0): Boundary F1 = 0.8572, Token F1 = 0.6744
+- **`getCaretBoundaries(text)`** — returns valid caret positions based on Khmer cluster boundaries
+- **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
+- **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
 ### Future
 
@@ -403,8 +441,9 @@ Features:
 
 - Live Khmer text input with instant results
 - Editable dictionary (add/remove words on the fly)
-- Strategy selector (FMM / BMM / BiMM)
+- Strategy selector (FMM / BMM / BiMM / Viterbi)
 - Normalize toggle (On/Off)
+- Caret boundary visualization
 - Detection, normalization, cluster splitting, and segmentation panels
 - JSON output with copy button
 

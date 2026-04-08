@@ -92,7 +92,10 @@ describe('segmentWords', () => {
 
         for (const { word, input } of zwsCases) {
             it(`segments "${word}" with ZWS as known word`, () => {
-                const result = segmentWords(input, { dictionary: defaultDict });
+                const result = segmentWords(input, {
+                    dictionary: defaultDict,
+                    strategy: 'fmm',
+                });
                 const matched = result.tokens.find(t => t.value === word);
                 expect(matched).toBeDefined();
                 expect(matched!.isKnown).toBe(true);
@@ -415,7 +418,7 @@ describe('segmentWords', () => {
     });
 
     describe('strategy comparison', () => {
-        it('defaults to FMM when no strategy specified', () => {
+        it('defaults to Viterbi when no strategy specified', () => {
             const dict = createDictionary(['សួស្តី']);
             const result = segmentWords('សួស្តី', { dictionary: dict });
             expect(result.tokens[0].value).toBe('សួស្តី');

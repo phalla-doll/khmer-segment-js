@@ -174,7 +174,7 @@
                         <button
                             type="button"
                             data-strategy="fmm"
-                            data-active="true"
+                            data-active="false"
                             class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         >
                             FMM
@@ -194,6 +194,14 @@
                             class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
                         >
                             BiMM
+                        </button>
+                        <button
+                            type="button"
+                            data-strategy="viterbi"
+                            data-active="true"
+                            class="rounded-lg px-3 py-1.5 text-xs font-medium outline-none transition-colors data-[active=true]:bg-neutral-900 data-[active=true]:text-white dark:data-[active=true]:bg-neutral-100 dark:data-[active=true]:text-neutral-900 data-[active=false]:bg-neutral-100 data-[active=false]:text-neutral-700 data-[active=false]:hover:bg-neutral-200/80 dark:data-[active=false]:bg-neutral-800 dark:data-[active=false]:text-neutral-300 dark:data-[active=false]:hover:bg-neutral-700/80 focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950"
+                        >
+                            Viterbi
                         </button>
                     </div>
                 </div>
@@ -285,7 +293,7 @@
                             <p
                                 class="mb-2 text-xs leading-snug text-neutral-500 dark:text-neutral-400"
                             >
-                                Words are added on top of the built-in 49K word
+                                Words are added on top of the built-in 101K word
                                 dictionary.
                             </p>
                             <textarea
@@ -397,6 +405,17 @@
                             class="result-box rounded-2xl border border-border bg-surface px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 dark:text-neutral-100"
                             id="cluster-result"
                         ></div>
+                        <div class="mt-3">
+                            <div
+                                class="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400"
+                            >
+                                Caret Boundaries
+                            </div>
+                            <div
+                                class="rounded-2xl border border-border bg-canvas px-3.5 py-2.5 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300"
+                                id="caret-boundaries"
+                            ></div>
+                        </div>
                     </div>
 
                     <div

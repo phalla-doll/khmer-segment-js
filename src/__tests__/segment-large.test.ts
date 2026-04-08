@@ -88,7 +88,10 @@ describe('large text correctness', () => {
         const text =
             'ផលិតផល\u200Bខ្មែរ\u200Bច្រើន\u200Bមុខ \u200Bដាំ\u200Bដុះ និង\u200Bកែ\u200Bច្នៃ\u200Bដោយ\u200Bកសិករ ផលិតករ និង\u200Bសិប្បករ\u200Bខ្មែរ នៅ\u200Bក្នុង\u200Bខេត្តកំពង់ស្ពឺ\u200B នៅ\u200Bតែ\u200Bបន្ត\u200Bដាក់\u200Bលក់\u200Bរៀង\u200Bរាល់\u200Bចុង\u200Bស\u200Bប្តា\u200Bហ៍';
 
-        const result = segmentWords(text, { dictionary: dict });
+        const result = segmentWords(text, {
+            dictionary: dict,
+            strategy: 'fmm',
+        });
 
         const joined = result.tokens.map(t => t.value).join('');
         expect(joined).toBe(result.normalized);
@@ -121,7 +124,10 @@ describe('large text correctness', () => {
             'រហូត\u200Bមិន\u200Bអាច\u200Bធ្វើ\u200Bដំណើរ\u200Bទៅ\u200Bមុខ\u200Bទៀត\u200Bបាន \u200B។ ' +
             '\u200Bរថយន្ត ០៣ គ្រឿង\u200Bទៀត\u200Bរង\u200Bការ\u200Bខូចខាត\u200Bស្រាល\u200B';
 
-        const result = segmentWords(text, { dictionary: dict });
+        const result = segmentWords(text, {
+            dictionary: dict,
+            strategy: 'fmm',
+        });
 
         // Tokens must reconstruct the normalized text (ZWS stripped)
         const joined = result.tokens.map(t => t.value).join('');

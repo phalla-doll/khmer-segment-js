@@ -8,6 +8,7 @@ import {
     countClusters,
     segmentWords,
     createDictionary,
+    getCaretBoundaries,
 } from 'khmer-segment';
 import {
     getDefaultDictionary,
@@ -50,7 +51,7 @@ const tabPanels = [
 ];
 
 let normalize = true;
-let strategy = 'fmm';
+let strategy = 'viterbi';
 
 function activateTab(index: number) {
     const i = Math.max(0, Math.min(index, tabs.length - 1));
@@ -194,6 +195,7 @@ function update() {
     renderDetection(hasKhmer, isKhmer);
     renderNormalization(text, normalized);
     renderClusters(clusters);
+    renderCaretBoundaries(normalize ? normalized : text);
     renderSegmentation(result.tokens);
     renderJson(result);
 }
@@ -207,6 +209,7 @@ function renderEmpty() {
     normalizeSection.hidden = true;
     document.getElementById('normalize-result')!.innerHTML = '';
     document.getElementById('cluster-result')!.innerHTML = '';
+    document.getElementById('caret-boundaries')!.innerHTML = '';
     document.getElementById('segment-result')!.innerHTML = '';
     document.getElementById('json-output')!.textContent = '';
     document.getElementById('cluster-count')!.textContent = '';
@@ -282,6 +285,18 @@ function renderClusters(clusters: string[]) {
             '<span class="mx-0.5 select-none text-xs font-medium tracking-wider text-neutral-400 dark:text-neutral-500">|</span>'
         );
     document.getElementById('cluster-result')!.innerHTML = html;
+}
+
+function renderCaretBoundaries(text: string) {
+    const boundaries = getCaretBoundaries(text);
+    const container = document.getElementById('caret-boundaries')!;
+    if (boundaries.length <= 2 && text.length <= 1) {
+        container.innerHTML =
+            '<span class="text-xs text-neutral-400 dark:text-neutral-500">Type more text to see caret boundaries…</span>';
+        return;
+    }
+    const positions = boundaries.map(i => String(i)).join(' ');
+    container.innerHTML = `<span class="font-mono text-xs tabular-nums tracking-wider text-neutral-500 dark:text-neutral-400">${escapeHtml(positions)}</span>`;
 }
 
 function renderSegmentation(

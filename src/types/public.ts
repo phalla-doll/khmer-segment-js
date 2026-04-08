@@ -45,3 +45,12 @@ export interface KhmerDictionary {
     getFrequency?(word: string): number | undefined;
     size: number;
 }
+
+export interface CaretOptions {
+    normalize?: boolean;
+}
+
+export interface DeleteResult {
+    text: string;
+    cursorIndex: number;
+}

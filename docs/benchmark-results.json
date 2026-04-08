@@ -1,8 +1,9 @@
 {
-    "generatedAt": "2026-04-08T04:30:21.804Z",
+    "generatedAt": "2026-04-08T08:53:21.184Z",
     "dataset": "kh_data_10000b",
     "dictionarySize": 101107,
     "sentences": 87875,
+    "viterbiBoundaryPenalty": 6,
     "results": [
         {
             "strategy": "fmm",
@@ -17,9 +18,9 @@
                 "f1": 0.630419592658994
             },
             "exactMatchRate": 0.0195049786628734,
-            "oovRate": 0.32844131110227565,
-            "oovBoundaryF1": 0.5353071886698355,
-            "elapsedMs": 7673
+            "oovRate": 0.2795967261677915,
+            "oovBoundaryF1": 0.41607808762784193,
+            "elapsedMs": 6890
         },
         {
             "strategy": "bmm",
@@ -34,9 +35,9 @@
                 "f1": 0.6239076879037041
             },
             "exactMatchRate": 0.017923186344238975,
-            "oovRate": 0.3258892458873601,
-            "oovBoundaryF1": 0.5351516619001578,
-            "elapsedMs": 10931
+            "oovRate": 0.2772092990771114,
+            "oovBoundaryF1": 0.4193050121230462,
+            "elapsedMs": 10510
         },
         {
             "strategy": "bimm",
@@ -51,26 +52,26 @@
                 "f1": 0.6326796867211796
             },
             "exactMatchRate": 0.020051209103840683,
-            "oovRate": 0.32610409630614623,
-            "oovBoundaryF1": 0.5350108715346983,
-            "elapsedMs": 15326
+            "oovRate": 0.2772717565015437,
+            "oovBoundaryF1": 0.4185533671848793,
+            "elapsedMs": 15537
         },
         {
             "strategy": "viterbi",
             "boundaryMetrics": {
-                "precision": 0.6128232969727927,
-                "recall": 0.9173919560922976,
-                "f1": 0.7347974894678261
+                "precision": 0.7209409995902525,
+                "recall": 0.9286007091367025,
+                "f1": 0.8116997829438296
             },
             "tokenMetrics": {
-                "precision": 0.3619478600474778,
-                "recall": 0.5418332771822131,
-                "f1": 0.43398868841134547
+                "precision": 0.5123809185810109,
+                "recall": 0.6599670217297414,
+                "f1": 0.5768842119301628
             },
-            "exactMatchRate": 0.0013200568990042675,
-            "oovRate": 0.05538273745458237,
-            "oovBoundaryF1": 0.962269399061195,
-            "elapsedMs": 22683
+            "exactMatchRate": 0.006190611664295875,
+            "oovRate": 0.03149685960134198,
+            "oovBoundaryF1": 0.8874803257373571,
+            "elapsedMs": 23469
         }
     ]
 }

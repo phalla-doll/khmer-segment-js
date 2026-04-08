@@ -5,7 +5,7 @@ const DEFAULT_COST = 10.0;
 const UNKNOWN_COST = 20.0;
 const SINGLE_CONSONANT_PENALTY = 10.0;
 const ORPHAN_SIGN_PENALTY = 50.0;
-const DEFAULT_BOUNDARY_PENALTY = 0.75;
+const DEFAULT_BOUNDARY_PENALTY = 10.0;
 
 interface DagEdge {
     end: number;
