@@ -4,15 +4,9 @@ import {
     isSign,
     isCoeng,
     isClusterBase,
+    isRobat,
+    cpAt,
 } from '../constants/char-categories';
-
-function isRobat(cp: number): boolean {
-    return cp === 0x17cc;
-}
-
-function cpAt(s: string, idx: number): number {
-    return s.codePointAt(idx) as number;
-}
 
 export function splitClusters(text: string): string[] {
     if (!text) return [];

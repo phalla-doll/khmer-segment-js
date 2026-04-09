@@ -1,8 +1,4 @@
-import { isKhmerCodePoint } from '../constants/char-categories';
-
-function cpAt(s: string): number {
-    return s.codePointAt(0) as number;
-}
+import { isKhmerCodePoint, cpAt } from '../constants/char-categories';
 
 export function isKhmerChar(char: string): boolean {
     if (!char) return false;

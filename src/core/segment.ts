@@ -71,7 +71,7 @@ export function segmentWords(
         });
     }
 
-    tokens = groupDigitTokens(tokens) as SegmentToken[];
+    tokens = groupDigitTokens(tokens);
     tokens = markKhmerSentencePunctuationKnown(tokens);
 
     return {

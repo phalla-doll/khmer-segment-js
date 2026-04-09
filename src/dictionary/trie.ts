@@ -9,10 +9,12 @@ export class Trie {
     insert(word: string): void {
         let node = this.root;
         for (const ch of word) {
-            if (!node.children.has(ch)) {
-                node.children.set(ch, new TrieNode());
+            let next = node.children.get(ch);
+            if (!next) {
+                next = new TrieNode();
+                node.children.set(ch, next);
             }
-            node = node.children.get(ch)!;
+            node = next;
         }
         node.isEndOfWord = true;
     }
@@ -20,8 +22,9 @@ export class Trie {
     has(word: string): boolean {
         let node = this.root;
         for (const ch of word) {
-            if (!node.children.has(ch)) return false;
-            node = node.children.get(ch)!;
+            const next = node.children.get(ch);
+            if (!next) return false;
+            node = next;
         }
         return node.isEndOfWord;
     }
@@ -29,30 +32,10 @@ export class Trie {
     hasPrefix(prefix: string): boolean {
         let node = this.root;
         for (const ch of prefix) {
-            if (!node.children.has(ch)) return false;
-            node = node.children.get(ch)!;
+            const next = node.children.get(ch);
+            if (!next) return false;
+            node = next;
         }
         return true;
-    }
-
-    hasSuffix(suffix: string): boolean {
-        return this.hasReverse(suffix, this.root);
-    }
-
-    private hasReverse(suffix: string, node: TrieNode): boolean {
-        if (suffix.length === 0) return node.isEndOfWord;
-        const lastChar = suffix[suffix.length - 1];
-        for (const [ch, child] of node.children) {
-            if (
-                ch === lastChar &&
-                this.hasReverse(suffix.slice(0, -1), child)
-            ) {
-                return true;
-            }
-            if (this.hasReverse(suffix, child)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

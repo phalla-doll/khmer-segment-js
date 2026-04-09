@@ -82,3 +82,11 @@ export function isClusterBase(cp: number): boolean {
 export function isClusterContinuation(cp: number): boolean {
     return isDependentVowel(cp) || isSign(cp) || isCoeng(cp);
 }
+
+export function isRobat(cp: number): boolean {
+    return cp === 0x17cc;
+}
+
+export function cpAt(s: string, idx: number = 0): number {
+    return s.codePointAt(idx) as number;
+}

@@ -192,5 +192,41 @@ describe('deleteBackward', () => {
             const normalized = normalizeKhmer(text);
             expect(result.cursorIndex).toBeLessThanOrEqual(normalized.length);
         });
+
+        it('clamps cursorIndex against normalized text length when ZWS is present', () => {
+            const text = 'ក\u200Bក';
+            const normalized = normalizeKhmer(text);
+            expect(normalized).toBe('កក');
+            const result = deleteBackward(text, 3, { normalize: true });
+            expect(result.cursorIndex).toBeLessThanOrEqual(normalized.length);
+            expect(result.cursorIndex).toBeGreaterThanOrEqual(0);
+        });
+
+        it('returns result in normalized-text space, not original-text space', () => {
+            const text = '\u200Bក\u200Bក\u200B';
+            const normalized = normalizeKhmer(text);
+            expect(normalized).toBe('កក');
+            const result = deleteBackward(text, 5, { normalize: true });
+            expect(result.cursorIndex).toBe(1);
+            expect(result.text).toBe('ក');
+        });
+
+        it('deletes cluster in normalized space when normalization removes invisible chars', () => {
+            const text = 'ក\u200B';
+            const normalized = normalizeKhmer(text);
+            expect(normalized).toBe('ក');
+            const result = deleteBackward(text, 2, { normalize: true });
+            expect(result.cursorIndex).toBe(0);
+            expect(result.text).toBe('');
+        });
+
+        it('cursorIndex beyond normalized length is clamped, not beyond original', () => {
+            const text = '\u200B\u200Bក\u200B\u200B';
+            const normalized = normalizeKhmer(text);
+            expect(normalized).toBe('ក');
+            const result = deleteBackward(text, 5, { normalize: true });
+            expect(result.cursorIndex).toBe(0);
+            expect(result.text).toBe('');
+        });
     });
 });

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { segmentWords } from '../core/segment';
 import { createDictionary } from '../dictionary/create-dictionary';
 import { getDefaultDictionary } from '../dictionary/default-dictionary';
+import type { SegmentOptions } from '../types/public';
 
 describe('runtime option validation', () => {
     const dict = createDictionary(['សួស្តី']);
@@ -31,35 +32,41 @@ describe('runtime option validation', () => {
     });
 
     it('throws TypeError for invalid string strategy', () => {
+        const invalidOptions = {
+            dictionary: dict,
+            strategy: 'unknown',
+        } as unknown as SegmentOptions;
+
         expect(() =>
-            segmentWords('សួស្តី', {
-                dictionary: dict,
-                strategy: 'unknown' as any,
-            })
+            segmentWords('សួស្តី', invalidOptions)
         ).toThrow(TypeError);
         expect(() =>
-            segmentWords('សួស្តី', {
-                dictionary: dict,
-                strategy: 'unknown' as any,
-            })
+            segmentWords('សួស្តី', invalidOptions)
         ).toThrow(/Invalid strategy.*"unknown".*fmm.*bmm.*bimm.*viterbi/);
     });
 
     it('throws TypeError for non-string strategy', () => {
+        const invalidOptions = {
+            dictionary: dict,
+            strategy: 42,
+        } as unknown as SegmentOptions;
+
         expect(() =>
-            segmentWords('សួស្តី', { dictionary: dict, strategy: 42 as any })
+            segmentWords('សួស្តី', invalidOptions)
         ).toThrow(TypeError);
         expect(() =>
-            segmentWords('សួស្តី', { dictionary: dict, strategy: 42 as any })
+            segmentWords('សួស្តី', invalidOptions)
         ).toThrow(/expected a string.*got number/);
     });
 
     it('throws TypeError for null strategy', () => {
+        const invalidOptions = {
+            dictionary: dict,
+            strategy: null,
+        } as unknown as SegmentOptions;
+
         expect(() =>
-            segmentWords('សួស្តី', {
-                dictionary: dict,
-                strategy: null as any,
-            })
+            segmentWords('សួស្តី', invalidOptions)
         ).toThrow(TypeError);
     });
 
@@ -169,7 +176,10 @@ describe('segmentWords', () => {
                 });
                 const matched = result.tokens.find(t => t.value === word);
                 expect(matched).toBeDefined();
-                expect(matched!.isKnown).toBe(true);
+                if (!matched) {
+                    throw new Error(`Missing expected token: ${word}`);
+                }
+                expect(matched.isKnown).toBe(true);
             });
         }
 
@@ -211,7 +221,10 @@ describe('segmentWords', () => {
                 /^[\u17E0-\u17E90-9]+$/.test(t.value)
             );
             expect(digitToken).toBeDefined();
-            expect(digitToken!.value).toBe('១៨៤');
+            if (!digitToken) {
+                throw new Error('Missing expected Khmer digit token');
+            }
+            expect(digitToken.value).toBe('១៨៤');
         });
 
         it('does not group non-adjacent digits', () => {
@@ -253,7 +266,10 @@ describe('segmentWords', () => {
                 /[\u17E0-\u17E90-9]/.test(t.value)
             );
             expect(digitToken).toBeDefined();
-            expect(digitToken!.value).toBe('២០2៥');
+            if (!digitToken) {
+                throw new Error('Missing expected mixed digit token');
+            }
+            expect(digitToken.value).toBe('២០2៥');
         });
 
         it('groups mixed digits without dictionary', () => {
@@ -633,7 +649,10 @@ describe('segmentWords', () => {
             });
             const word = result.tokens.find(t => t.value === 'កន្ត្រក');
             expect(word).toBeDefined();
-            expect(word!.isKnown).toBe(true);
+            if (!word) {
+                throw new Error('Missing expected token: កន្ត្រក');
+            }
+            expect(word.isKnown).toBe(true);
         });
 
         it('supports boundary penalty to reduce over-segmentation', () => {

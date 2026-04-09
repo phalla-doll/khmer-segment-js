@@ -1,4 +1,4 @@
-import type { FmmToken } from './fmm';
+import type { SegmentToken } from '../types/public';
 import { isDigit } from '../constants/char-categories';
 
 function isDigitStr(s: string): boolean {
@@ -6,10 +6,10 @@ function isDigitStr(s: string): boolean {
     return isDigit(s.codePointAt(0) as number);
 }
 
-export function groupDigitTokens(tokens: FmmToken[]): FmmToken[] {
+export function groupDigitTokens(tokens: SegmentToken[]): SegmentToken[] {
     if (tokens.length === 0) return [];
 
-    const result: FmmToken[] = [];
+    const result: SegmentToken[] = [];
     let i = 0;
 
     while (i < tokens.length) {

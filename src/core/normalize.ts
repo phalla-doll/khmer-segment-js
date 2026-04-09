@@ -6,20 +6,14 @@ import {
     isCoeng,
     isKhmerCodePoint,
     isShiftSign,
+    isRobat,
+    cpAt,
 } from '../constants/char-categories';
 
 // eslint-disable-next-line no-misleading-character-class
 const INVISIBLE_CHARS = /[\u200B\u200C\u200D\u2060\u200E\u200F\uFEFF]/g;
 
 const RO = 0x179a;
-
-function isRobat(cp: number): boolean {
-    return cp === 0x17cc;
-}
-
-function cpAt(s: string, idx: number = 0): number {
-    return s.codePointAt(idx) as number;
-}
 
 function fixCompositeVowels(chars: string[]): string[] {
     const result: string[] = [];

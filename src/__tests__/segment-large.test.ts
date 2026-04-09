@@ -107,7 +107,10 @@ describe('large text correctness', () => {
         for (const word of compoundKnown) {
             const tok = result.tokens.find(t => t.value === word);
             expect(tok).toBeDefined();
-            expect(tok!.isKnown).toBe(true);
+            if (!tok) {
+                throw new Error(`Missing expected token: ${word}`);
+            }
+            expect(tok.isKnown).toBe(true);
         }
 
         const knownRatio =
@@ -164,7 +167,10 @@ describe('large text correctness', () => {
         for (const word of compoundKnown) {
             const tok = result.tokens.find(t => t.value === word);
             expect(tok, `Expected "${word}" to be a known token`).toBeDefined();
-            expect(tok!.isKnown).toBe(true);
+            if (!tok) {
+                throw new Error(`Missing expected token: ${word}`);
+            }
+            expect(tok.isKnown).toBe(true);
         }
 
         // The first occurrence of រថយន្ត had ZWS splitting "រ" from "ថយន្ត"

@@ -38,47 +38,79 @@ describe('createDictionary', () => {
 describe('hasPrefix', () => {
     it('returns true for a prefix of a known word', () => {
         const dict = createDictionary(['សួស្តី']);
-        expect(dict.hasPrefix!('សួ')).toBe(true);
-        expect(dict.hasPrefix!('សួស')).toBe(true);
-        expect(dict.hasPrefix!('សួស្តី')).toBe(true);
+        expect(dict.hasPrefix).toBeDefined();
+        const hasPrefix = (dict.hasPrefix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasPrefix('សួ')).toBe(true);
+        expect(hasPrefix('សួស')).toBe(true);
+        expect(hasPrefix('សួស្តី')).toBe(true);
     });
 
     it('returns true for single-character prefix', () => {
         const dict = createDictionary(['កខ']);
-        expect(dict.hasPrefix!('ក')).toBe(true);
+        expect(dict.hasPrefix).toBeDefined();
+        const hasPrefix = (dict.hasPrefix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasPrefix('ក')).toBe(true);
     });
 
     it('returns false for non-matching prefix', () => {
         const dict = createDictionary(['កខ']);
-        expect(dict.hasPrefix!('គ')).toBe(false);
+        expect(dict.hasPrefix).toBeDefined();
+        const hasPrefix = (dict.hasPrefix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasPrefix('គ')).toBe(false);
     });
 
     it('returns false for prefix longer than any word', () => {
         const dict = createDictionary(['កខ']);
-        expect(dict.hasPrefix!('កខគ')).toBe(false);
+        expect(dict.hasPrefix).toBeDefined();
+        const hasPrefix = (dict.hasPrefix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasPrefix('កខគ')).toBe(false);
     });
 
     it('returns false for empty dictionary', () => {
         const dict = createDictionary([]);
-        expect(dict.hasPrefix!('ក')).toBe(false);
+        expect(dict.hasPrefix).toBeDefined();
+        const hasPrefix = (dict.hasPrefix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasPrefix('ក')).toBe(false);
     });
 });
 
 describe('hasSuffix', () => {
     it('returns true for a suffix of a known word', () => {
         const dict = createDictionary(['សួស្តី']);
-        expect(dict.hasSuffix!('ី')).toBe(true);
-        expect(dict.hasSuffix!('្តី')).toBe(true);
+        expect(dict.hasSuffix).toBeDefined();
+        const hasSuffix = (dict.hasSuffix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasSuffix('ី')).toBe(true);
+        expect(hasSuffix('្តី')).toBe(true);
     });
 
     it('returns false for non-matching suffix', () => {
         const dict = createDictionary(['កខ']);
-        expect(dict.hasSuffix!('គ')).toBe(false);
+        expect(dict.hasSuffix).toBeDefined();
+        const hasSuffix = (dict.hasSuffix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasSuffix('គ')).toBe(false);
     });
 
     it('returns false for empty dictionary', () => {
         const dict = createDictionary([]);
-        expect(dict.hasSuffix!('ក')).toBe(false);
+        expect(dict.hasSuffix).toBeDefined();
+        const hasSuffix = (dict.hasSuffix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasSuffix('ក')).toBe(false);
     });
 });
 

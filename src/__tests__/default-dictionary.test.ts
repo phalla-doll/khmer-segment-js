@@ -36,26 +36,42 @@ describe('getDefaultDictionary', () => {
 
     it('supports hasPrefix', () => {
         const dict = getDefaultDictionary();
-        expect(dict.hasPrefix!('កម្ពុ')).toBe(true);
-        expect(dict.hasPrefix!('សួ')).toBe(true);
+        expect(dict.hasPrefix).toBeDefined();
+        const hasPrefix = (dict.hasPrefix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasPrefix('កម្ពុ')).toBe(true);
+        expect(hasPrefix('សួ')).toBe(true);
     });
 
     it('supports hasSuffix', () => {
         const dict = getDefaultDictionary();
-        expect(dict.hasSuffix!('ជា')).toBe(true);
+        expect(dict.hasSuffix).toBeDefined();
+        const hasSuffix = (dict.hasSuffix as (value: string) => boolean).bind(
+            dict
+        );
+        expect(hasSuffix('ជា')).toBe(true);
     });
 
     it('supports getFrequency', () => {
         const dict = getDefaultDictionary();
-        const freq = dict.getFrequency!('ជា');
+        expect(dict.getFrequency).toBeDefined();
+        const getFrequency = (
+            dict.getFrequency as (word: string) => number | undefined
+        ).bind(dict);
+        const freq = getFrequency('ជា');
         expect(freq).toBeDefined();
         expect(typeof freq).toBe('number');
-        expect(freq!).toBeGreaterThan(0);
+        expect(freq).toBeGreaterThan(0);
     });
 
     it('getFrequency returns undefined for unknown words', () => {
         const dict = getDefaultDictionary();
-        expect(dict.getFrequency!('hello')).toBeUndefined();
+        expect(dict.getFrequency).toBeDefined();
+        const getFrequency = (
+            dict.getFrequency as (word: string) => number | undefined
+        ).bind(dict);
+        expect(getFrequency('hello')).toBeUndefined();
     });
 });
 

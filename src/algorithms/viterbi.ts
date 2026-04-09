@@ -7,6 +7,8 @@ import {
     isDependentVowel,
     isSign,
     isCoeng,
+    isRobat,
+    cpAt,
 } from '../constants/char-categories';
 
 const DEFAULT_COST = 10.0;
@@ -17,14 +19,6 @@ const DEFAULT_BOUNDARY_PENALTY = 10.0;
 
 interface ViterbiOptions {
     boundaryPenalty?: number;
-}
-
-function isRobat(cp: number): boolean {
-    return cp === 0x17cc;
-}
-
-function cpAt(s: string): number {
-    return s.codePointAt(0) as number;
 }
 
 function getClusterLength(chars: string[], start: number): number {
