@@ -363,6 +363,8 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 ## Roadmap
 
+For the detailed next-step execution plan, see [`docs/v0.5.0-improvement-plan.md`](docs/v0.5.0-improvement-plan.md).
+
 ### v0.1.0
 
 - `isKhmerChar`, `containsKhmer`, `isKhmerText`
