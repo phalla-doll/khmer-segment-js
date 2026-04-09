@@ -7,6 +7,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-04-09
+
+### Changed
+
+- Reordered README roadmap entries into ascending version order to improve release-history readability.
+
 ## [0.6.0] - 2026-04-09
 
 ### Added

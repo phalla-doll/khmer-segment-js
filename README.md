@@ -478,12 +478,16 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **Trie cleanup** — removed internal expensive `Trie.hasSuffix()` path and simplified node traversal logic
 - **Lint/test quality improvements** — removed lingering warnings and kept full suite green
 
-### v0.6.0 (current)
+### v0.6.0
 
 - **React hooks release** — `khmer-segment/react` now ships `useKhmerSegments` and `useKhmerTyping` for controlled inputs
 - **React packaging** — added `./react` subpath build and exports with optional `react >= 18` peer metadata
 - **Hook test coverage** — added React-focused tests for segmentation updates, caret snapping/deletion, normalization mode, and mixed-script inputs
 - **Security hygiene** — dev dependency audit issue resolved (Vite advisory chain cleared via lockfile update)
+
+### v0.6.1 (current)
+
+- Reordered roadmap entries into ascending version order for easier historical scanning
 
 ### Future
 
