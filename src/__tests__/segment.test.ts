@@ -37,12 +37,10 @@ describe('runtime option validation', () => {
             strategy: 'unknown',
         } as unknown as SegmentOptions;
 
-        expect(() =>
-            segmentWords('សួស្តី', invalidOptions)
-        ).toThrow(TypeError);
-        expect(() =>
-            segmentWords('សួស្តី', invalidOptions)
-        ).toThrow(/Invalid strategy.*"unknown".*fmm.*bmm.*bimm.*viterbi/);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(TypeError);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(
+            /Invalid strategy.*"unknown".*fmm.*bmm.*bimm.*viterbi/
+        );
     });
 
     it('throws TypeError for non-string strategy', () => {
@@ -51,12 +49,10 @@ describe('runtime option validation', () => {
             strategy: 42,
         } as unknown as SegmentOptions;
 
-        expect(() =>
-            segmentWords('សួស្តី', invalidOptions)
-        ).toThrow(TypeError);
-        expect(() =>
-            segmentWords('សួស្តី', invalidOptions)
-        ).toThrow(/expected a string.*got number/);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(TypeError);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(
+            /expected a string.*got number/
+        );
     });
 
     it('throws TypeError for null strategy', () => {
@@ -65,9 +61,7 @@ describe('runtime option validation', () => {
             strategy: null,
         } as unknown as SegmentOptions;
 
-        expect(() =>
-            segmentWords('សួស្តី', invalidOptions)
-        ).toThrow(TypeError);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(TypeError);
     });
 
     it('does not throw when strategy is omitted', () => {
