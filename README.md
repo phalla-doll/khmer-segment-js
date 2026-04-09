@@ -142,8 +142,8 @@ When normalization is enabled, token offsets always refer to `result.normalized`
 const dict = createDictionary(['សួស្តី', 'អ្នក', 'ខ្មែរ']);
 
 dict.has('សួស្តី'); // true
-dict.hasPrefix!('សួ'); // true (trie-based O(k) lookup)
-dict.hasSuffix!('ី'); // true
+dict.hasPrefix?.('សួ'); // true (trie-based O(k) lookup)
+dict.hasSuffix?.('ី'); // true
 dict.size; // 3 unique words
 ```
 
@@ -184,7 +184,7 @@ console.log(freqData.words.length); // 101107
 console.log(freqData.frequencies.get('ជា')); // 701541
 ```
 
-This is a **separate import** — the core `khmer-segment` package stays small (~11KB). The dictionary module is ~3.9MB. Only import the dictionary when you need it.
+This is a **separate import** — the core `khmer-segment` package stays small (~11KB). The dictionary build artifact is large (roughly ~8MB per JS format), so only import the dictionary module when you need it.
 
 `loadFrequencyDictionary()` builds its return value from cached dictionary data, but each call returns fresh arrays and a fresh `Map`. You can safely extend or mutate the returned data without affecting later calls.
 
@@ -406,16 +406,15 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
-### v0.5.0 (current)
+### v0.5.1 (current)
 
-- **Runtime validation** — `segmentWords()` throws `TypeError` for invalid strategy values instead of silent fallback
-- **Viterbi algorithm consolidated** — removed duplicated character classification, now shares logic with `cluster.ts` and `char-categories.ts`
-- **ESLint integration** — static analysis with `@typescript-eslint` in `npm run lint`
-- **Reliable CI performance gate** — warmup + median measurement, blocks on failure
-- **Reduced non-null assertions** in hot code paths (`cluster.ts`, `detect.ts`, `normalize.ts`, `viterbi.ts`)
-- **`engines.node`** field declaring `>=18.0.0` compatibility
-- **Removed unused types** (`TypingDiffItem`, `TypingComparisonResult`) from public API surface
-- **15 new tests** — runtime validation (10) + Viterbi edge cases (5)
+- **Audit hardening pass** — aligned code/docs/tests with v0.5.0 audit findings
+- **Type cleanup** — digit grouping now uses `SegmentToken` end-to-end (removed fragile cross-algorithm coupling)
+- **Shared Khmer char helpers** — centralized `isRobat` and `cpAt` usage across core and Viterbi paths
+- **Caret normalization coverage** — added tests for `deleteBackward(..., { normalize: true })` when normalization changes text length
+- **CI compatibility matrix** — validates Node 18 and Node 20
+- **Trie cleanup** — removed internal expensive `Trie.hasSuffix()` path and simplified node traversal logic
+- **Lint/test quality improvements** — removed lingering warnings and kept full suite green
 
 ### Future
 
