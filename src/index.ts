@@ -18,7 +18,6 @@ export type {
     SegmentOptions,
     SegmentResult,
     SegmentToken,
-    TypingComparisonResult,
     KhmerDictionary,
     CaretOptions,
     DeleteResult,

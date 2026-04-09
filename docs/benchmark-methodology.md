@@ -48,3 +48,16 @@ npm run test:accuracy
 ```
 
 Results are written to `docs/benchmark-results.md`.
+
+## Performance Gate Policy
+
+Performance tests (`npm run test:perf`) use a **warmup + median** strategy to reduce CI jitter:
+
+1. **Warmup**: 3 iterations before measurement (JIT warmup, cache priming).
+2. **Measurement**: 7 timed iterations per scenario.
+3. **Assertion**: Tests assert on the **median** of measured runs (not wall-clock total), which is robust against outliers from CI runner variance.
+4. **CI behavior**: Performance test failures block the pipeline (no `continue-on-error`).
+
+### Accuracy Regression Gate
+
+The accuracy regression check (`npm run test:accuracy:check`) compares current benchmark results against the committed baseline (`docs/benchmark-baseline.json`) with per-strategy tolerance windows. This gate is required in CI.

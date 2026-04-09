@@ -1,9 +1,12 @@
 import { isKhmerCodePoint } from '../constants/char-categories';
 
+function cpAt(s: string): number {
+    return s.codePointAt(0) as number;
+}
+
 export function isKhmerChar(char: string): boolean {
     if (!char) return false;
-    const cp = char.codePointAt(0)!;
-    return isKhmerCodePoint(cp);
+    return isKhmerCodePoint(cpAt(char));
 }
 
 export function containsKhmer(text: string): boolean {

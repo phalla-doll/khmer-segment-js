@@ -7,6 +7,30 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-09
+
+### Added
+
+- **Runtime validation** for `strategy` option: `segmentWords()` now throws `TypeError` with actionable messages for invalid or non-string strategy values instead of silently falling back to FMM.
+- **ESLint** static analysis integrated into `npm run lint` (runs alongside `tsc --noEmit`). Configured with `@typescript-eslint` rules: `no-non-null-assertion` (warn), `no-explicit-any` (warn), `consistent-type-imports` (error).
+- **`engines.node`** field in `package.json` declaring `>=18.0.0` compatibility.
+- **Performance gate policy** documented in `docs/benchmark-methodology.md` — describes warmup + median measurement strategy and CI blocking behavior.
+- **Regression tests** for Viterbi cluster edge cases: robat sequences, coeng/subscript stacking, mixed Khmer + digits + separators, unknown-word spans, independent vowel clusters.
+- **Validation tests** for runtime option checking: valid strategies, invalid strings, non-string values, null, omitted strategy.
+
+### Changed
+
+- **Viterbi algorithm consolidated** — removed 6 duplicated inline character classification functions. `viterbi.ts` now uses `isClusterBase`, `isConsonant`, `isDigit` from `char-categories.ts` and shares cluster-walking logic with `cluster.ts`. Removed unused `DagEdge` interface, `buildCharOffsets` function, and `foundDict` variable.
+- **Performance tests rewritten** with warmup (3 iterations) + median-of-7 measurement strategy. Replaced fixed wall-clock assertions with median-based checks to reduce CI flakiness.
+- **CI performance gate** now blocks on failure (`continue-on-error` removed).
+- **`npm run lint`** now runs both `tsc --noEmit` and `eslint src/`.
+- **Non-null assertions reduced** in hot code paths (`cluster.ts`, `detect.ts`, `normalize.ts`, `viterbi.ts`, `char-categories.ts`, `group-digits.ts`) — replaced with safe `cpAt()` helper function.
+- Switch statement in `segment.ts` now has explicit `case 'fmm'` instead of relying on `default`.
+
+### Removed
+
+- **`TypingDiffItem`** and **`TypingComparisonResult`** types removed from `src/types/public.ts` and public exports — were defined but never implemented or used.
+
 ## [0.4.0] - 2026-04-08
 
 ### Added

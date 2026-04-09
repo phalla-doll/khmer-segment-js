@@ -1,5 +1,13 @@
 import type { KhmerDictionary, SegmentToken } from '../types/public';
-import { isKhmerSentencePunctuation } from '../constants/char-categories';
+import {
+    isKhmerSentencePunctuation,
+    isDigit,
+    isConsonant,
+    isClusterBase,
+    isDependentVowel,
+    isSign,
+    isCoeng,
+} from '../constants/char-categories';
 
 const DEFAULT_COST = 10.0;
 const UNKNOWN_COST = 20.0;
@@ -7,52 +15,36 @@ const SINGLE_CONSONANT_PENALTY = 10.0;
 const ORPHAN_SIGN_PENALTY = 50.0;
 const DEFAULT_BOUNDARY_PENALTY = 10.0;
 
-interface DagEdge {
-    end: number;
-    cost: number;
-    isKnown: boolean;
-}
-
 interface ViterbiOptions {
     boundaryPenalty?: number;
 }
 
-function isClusterStart(cp: number): boolean {
-    return (cp >= 0x1780 && cp <= 0x17a2) || (cp >= 0x17a3 && cp <= 0x17b3);
+function isRobat(cp: number): boolean {
+    return cp === 0x17cc;
 }
 
-function isNonClusterBase(cp: number): boolean {
-    return (
-        cp === 0x17d2 ||
-        (cp >= 0x17b4 && cp <= 0x17c5) ||
-        (cp >= 0x17c6 && cp <= 0x17d3) ||
-        cp === 0x17dd
-    );
+function cpAt(s: string): number {
+    return s.codePointAt(0) as number;
 }
 
 function getClusterLength(chars: string[], start: number): number {
     let i = start;
     if (i >= chars.length) return 0;
 
-    const cp = chars[i].codePointAt(0)!;
-    if (!isClusterStart(cp)) return 1;
+    const cp = cpAt(chars[i]);
+    if (!isClusterBase(cp)) return 1;
 
     i++;
     while (i < chars.length) {
-        const nextCp = chars[i].codePointAt(0)!;
-        if (nextCp === 0x17d2) {
+        const nextCp = cpAt(chars[i]);
+        if (isCoeng(nextCp)) {
             i++;
-            if (i < chars.length) {
-                const subCp = chars[i].codePointAt(0)!;
-                if (subCp >= 0x1780 && subCp <= 0x17a2) {
-                    i++;
-                }
+            if (i < chars.length && isConsonant(cpAt(chars[i]))) {
+                i++;
             }
-        } else if (
-            (nextCp >= 0x17b4 && nextCp <= 0x17c5) ||
-            (nextCp >= 0x17c6 && nextCp <= 0x17d3) ||
-            nextCp === 0x17dd
-        ) {
+        } else if (isRobat(nextCp)) {
+            i++;
+        } else if (isDependentVowel(nextCp) || isSign(nextCp)) {
             i++;
         } else {
             break;
@@ -62,21 +54,12 @@ function getClusterLength(chars: string[], start: number): number {
     return i - start;
 }
 
-function isConsonant(cp: number): boolean {
-    return cp >= 0x1780 && cp <= 0x17a2;
-}
-
-function isDigit(cp: number): boolean {
-    return (cp >= 0x17e0 && cp <= 0x17e9) || (cp >= 0x30 && cp <= 0x39);
-}
-
 function isSeparator(cp: number): boolean {
     return (
         cp <= 0x2f ||
         (cp >= 0x3a && cp <= 0x40) ||
         (cp >= 0x5b && cp <= 0x60) ||
         (cp >= 0x7b && cp <= 0x7f) ||
-        cp === 0x20a0 + 0x2f ||
         (cp >= 0x2000 && cp <= 0x206f) ||
         cp === 0x17d4 ||
         cp === 0x17d5 ||
@@ -111,9 +94,9 @@ export function viterbiSegment(
     for (let i = 0; i < n; i++) {
         if (dp[i] === INF) continue;
 
-        const cp = chars[i].codePointAt(0)!;
+        const cp = cpAt(chars[i]);
 
-        if (isNonClusterBase(cp)) {
+        if (!isClusterBase(cp) && !isDigit(cp) && !isSeparator(cp)) {
             const cost =
                 dp[i] + UNKNOWN_COST + ORPHAN_SIGN_PENALTY + boundaryPenalty;
             if (cost < dp[i + 1]) {
@@ -126,7 +109,7 @@ export function viterbiSegment(
 
         if (isDigit(cp)) {
             let j = i + 1;
-            while (j < n && isDigit(chars[j].codePointAt(0)!)) {
+            while (j < n && isDigit(cpAt(chars[j]))) {
                 j++;
             }
             const cost = dp[i] + 1.0 + boundaryPenalty;
@@ -160,7 +143,6 @@ export function viterbiSegment(
             if (maxWordLen === 0) maxWordLen = 1;
         }
 
-        let foundDict = false;
         for (let len = maxWordLen; len >= 1; len--) {
             const end = i + len;
             if (end > n) continue;
@@ -168,7 +150,6 @@ export function viterbiSegment(
             const word = chars.slice(i, end).join('');
 
             if (dictionary.has(word)) {
-                foundDict = true;
                 let cost: number;
                 if (getFreqFn) {
                     const freq = getFreqFn(word);

@@ -12,10 +12,31 @@ import { viterbiSegment } from '../algorithms/viterbi';
 import { groupDigitTokens } from '../algorithms/group-digits';
 import { isKhmerSentencePunctuationToken } from '../constants/char-categories';
 
+const VALID_STRATEGIES = ['fmm', 'bmm', 'bimm', 'viterbi'] as const;
+
+function validateOptions(options?: SegmentOptions): void {
+    if (options?.strategy !== undefined) {
+        if (typeof options.strategy !== 'string') {
+            throw new TypeError(
+                `Invalid strategy: expected a string, got ${typeof options.strategy}`
+            );
+        }
+        if (
+            !(VALID_STRATEGIES as readonly string[]).includes(options.strategy)
+        ) {
+            throw new TypeError(
+                `Invalid strategy: "${options.strategy}". Valid strategies are: ${VALID_STRATEGIES.join(', ')}`
+            );
+        }
+    }
+}
+
 export function segmentWords(
     text: string,
     options?: SegmentOptions
 ): SegmentResult {
+    validateOptions(options);
+
     const shouldNormalize = options?.normalize !== false;
     const normalized = shouldNormalize ? normalizeKhmer(text) : text;
     const clusters = splitClusters(normalized);
@@ -25,6 +46,9 @@ export function segmentWords(
     if (dictionary) {
         const strategy = options?.strategy ?? 'viterbi';
         switch (strategy) {
+            case 'fmm':
+                tokens = fmmSegment(clusters, dictionary);
+                break;
             case 'bmm':
                 tokens = bmmSegment(clusters, dictionary);
                 break;
@@ -35,9 +59,6 @@ export function segmentWords(
                 tokens = viterbiSegment(clusters, dictionary, {
                     boundaryPenalty: options?.viterbiBoundaryPenalty,
                 });
-                break;
-            default:
-                tokens = fmmSegment(clusters, dictionary);
                 break;
         }
     } else {

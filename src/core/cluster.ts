@@ -10,6 +10,10 @@ function isRobat(cp: number): boolean {
     return cp === 0x17cc;
 }
 
+function cpAt(s: string, idx: number): number {
+    return s.codePointAt(idx) as number;
+}
+
 export function splitClusters(text: string): string[] {
     if (!text) return [];
 
@@ -18,22 +22,19 @@ export function splitClusters(text: string): string[] {
     let i = 0;
 
     while (i < chars.length) {
-        const cp = chars[i].codePointAt(0)!;
+        const cp = cpAt(chars[i], 0);
 
         if (isClusterBase(cp)) {
             let cluster = chars[i];
             i++;
 
             while (i < chars.length) {
-                const nextCp = chars[i].codePointAt(0)!;
+                const nextCp = cpAt(chars[i], 0);
 
                 if (isCoeng(nextCp)) {
                     cluster += chars[i];
                     i++;
-                    if (
-                        i < chars.length &&
-                        isConsonant(chars[i].codePointAt(0)!)
-                    ) {
+                    if (i < chars.length && isConsonant(cpAt(chars[i], 0))) {
                         cluster += chars[i];
                         i++;
                     }

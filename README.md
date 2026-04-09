@@ -111,6 +111,8 @@ interface SegmentOptions {
 }
 ```
 
+**Runtime validation:** If `strategy` is provided but is not one of the four valid values, `segmentWords` throws a `TypeError` with an actionable message listing the allowed values. Non-string values (e.g., numbers, `null`) also throw `TypeError`.
+
 #### `SegmentResult`
 
 ```ts
@@ -363,8 +365,6 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 ## Roadmap
 
-For the detailed next-step execution plan, see [`docs/v0.5.0-improvement-plan.md`](docs/v0.5.0-improvement-plan.md).
-
 ### v0.1.0
 
 - `isKhmerChar`, `containsKhmer`, `isKhmerText`
@@ -399,12 +399,23 @@ For the detailed next-step execution plan, see [`docs/v0.5.0-improvement-plan.md
 - **Full KCC cluster model** — ROBAT continuation, independent vowel bases
 - **Accuracy benchmarking** — 87,875-sentence gold standard, per-strategy metrics
 
-### v0.4.0 (current)
+### v0.4.0
 
 - **Default strategy switched to Viterbi** (penalty=10.0): Boundary F1 = 0.8572, Token F1 = 0.6744
 - **`getCaretBoundaries(text)`** — returns valid caret positions based on Khmer cluster boundaries
 - **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
+
+### v0.5.0 (current)
+
+- **Runtime validation** — `segmentWords()` throws `TypeError` for invalid strategy values instead of silent fallback
+- **Viterbi algorithm consolidated** — removed duplicated character classification, now shares logic with `cluster.ts` and `char-categories.ts`
+- **ESLint integration** — static analysis with `@typescript-eslint` in `npm run lint`
+- **Reliable CI performance gate** — warmup + median measurement, blocks on failure
+- **Reduced non-null assertions** in hot code paths (`cluster.ts`, `detect.ts`, `normalize.ts`, `viterbi.ts`)
+- **`engines.node`** field declaring `>=18.0.0` compatibility
+- **Removed unused types** (`TypingDiffItem`, `TypingComparisonResult`) from public API surface
+- **15 new tests** — runtime validation (10) + Viterbi edge cases (5)
 
 ### Future
 
@@ -422,7 +433,7 @@ npm run build     # build with tsup (ESM + CJS + types)
 npm test          # run vitest
 npm run test:perf # optional performance-focused checks
 npm run test:watch  # watch mode
-npm run lint      # TypeScript type check
+npm run lint      # TypeScript type check + ESLint
 ```
 
 ---
@@ -437,7 +448,7 @@ npm run test:perf     # optional performance-focused checks
 npm run test:accuracy # run full accuracy benchmark and write docs/benchmark-results.*
 npm run test:accuracy:check # accuracy benchmark + baseline regression gate
 npm run test:watch    # watch mode — re-runs on changes
-npm run lint          # TypeScript type check
+npm run lint          # TypeScript type check + ESLint
 ```
 
 ### Manual Testing (Playground)

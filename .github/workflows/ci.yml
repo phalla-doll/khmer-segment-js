@@ -37,7 +37,6 @@ jobs:
 
             - name: Run performance tests
               run: npm run test:perf
-              continue-on-error: true
 
             - name: Download benchmark corpus
               run: npm run download:benchmark

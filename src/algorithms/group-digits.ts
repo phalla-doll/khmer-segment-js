@@ -3,8 +3,7 @@ import { isDigit } from '../constants/char-categories';
 
 function isDigitStr(s: string): boolean {
     if (s.length !== 1) return false;
-    const cp = s.codePointAt(0)!;
-    return isDigit(cp);
+    return isDigit(s.codePointAt(0) as number);
 }
 
 export function groupDigitTokens(tokens: FmmToken[]): FmmToken[] {

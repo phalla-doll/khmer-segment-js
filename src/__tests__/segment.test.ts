@@ -3,6 +3,77 @@ import { segmentWords } from '../core/segment';
 import { createDictionary } from '../dictionary/create-dictionary';
 import { getDefaultDictionary } from '../dictionary/default-dictionary';
 
+describe('runtime option validation', () => {
+    const dict = createDictionary(['សួស្តី']);
+
+    it('accepts valid strategy "fmm"', () => {
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict, strategy: 'fmm' })
+        ).not.toThrow();
+    });
+
+    it('accepts valid strategy "bmm"', () => {
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict, strategy: 'bmm' })
+        ).not.toThrow();
+    });
+
+    it('accepts valid strategy "bimm"', () => {
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict, strategy: 'bimm' })
+        ).not.toThrow();
+    });
+
+    it('accepts valid strategy "viterbi"', () => {
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict, strategy: 'viterbi' })
+        ).not.toThrow();
+    });
+
+    it('throws TypeError for invalid string strategy', () => {
+        expect(() =>
+            segmentWords('សួស្តី', {
+                dictionary: dict,
+                strategy: 'unknown' as any,
+            })
+        ).toThrow(TypeError);
+        expect(() =>
+            segmentWords('សួស្តី', {
+                dictionary: dict,
+                strategy: 'unknown' as any,
+            })
+        ).toThrow(/Invalid strategy.*"unknown".*fmm.*bmm.*bimm.*viterbi/);
+    });
+
+    it('throws TypeError for non-string strategy', () => {
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict, strategy: 42 as any })
+        ).toThrow(TypeError);
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict, strategy: 42 as any })
+        ).toThrow(/expected a string.*got number/);
+    });
+
+    it('throws TypeError for null strategy', () => {
+        expect(() =>
+            segmentWords('សួស្តី', {
+                dictionary: dict,
+                strategy: null as any,
+            })
+        ).toThrow(TypeError);
+    });
+
+    it('does not throw when strategy is omitted', () => {
+        expect(() =>
+            segmentWords('សួស្តី', { dictionary: dict })
+        ).not.toThrow();
+    });
+
+    it('does not throw when no dictionary is provided', () => {
+        expect(() => segmentWords('សួស្តី', { strategy: 'fmm' })).not.toThrow();
+    });
+});
+
 describe('segmentWords', () => {
     const dict = createDictionary(['សួស្តី', 'អ្នក', 'ក្មែរ', 'ទាំងអស់គ្នា']);
 
@@ -643,6 +714,70 @@ describe('segmentWords', () => {
             for (const r of results) {
                 expect(r.tokens.map(t => t.value)).toEqual(expected);
             }
+        });
+    });
+
+    describe('Viterbi cluster edge cases', () => {
+        const dict = getDefaultDictionary();
+
+        it('handles robat sequences without regression', () => {
+            const text = 'ក្តៅ';
+            const result = segmentWords(text, {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
+            expect(result.tokens[0].start).toBe(0);
+            expect(result.tokens[result.tokens.length - 1].end).toBe(
+                text.length
+            );
+        });
+
+        it('handles coeng/subscript sequences correctly', () => {
+            const text = 'ក្ក្ខក្លីស្តី';
+            const result = segmentWords(text, {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
+            for (let i = 1; i < result.tokens.length; i++) {
+                expect(result.tokens[i].start).toBe(result.tokens[i - 1].end);
+            }
+        });
+
+        it('handles mixed Khmer + digits + separators', () => {
+            const text = 'កម្ពុជា២០២៥។សួស្តី';
+            const result = segmentWords(text, {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
+            const digitToken = result.tokens.find(t =>
+                /^[\u17E0-\u17E90-9]+$/.test(t.value)
+            );
+            expect(digitToken).toBeDefined();
+        });
+
+        it('handles unknown-word spans contiguous offsets', () => {
+            const text = 'គឃឃ';
+            const result = segmentWords(text, {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
+            expect(result.tokens[0].start).toBe(0);
+            expect(result.tokens[result.tokens.length - 1].end).toBe(
+                text.length
+            );
+        });
+
+        it('handles independent vowel clusters', () => {
+            const text = 'ឥតဧក';
+            const result = segmentWords(text, {
+                dictionary: dict,
+                strategy: 'viterbi',
+            });
+            expect(result.tokens.map(t => t.value).join('')).toBe(text);
         });
     });
 });

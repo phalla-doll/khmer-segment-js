@@ -70,7 +70,8 @@ export function isKhmerSentencePunctuation(cp: number): boolean {
 
 export function isKhmerSentencePunctuationToken(value: string): boolean {
     return (
-        value.length === 1 && isKhmerSentencePunctuation(value.codePointAt(0)!)
+        value.length === 1 &&
+        isKhmerSentencePunctuation(value.codePointAt(0) as number)
     );
 }
 

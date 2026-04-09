@@ -25,19 +25,6 @@ export interface SegmentResult {
     tokens: SegmentToken[];
 }
 
-export interface TypingDiffItem {
-    expected?: string;
-    actual?: string;
-    correct: boolean;
-}
-
-export interface TypingComparisonResult {
-    expectedClusters: string[];
-    actualClusters: string[];
-    diff: TypingDiffItem[];
-    accuracy: number;
-}
-
 export interface KhmerDictionary {
     has(word: string): boolean;
     hasPrefix?(value: string): boolean;
