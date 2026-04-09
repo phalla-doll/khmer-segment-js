@@ -7,6 +7,24 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-04-09
+
+### Added
+
+- `khmer-segment/react` subpath export with two controlled-input hooks:
+    - `useKhmerSegments` for memoized segmentation results.
+    - `useKhmerTyping` for caret-safe snapping and backspace behavior.
+- React hook test coverage for segmentation updates, caret boundaries, delete behavior, normalization mode, and mixed Khmer/Latin/digit inputs.
+- README React integration docs with usage snippets and controlled input wiring guidance.
+
+### Changed
+
+- Package exports and build config now include `./react` output (`dist/react/index.{js,cjs,d.ts}`).
+- Added optional React peer dependency metadata:
+    - `peerDependencies.react: >=18`
+    - `peerDependenciesMeta.react.optional: true`
+- Updated locked Vite dependency to a non-vulnerable version via `npm audit fix` to clear high-severity advisories in the dev toolchain.
+
 ## [0.5.0] - 2026-04-09
 
 ### Added

@@ -276,6 +276,68 @@ interface DeleteResult {
 }
 ```
 
+### React Hooks (`khmer-segment/react`)
+
+`khmer-segment/react` provides controlled-input hooks for React:
+
+- `useKhmerSegments` for memoized segmentation output
+- `useKhmerTyping` for caret-safe typing helpers
+- React peer requirement: `react >= 18`
+
+```ts
+import { useKhmerSegments, useKhmerTyping } from 'khmer-segment/react';
+import { getDefaultDictionary } from 'khmer-segment/dictionary';
+
+const dict = getDefaultDictionary();
+
+const { segment } = useKhmerSegments({
+    value,
+    dictionary: dict,
+    segmentOptions: { strategy: 'viterbi' },
+});
+
+const { caretBoundaries, snapCaret, deleteBackwardAtCaret } = useKhmerTyping({
+    value,
+    selectionStart,
+    caretOptions: { normalize: true },
+});
+```
+
+`useKhmerTyping` works in the same text space as `deleteBackward` and `getCaretBoundaries`. If `caretOptions.normalize` is enabled, caret positions and deletion are computed on normalized text.
+
+Example controlled input wiring:
+
+```tsx
+import { useState } from 'react';
+import { useKhmerTyping } from 'khmer-segment/react';
+
+export function KhmerInput(): JSX.Element {
+    const [value, setValue] = useState('សួស្តីអ្នក');
+    const [selectionStart, setSelectionStart] = useState(value.length);
+    const { deleteBackwardAtCaret } = useKhmerTyping({
+        value,
+        selectionStart,
+    });
+
+    return (
+        <input
+            value={value}
+            onChange={event => {
+                setValue(event.target.value);
+                setSelectionStart(event.target.selectionStart ?? 0);
+            }}
+            onKeyDown={event => {
+                if (event.key !== 'Backspace') return;
+                event.preventDefault();
+                const { nextValue, nextCaret } = deleteBackwardAtCaret();
+                setValue(nextValue);
+                setSelectionStart(nextCaret);
+            }}
+        />
+    );
+}
+```
+
 ### Digit Grouping
 
 Consecutive Khmer digit clusters (and ASCII digits) are automatically merged into a single token after segmentation, so `១៨៤` or `184` becomes one token instead of three separate tokens.
@@ -406,7 +468,14 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
-### v0.5.1 (current)
+### v0.6.0 (current)
+
+- **React hooks release** — `khmer-segment/react` now ships `useKhmerSegments` and `useKhmerTyping` for controlled inputs
+- **React packaging** — added `./react` subpath build and exports with optional `react >= 18` peer metadata
+- **Hook test coverage** — added React-focused tests for segmentation updates, caret snapping/deletion, normalization mode, and mixed-script inputs
+- **Security hygiene** — dev dependency audit issue resolved (Vite advisory chain cleared via lockfile update)
+
+### v0.5.1
 
 - **Audit hardening pass** — aligned code/docs/tests with v0.5.0 audit findings
 - **Type cleanup** — digit grouping now uses `SegmentToken` end-to-end (removed fragile cross-algorithm coupling)
@@ -418,7 +487,6 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 ### Future
 
-- `khmer-segment/react` — `useKhmerSegments`, `useKhmerTyping`
 - `khmer-segment/angular` — injectable service, pipe
 - ICU-style line-breaking helpers
 
