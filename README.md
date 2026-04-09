@@ -468,13 +468,6 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
-### v0.6.0 (current)
-
-- **React hooks release** — `khmer-segment/react` now ships `useKhmerSegments` and `useKhmerTyping` for controlled inputs
-- **React packaging** — added `./react` subpath build and exports with optional `react >= 18` peer metadata
-- **Hook test coverage** — added React-focused tests for segmentation updates, caret snapping/deletion, normalization mode, and mixed-script inputs
-- **Security hygiene** — dev dependency audit issue resolved (Vite advisory chain cleared via lockfile update)
-
 ### v0.5.1
 
 - **Audit hardening pass** — aligned code/docs/tests with v0.5.0 audit findings
@@ -484,6 +477,13 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **CI compatibility matrix** — validates Node 18 and Node 20
 - **Trie cleanup** — removed internal expensive `Trie.hasSuffix()` path and simplified node traversal logic
 - **Lint/test quality improvements** — removed lingering warnings and kept full suite green
+
+### v0.6.0 (current)
+
+- **React hooks release** — `khmer-segment/react` now ships `useKhmerSegments` and `useKhmerTyping` for controlled inputs
+- **React packaging** — added `./react` subpath build and exports with optional `react >= 18` peer metadata
+- **Hook test coverage** — added React-focused tests for segmentation updates, caret snapping/deletion, normalization mode, and mixed-script inputs
+- **Security hygiene** — dev dependency audit issue resolved (Vite advisory chain cleared via lockfile update)
 
 ### Future
 
