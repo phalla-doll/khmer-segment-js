@@ -19,4 +19,13 @@ export default defineConfig([
         target: 'es2020',
         outDir: 'dist',
     },
+    {
+        entry: { 'react/index': 'src/react/index.ts' },
+        format: ['esm', 'cjs'],
+        dts: { compilerOptions: { outDir: 'dist' } },
+        sourcemap: true,
+        minify: false,
+        target: 'es2020',
+        outDir: 'dist',
+    },
 ]);

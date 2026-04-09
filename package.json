@@ -1,6 +1,6 @@
 {
     "name": "khmer-segment",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "description": "Khmer text segmentation, normalization, and cluster utilities for JavaScript and TypeScript.",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -16,6 +16,11 @@
             "types": "./dist/dictionary/index.d.ts",
             "import": "./dist/dictionary/index.js",
             "require": "./dist/dictionary/index.cjs"
+        },
+        "./react": {
+            "types": "./dist/react/index.d.ts",
+            "import": "./dist/react/index.js",
+            "require": "./dist/react/index.cjs"
         }
     },
     "files": [
@@ -61,12 +66,24 @@
     "bugs": {
         "url": "https://github.com/phalla-doll/khmer-segment-js/issues"
     },
+    "peerDependencies": {
+        "react": ">=18"
+    },
+    "peerDependenciesMeta": {
+        "react": {
+            "optional": true
+        }
+    },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "@huggingface/hub": "^2.11.0",
+        "@testing-library/react": "^16.3.2",
         "@types/node": "^25.5.2",
+        "@types/react": "^19.2.14",
         "eslint": "^10.2.0",
+        "jsdom": "^29.0.2",
         "prettier": "^3.8.1",
+        "react": "^19.2.5",
         "tsup": "^8.0.0",
         "typescript": "^5.0.0",
         "typescript-eslint": "^8.58.1",
