@@ -493,9 +493,16 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **Hook test coverage** — added React-focused tests for segmentation updates, caret snapping/deletion, normalization mode, and mixed-script inputs
 - **Security hygiene** — dev dependency audit issue resolved (Vite advisory chain cleared via lockfile update)
 
-### v0.6.1 (current)
+### v0.6.1
 
 - Reordered roadmap entries into ascending version order for easier historical scanning
+
+### v0.6.2 (current)
+
+- Reliability release with CI benchmark hardening and pinned local tooling
+- Runtime guards for public APIs and safer React hook dependency handling
+- Segmentation performance improvements in Viterbi/BMM hot paths and cluster counting
+- Documentation refresh with canonical docs index and updated release notes
 
 ### Future
 

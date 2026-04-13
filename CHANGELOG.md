@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-04-13
+
 ### Added
 
 - `getFrequencyDictionaryView()` in `khmer-segment/dictionary` for callers that need a stable readonly frequency dataset without per-call cloning.
