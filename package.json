@@ -41,10 +41,10 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "prepublishOnly": "npm run build && npm run test && npm run lint && npm run format:check",
-        "download:benchmark": "npx tsx scripts/download-benchmark-data.ts",
-        "test:accuracy": "npx tsx scripts/benchmark-accuracy.ts",
-        "test:accuracy:check": "npm run test:accuracy && npx tsx scripts/check-benchmark-regression.ts",
-        "test:accuracy:sweep": "npx tsx scripts/benchmark-viterbi-penalty.ts",
+        "download:benchmark": "tsx scripts/download-benchmark-data.ts",
+        "test:accuracy": "tsx scripts/benchmark-accuracy.ts",
+        "test:accuracy:check": "npm run test:accuracy && tsx scripts/check-benchmark-regression.ts",
+        "test:accuracy:sweep": "tsx scripts/benchmark-viterbi-penalty.ts",
         "playground:dev": "npm run dev --prefix playground",
         "playground:build": "npm run build --prefix playground"
     },
@@ -85,6 +85,7 @@
         "prettier": "^3.8.1",
         "react": "^19.2.5",
         "tsup": "^8.0.0",
+        "tsx": "^4.21.0",
         "typescript": "^5.0.0",
         "typescript-eslint": "^8.58.1",
         "vitest": "^3.0.0"

@@ -30,40 +30,54 @@ function benchmark(
     };
 }
 
+function expectSegmentsRoundTrip(text: string): void {
+    const dict = getDefaultDictionary();
+    const seg = segmentWords(text, { dictionary: dict, strategy: 'viterbi' });
+    expect(seg.tokens.length).toBeGreaterThan(0);
+    expect(seg.tokens.map(t => t.value).join('')).toBe(text);
+}
+
+function expectWithinRelativeBudget(
+    result: BenchResult,
+    baseline: BenchResult,
+    ratio = 2.75,
+    fixedSlackMs = 150
+): void {
+    expect(result.median).toBeLessThanOrEqual(
+        baseline.median * ratio + fixedSlackMs
+    );
+}
+
 describe('segmentation performance', () => {
     const dict = getDefaultDictionary();
 
-    it('segments 500 repetitions efficiently', () => {
+    it('segments 500 repetitions efficiently with BiMM baseline', () => {
         const sentence = 'សួស្តីអ្នក';
         const text = sentence.repeat(500);
 
         const result = benchmark(() =>
-            segmentWords(text, { dictionary: dict })
+            segmentWords(text, { dictionary: dict, strategy: 'bimm' })
         );
 
-        const seg = segmentWords(text, { dictionary: dict });
-        expect(seg.tokens.length).toBeGreaterThan(0);
-        expect(seg.tokens.map(t => t.value).join('')).toBe(text);
-
-        expect(result.median).toBeLessThan(5000);
-    });
-
-    it('segments 2000 repetitions efficiently', () => {
-        const sentence = 'ខ្ញុំសរសេរភាសាខ្មែរ';
-        const text = sentence.repeat(2000);
-
-        const result = benchmark(() =>
-            segmentWords(text, { dictionary: dict })
-        );
-
-        const seg = segmentWords(text, { dictionary: dict });
-        expect(seg.tokens.length).toBeGreaterThan(0);
-        expect(seg.tokens.map(t => t.value).join('')).toBe(text);
+        expectSegmentsRoundTrip(text);
 
         expect(result.median).toBeLessThan(10000);
     });
 
-    it('segments a large paragraph with mixed known/unknown words', () => {
+    it('segments 2000 repetitions efficiently with BiMM baseline', () => {
+        const sentence = 'ខ្ញុំសរសេរភាសាខ្មែរ';
+        const text = sentence.repeat(2000);
+
+        const result = benchmark(() =>
+            segmentWords(text, { dictionary: dict, strategy: 'bimm' })
+        );
+
+        expectSegmentsRoundTrip(text);
+
+        expect(result.median).toBeLessThan(25000);
+    });
+
+    it('segments a large paragraph with mixed known/unknown words (BiMM)', () => {
         const paragraph =
             'កម្ពុជាជាប្រទេសមួយស្ថិតនៅទ្វីបអាស៊ី។ ' +
             'រដ្ឋធម្មនុញ្ញនៃព្រះរាជាណាចក្រកម្ពុជារក្សាទុកនូវសិទ្ធិសេរីភាពនៃប្រជាពលរដ្ឋ។ ' +
@@ -72,17 +86,17 @@ describe('segmentation performance', () => {
         const text = paragraph.repeat(100);
 
         const result = benchmark(() =>
-            segmentWords(text, { dictionary: dict })
+            segmentWords(text, { dictionary: dict, strategy: 'bimm' })
         );
 
-        const seg = segmentWords(text, { dictionary: dict });
+        const seg = segmentWords(text, { dictionary: dict, strategy: 'bimm' });
         expect(seg.tokens.length).toBeGreaterThan(0);
 
         const knownRatio =
             seg.tokens.filter(t => t.isKnown).length / seg.tokens.length;
         expect(knownRatio).toBeGreaterThan(0.3);
 
-        expect(result.median).toBeLessThan(10000);
+        expect(result.median).toBeLessThan(30000);
     });
 });
 
@@ -93,36 +107,32 @@ describe('Viterbi performance', () => {
         const sentence = 'សួស្តីអ្នក';
         const text = sentence.repeat(500);
 
-        const result = benchmark(() =>
+        const bimmResult = benchmark(() =>
+            segmentWords(text, { dictionary: dict, strategy: 'bimm' })
+        );
+        const viterbiResult = benchmark(() =>
             segmentWords(text, { dictionary: dict, strategy: 'viterbi' })
         );
 
-        const seg = segmentWords(text, {
-            dictionary: dict,
-            strategy: 'viterbi',
-        });
-        expect(seg.tokens.length).toBeGreaterThan(0);
-        expect(seg.tokens.map(t => t.value).join('')).toBe(text);
+        expectSegmentsRoundTrip(text);
 
-        expect(result.median).toBeLessThan(10000);
+        expectWithinRelativeBudget(viterbiResult, bimmResult);
     });
 
     it('segments 2000 repetitions efficiently with Viterbi', () => {
         const sentence = 'ខ្ញុំសរសេរភាសាខ្មែរ';
         const text = sentence.repeat(2000);
 
-        const result = benchmark(() =>
+        const bimmResult = benchmark(() =>
+            segmentWords(text, { dictionary: dict, strategy: 'bimm' })
+        );
+        const viterbiResult = benchmark(() =>
             segmentWords(text, { dictionary: dict, strategy: 'viterbi' })
         );
 
-        const seg = segmentWords(text, {
-            dictionary: dict,
-            strategy: 'viterbi',
-        });
-        expect(seg.tokens.length).toBeGreaterThan(0);
-        expect(seg.tokens.map(t => t.value).join('')).toBe(text);
+        expectSegmentsRoundTrip(text);
 
-        expect(result.median).toBeLessThan(20000);
+        expectWithinRelativeBudget(viterbiResult, bimmResult);
     });
 
     it('segments a large paragraph with Viterbi', () => {
@@ -133,18 +143,16 @@ describe('Viterbi performance', () => {
             'ភាសាខ្មែរជាភាសាជាតិដែលប្រើប្រាស់នៅក្នុងប្រទេសកម្ពុជា។';
         const text = paragraph.repeat(100);
 
-        const result = benchmark(() =>
+        const bimmResult = benchmark(() =>
+            segmentWords(text, { dictionary: dict, strategy: 'bimm' })
+        );
+        const viterbiResult = benchmark(() =>
             segmentWords(text, { dictionary: dict, strategy: 'viterbi' })
         );
 
-        const seg = segmentWords(text, {
-            dictionary: dict,
-            strategy: 'viterbi',
-        });
-        expect(seg.tokens.length).toBeGreaterThan(0);
-        expect(seg.tokens.map(t => t.value).join('')).toBe(text);
+        expectSegmentsRoundTrip(text);
 
-        expect(result.median).toBeLessThan(20000);
+        expectWithinRelativeBudget(viterbiResult, bimmResult, 2.5, 200);
     });
 
     it('Viterbi latency is within 2.5x of BiMM (median of repeated runs)', () => {

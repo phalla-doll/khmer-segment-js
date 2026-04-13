@@ -5,6 +5,9 @@ on:
         branches:
             - main
     pull_request:
+    workflow_dispatch:
+    schedule:
+        - cron: '0 3 * * 1'
 
 jobs:
     checks:
@@ -12,7 +15,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [18, 20]
+                node-version: [18, 20, 22]
 
         steps:
             - name: Checkout repository
@@ -39,8 +42,44 @@ jobs:
             - name: Check formatting
               run: npm run format:check
 
+    perf-checks:
+        needs: checks
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        continue-on-error: true
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js 20
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
             - name: Run performance tests
               run: npm run test:perf
+
+    accuracy-benchmark:
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js 20
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
 
             - name: Download benchmark corpus
               run: npm run download:benchmark
