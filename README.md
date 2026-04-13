@@ -542,7 +542,13 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 - Reordered roadmap entries into ascending version order for easier historical scanning
 
-### v0.6.2 (current)
+### v0.7.0 (current)
+
+- **Angular release** — `khmer-segment/angular` now ships `KhmerSegmentService` and standalone `KhmerNormalizePipe`
+- **Angular packaging** — added `./angular` subpath build and exports with optional `@angular/core >= 17` peer metadata
+- **Angular test coverage** — added adapter tests to ensure parity with core normalization/caret/segmentation behavior
+
+### v0.6.2
 
 - Reliability release with CI benchmark hardening and pinned local tooling
 - Runtime guards for public APIs and safer React hook dependency handling
