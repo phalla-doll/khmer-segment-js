@@ -55,15 +55,15 @@ This matches the repository `prepublishOnly` gate and the blocking CI checks.
 GitHub Actions currently runs:
 
 - Blocking checks on push/PR:
-  - `build`
-  - `test`
-  - `lint`
-  - `format:check`
+    - `build`
+    - `test`
+    - `lint`
+    - `format:check`
 - Non-blocking perf job on push/PR:
-  - `test:perf` (`continue-on-error: true`)
+    - `test:perf` (`continue-on-error: true`)
 - Manual/scheduled benchmark regression job:
-  - `download:benchmark`
-  - `test:accuracy:check`
+    - `download:benchmark`
+    - `test:accuracy:check`
 
 ## Testing Guidance
 
@@ -90,10 +90,10 @@ When behavior, benchmarks, or source data change, update the relevant docs in th
 If your contribution adds or changes dictionary/corpus data sources:
 
 - Document the source in `docs/data-sources.md`:
-  - URL or origin
-  - license
-  - what files are used
-  - redistribution policy
+    - URL or origin
+    - license
+    - what files are used
+    - redistribution policy
 - Confirm redistribution rights before vendoring data.
 - Prefer reproducible fetch/build scripts when raw data should not be committed.
 
