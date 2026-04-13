@@ -1,6 +1,10 @@
 import type { KhmerDictionary } from '../types/public';
 import { Trie } from './trie';
 
+function reverseString(value: string): string {
+    return [...value].reverse().join('');
+}
+
 export class MemoryDictionary implements KhmerDictionary {
     private trie: Trie;
     private reverseTrie: Trie;
@@ -22,7 +26,7 @@ export class MemoryDictionary implements KhmerDictionary {
         for (const word of uniqueWords) {
             if (word.length > 0) {
                 this.trie.insert(word);
-                this.reverseTrie.insert([...word].reverse().join(''));
+                this.reverseTrie.insert(reverseString(word));
             }
         }
         this.size = uniqueWords.size;
@@ -37,7 +41,11 @@ export class MemoryDictionary implements KhmerDictionary {
     }
 
     hasSuffix(value: string): boolean {
-        return this.reverseTrie.hasPrefix([...value].reverse().join(''));
+        return this.reverseTrie.hasPrefix(reverseString(value));
+    }
+
+    hasReversedPrefix(value: string): boolean {
+        return this.reverseTrie.hasPrefix(value);
     }
 
     getFrequency(word: string): number | undefined {

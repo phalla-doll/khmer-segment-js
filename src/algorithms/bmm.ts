@@ -22,7 +22,16 @@ export function bmmSegment(
     dictionary: KhmerDictionary
 ): BmmToken[] {
     const tokens: BmmToken[] = [];
+    const hasSuffixReversedFn = (
+        dictionary as KhmerDictionary & {
+            hasReversedPrefix?: (value: string) => boolean;
+        }
+    ).hasReversedPrefix?.bind(dictionary);
     const hasSuffixFn = dictionary.hasSuffix?.bind(dictionary);
+    const reversedClusters =
+        hasSuffixReversedFn !== undefined
+            ? clusters.map(cluster => [...cluster].reverse().join(''))
+            : null;
     let i = clusters.length - 1;
 
     while (i >= 0) {
@@ -31,7 +40,15 @@ export function bmmSegment(
         // Determine the maximum window length ending at position i
         // that could possibly form a known word (suffix optimization).
         let maxLen = i + 1;
-        if (hasSuffixFn) {
+        if (hasSuffixReversedFn && reversedClusters) {
+            maxLen = 1;
+            let reversedCandidate = reversedClusters[i];
+            while (maxLen < i + 1 && hasSuffixReversedFn(reversedCandidate)) {
+                const nextIndex = i - maxLen;
+                maxLen++;
+                reversedCandidate += reversedClusters[nextIndex];
+            }
+        } else if (hasSuffixFn) {
             maxLen = 1;
             let candidate = clusters[i];
             while (maxLen < i + 1 && hasSuffixFn(candidate)) {
@@ -41,14 +58,21 @@ export function bmmSegment(
         }
 
         // Try longest match first, shrink until we find a known word
-        for (let len = maxLen; len >= 1; len--) {
-            const word = clusters.slice(i - len + 1, i + 1).join('');
+        let bestLen = 0;
+        let bestWord = '';
+        let word = '';
+        for (let len = 1; len <= maxLen; len++) {
+            word = clusters[i - len + 1] + word;
             if (dictionary.has(word)) {
-                tokens.push({ value: word, start: 0, end: 0, isKnown: true });
-                i -= len;
-                matched = true;
-                break;
+                bestLen = len;
+                bestWord = word;
             }
+        }
+
+        if (bestLen > 0) {
+            tokens.push({ value: bestWord, start: 0, end: 0, isKnown: true });
+            i -= bestLen;
+            matched = true;
         }
 
         if (!matched) {

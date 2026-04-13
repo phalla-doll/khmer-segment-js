@@ -128,20 +128,19 @@ export function viterbiSegment(
         let maxWordLen = n - i;
         if (hasPrefixFn) {
             maxWordLen = 0;
-            let candidate = '';
+            let prefixCandidate = '';
             while (maxWordLen < n - i) {
-                candidate += chars[i + maxWordLen];
-                if (!hasPrefixFn(candidate)) break;
+                prefixCandidate += chars[i + maxWordLen];
+                if (!hasPrefixFn(prefixCandidate)) break;
                 maxWordLen++;
             }
             if (maxWordLen === 0) maxWordLen = 1;
         }
 
-        for (let len = maxWordLen; len >= 1; len--) {
+        let word = '';
+        for (let len = 1; len <= maxWordLen; len++) {
             const end = i + len;
-            if (end > n) continue;
-
-            const word = chars.slice(i, end).join('');
+            word += chars[end - 1];
 
             if (dictionary.has(word)) {
                 let cost: number;

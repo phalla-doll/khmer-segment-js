@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { getDefaultDictionary } from '../dictionary/default-dictionary';
-import { loadFrequencyDictionary } from '../dictionary/load-frequency-dictionary';
+import {
+    getFrequencyDictionaryView,
+    loadFrequencyDictionary,
+} from '../dictionary/load-frequency-dictionary';
 import { segmentWords } from '../core/segment';
 import { createDictionary } from '../dictionary/create-dictionary';
 
@@ -107,6 +110,14 @@ describe('loadFrequencyDictionary', () => {
         expect([...a.frequencies.entries()]).toEqual([
             ...b.frequencies.entries(),
         ]);
+    });
+
+    it('provides a stable readonly view for low-allocation callers', () => {
+        const a = getFrequencyDictionaryView();
+        const b = getFrequencyDictionaryView();
+        expect(a).toBe(b);
+        expect(Object.isFrozen(a.words)).toBe(true);
+        expect(Object.isFrozen(a.entries)).toBe(true);
     });
 });
 

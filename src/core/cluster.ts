@@ -54,7 +54,41 @@ export function splitClusters(text: string): string[] {
 }
 
 export function countClusters(text: string): number {
-    return splitClusters(text).length;
+    if (!text) return 0;
+
+    const chars = [...text];
+    let i = 0;
+    let count = 0;
+
+    while (i < chars.length) {
+        const cp = cpAt(chars[i], 0);
+        count++;
+
+        if (!isClusterBase(cp)) {
+            i++;
+            continue;
+        }
+
+        i++;
+        while (i < chars.length) {
+            const nextCp = cpAt(chars[i], 0);
+
+            if (isCoeng(nextCp)) {
+                i++;
+                if (i < chars.length && isConsonant(cpAt(chars[i], 0))) {
+                    i++;
+                }
+            } else if (isRobat(nextCp)) {
+                i++;
+            } else if (isDependentVowel(nextCp) || isSign(nextCp)) {
+                i++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    return count;
 }
 
 export function getClusterBoundaries(
