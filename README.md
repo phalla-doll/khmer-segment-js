@@ -66,20 +66,25 @@ deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 }
 
 ### Detection
 
+
 | Function              | Description                                               |
 | --------------------- | --------------------------------------------------------- |
 | `isKhmerChar(char)`   | Returns `true` if the character is a Khmer code point     |
 | `containsKhmer(text)` | Returns `true` if the text contains any Khmer characters  |
 | `isKhmerText(text)`   | Returns `true` if all non-whitespace characters are Khmer |
 
+
 ### Normalization
+
 
 | Function                         | Description                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------ |
 | `normalizeKhmer(text)`           | Reorders Khmer characters into canonical order (base → coeng → shift signs → vowel → sign) |
 | `normalizeKhmerCluster(cluster)` | Normalizes a single cluster                                                                |
 
+
 ### Cluster Utilities
+
 
 | Function                     | Description                                       |
 | ---------------------------- | ------------------------------------------------- |
@@ -87,18 +92,23 @@ deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 }
 | `countClusters(text)`        | Returns the number of clusters in the text        |
 | `getClusterBoundaries(text)` | Returns `{ start, end }` offsets for each cluster |
 
+
 ### Text Editing
+
 
 | Function                              | Description                                               |
 | ------------------------------------- | --------------------------------------------------------- |
 | `getCaretBoundaries(text, options?)`  | Returns valid caret positions based on cluster boundaries |
 | `deleteBackward(text, cursor, opts?)` | Deletes the cluster before the cursor, returning new text |
 
+
 ### Segmentation
+
 
 | Function                       | Description                                                    |
 | ------------------------------ | -------------------------------------------------------------- |
 | `segmentWords(text, options?)` | Segments text into word tokens using dictionary-based matching |
+
 
 #### `SegmentOptions`
 
@@ -134,9 +144,11 @@ When normalization is enabled, token offsets always refer to `result.normalized`
 
 ### Dictionary
 
+
 | Function                                | Description                                      |
 | --------------------------------------- | ------------------------------------------------ |
 | `createDictionary(words, frequencies?)` | Creates an in-memory dictionary from a word list |
+
 
 ```ts
 const dict = createDictionary(['សួស្តី', 'អ្នក', 'ខ្មែរ']);
@@ -391,6 +403,7 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 
 ## Framework Compatibility
 
+
 | Environment         | Support |
 | ------------------- | ------- |
 | Node.js (ESM + CJS) | Yes     |
@@ -399,6 +412,7 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 | React               | Yes     |
 | Angular             | Yes     |
 | Vue                 | Yes     |
+
 
 No framework-specific code in the core. Tree-shakeable with `sideEffects: false`.
 
@@ -414,6 +428,7 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segmentation-crf-khmer](https://github.com/phylypo/segmentation-crf-khmer)) with the default 101,107-word dictionary.
 
+
 | Strategy    | Boundary F1 | Token F1   | Exact Match | OOV Rate | OOV Boundary F1 | Relative Speed  |
 | ----------- | ----------- | ---------- | ----------- | -------- | --------------- | --------------- |
 | **Viterbi** | **0.8572**  | **0.6744** | **1.4%**    | 5.4%     | **0.8875**      | 1.4x            |
@@ -421,7 +436,8 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 | FMM         | 0.8024      | 0.6304     | 2.0%        | 32.8%    | —               | 0.5x            |
 | BMM         | 0.7981      | 0.6239     | 1.8%        | 32.6%    | —               | 0.7x            |
 
-**Recommended:** `strategy: 'viterbi'` (default) for best accuracy. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) for methodology.
+
+**Recommended:** `strategy: 'viterbi'` (default) for best accuracy. See `[docs/benchmark-results.md](docs/benchmark-results.md)` for full details and `[docs/benchmark-methodology.md](docs/benchmark-methodology.md)` for methodology.
 
 ---
 
@@ -464,8 +480,8 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 ### v0.4.0
 
 - **Default strategy switched to Viterbi** (penalty=10.0): Boundary F1 = 0.8572, Token F1 = 0.6744
-- **`getCaretBoundaries(text)`** — returns valid caret positions based on Khmer cluster boundaries
-- **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
+- `**getCaretBoundaries(text)`** — returns valid caret positions based on Khmer cluster boundaries
+- `**deleteBackward(text, cursorIndex)**` — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
 ### v0.5.1
