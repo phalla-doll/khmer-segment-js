@@ -7,6 +7,25 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- `getFrequencyDictionaryView()` in `khmer-segment/dictionary` for callers that need a stable readonly frequency dataset without per-call cloning.
+- Runtime input guards for string-based public APIs (`segmentWords`, `normalizeKhmer`, `containsKhmer`, `isKhmerText`) with actionable `TypeError` messages.
+- Runtime dictionary-shape validation in `segmentWords()` for custom dictionary integrations.
+- Documentation index at `docs/README.md` to distinguish canonical references from historical planning docs.
+
+### Changed
+
+- CI pipeline now tests Node 18/20/22 for blocking checks, runs perf tests as a separate non-blocking job on push/PR, and runs accuracy benchmark regression only on scheduled/manual workflows.
+- Accuracy-related npm scripts now use pinned local `tsx` (added as a dev dependency) instead of `npx tsx`.
+- Benchmark download script now includes stronger failure diagnostics, existing-archive fallback handling, and unzip/tooling validation.
+- Performance checks now favor relative latency comparisons (Viterbi vs BiMM) to reduce environment-specific flake.
+- `countClusters()` now performs a direct counting pass without allocating an intermediate cluster array.
+- BMM suffix probing avoids repeated full-string reversals by reusing reversed cluster fragments when available.
+- Viterbi dictionary probing avoids repeated `slice().join('')` allocations in the main DP loop.
+- React hooks now track full options object references (`segmentOptions`, `caretOptions`) in memo dependencies for safer behavior as options evolve.
+- README testing/CI notes now document blocking vs non-blocking benchmark behavior and hook reference-stability guidance.
+
 ## [0.6.1] - 2026-04-09
 
 ### Changed

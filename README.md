@@ -66,25 +66,20 @@ deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 }
 
 ### Detection
 
-
 | Function              | Description                                               |
 | --------------------- | --------------------------------------------------------- |
 | `isKhmerChar(char)`   | Returns `true` if the character is a Khmer code point     |
 | `containsKhmer(text)` | Returns `true` if the text contains any Khmer characters  |
 | `isKhmerText(text)`   | Returns `true` if all non-whitespace characters are Khmer |
 
-
 ### Normalization
-
 
 | Function                         | Description                                                                                |
 | -------------------------------- | ------------------------------------------------------------------------------------------ |
 | `normalizeKhmer(text)`           | Reorders Khmer characters into canonical order (base → coeng → shift signs → vowel → sign) |
 | `normalizeKhmerCluster(cluster)` | Normalizes a single cluster                                                                |
 
-
 ### Cluster Utilities
-
 
 | Function                     | Description                                       |
 | ---------------------------- | ------------------------------------------------- |
@@ -92,23 +87,18 @@ deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 }
 | `countClusters(text)`        | Returns the number of clusters in the text        |
 | `getClusterBoundaries(text)` | Returns `{ start, end }` offsets for each cluster |
 
-
 ### Text Editing
-
 
 | Function                              | Description                                               |
 | ------------------------------------- | --------------------------------------------------------- |
 | `getCaretBoundaries(text, options?)`  | Returns valid caret positions based on cluster boundaries |
 | `deleteBackward(text, cursor, opts?)` | Deletes the cluster before the cursor, returning new text |
 
-
 ### Segmentation
-
 
 | Function                       | Description                                                    |
 | ------------------------------ | -------------------------------------------------------------- |
 | `segmentWords(text, options?)` | Segments text into word tokens using dictionary-based matching |
-
 
 #### `SegmentOptions`
 
@@ -144,11 +134,9 @@ When normalization is enabled, token offsets always refer to `result.normalized`
 
 ### Dictionary
 
-
 | Function                                | Description                                      |
 | --------------------------------------- | ------------------------------------------------ |
 | `createDictionary(words, frequencies?)` | Creates an in-memory dictionary from a word list |
-
 
 ```ts
 const dict = createDictionary(['សួស្តី', 'អ្នក', 'ខ្មែរ']);
@@ -180,6 +168,7 @@ A pre-built Khmer dictionary with **101,107 words** sourced from [khmerlbdict](h
 ```ts
 import {
     getDefaultDictionary,
+    getFrequencyDictionaryView,
     loadFrequencyDictionary,
 } from 'khmer-segment/dictionary';
 import { segmentWords } from 'khmer-segment';
@@ -194,11 +183,16 @@ const result = segmentWords('សួស្តីអ្នកទាំងអស់
 const freqData = loadFrequencyDictionary();
 console.log(freqData.words.length); // 101107
 console.log(freqData.frequencies.get('ជា')); // 701541
+
+const freqView = getFrequencyDictionaryView();
+console.log(freqView.words.length); // 101107 (cached readonly view)
 ```
 
 This is a **separate import** — the core `khmer-segment` package stays small (~11KB). The dictionary build artifact is large (roughly ~8MB per JS format), so only import the dictionary module when you need it.
 
 `loadFrequencyDictionary()` builds its return value from cached dictionary data, but each call returns fresh arrays and a fresh `Map`. You can safely extend or mutate the returned data without affecting later calls.
+
+`getFrequencyDictionaryView()` returns a stable readonly view over the cached dictionary data. Prefer this in hot paths where you want to avoid per-call cloning.
 
 ---
 
@@ -317,6 +311,8 @@ const { caretBoundaries, snapCaret, deleteBackwardAtCaret } = useKhmerTyping({
 
 `useKhmerTyping` works in the same text space as `deleteBackward` and `getCaretBoundaries`. If `caretOptions.normalize` is enabled, caret positions and deletion are computed on normalized text.
 
+For best hook performance, keep `dictionary`, `segmentOptions`, and `caretOptions` references stable (for example with `useMemo`) when values are unchanged.
+
 Example controlled input wiring:
 
 ```tsx
@@ -403,7 +399,6 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 
 ## Framework Compatibility
 
-
 | Environment         | Support |
 | ------------------- | ------- |
 | Node.js (ESM + CJS) | Yes     |
@@ -412,7 +407,6 @@ const dict = createDictionary([...words, 'custom_word'], frequencies);
 | React               | Yes     |
 | Angular             | Yes     |
 | Vue                 | Yes     |
-
 
 No framework-specific code in the core. Tree-shakeable with `sideEffects: false`.
 
@@ -428,14 +422,12 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segmentation-crf-khmer](https://github.com/phylypo/segmentation-crf-khmer)) with the default 101,107-word dictionary.
 
-
 | Strategy    | Boundary F1 | Token F1   | Exact Match | OOV Rate | OOV Boundary F1 | Relative Speed  |
 | ----------- | ----------- | ---------- | ----------- | -------- | --------------- | --------------- |
 | **Viterbi** | **0.8572**  | **0.6744** | **1.4%**    | 5.4%     | **0.8875**      | 1.4x            |
 | BiMM        | 0.8041      | 0.6327     | 2.0%        | 32.6%    | 0.4186          | 1.0x (baseline) |
 | FMM         | 0.8024      | 0.6304     | 2.0%        | 32.8%    | —               | 0.5x            |
 | BMM         | 0.7981      | 0.6239     | 1.8%        | 32.6%    | —               | 0.7x            |
-
 
 **Recommended:** `strategy: 'viterbi'` (default) for best accuracy. See `[docs/benchmark-results.md](docs/benchmark-results.md)` for full details and `[docs/benchmark-methodology.md](docs/benchmark-methodology.md)` for methodology.
 
@@ -480,7 +472,7 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 ### v0.4.0
 
 - **Default strategy switched to Viterbi** (penalty=10.0): Boundary F1 = 0.8572, Token F1 = 0.6744
-- `**getCaretBoundaries(text)`** — returns valid caret positions based on Khmer cluster boundaries
+- `**getCaretBoundaries(text)`\*\* — returns valid caret positions based on Khmer cluster boundaries
 - `**deleteBackward(text, cursorIndex)**` — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
@@ -531,12 +523,23 @@ npm run lint      # TypeScript type check + ESLint
 
 ```bash
 npm test              # run the main Vitest correctness suite
-npm run test:perf     # optional performance-focused checks
+npm run test:perf     # non-blocking CI perf checks (relative thresholds)
 npm run test:accuracy # run full accuracy benchmark and write docs/benchmark-results.*
-npm run test:accuracy:check # accuracy benchmark + baseline regression gate
+npm run test:accuracy:check # accuracy benchmark + baseline regression gate (manual/scheduled CI)
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check + ESLint
 ```
+
+CI behavior:
+
+- Blocking checks on push/PR: build, test, lint, format.
+- `test:perf` runs as a separate non-blocking CI job.
+- Accuracy benchmark download/regression runs on manual dispatch or schedule.
+
+## Project Docs
+
+- Canonical docs index: [`docs/README.md`](docs/README.md)
+- Release history and migration notes: [`CHANGELOG.md`](CHANGELOG.md)
 
 ### Manual Testing (Playground)
 
