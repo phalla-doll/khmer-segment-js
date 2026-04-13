@@ -15,6 +15,15 @@ const INVISIBLE_CHARS = /[\u200B\u200C\u200D\u2060\u200E\u200F\uFEFF]/g;
 
 const RO = 0x179a;
 
+function assertStringInput(
+    name: string,
+    value: unknown
+): asserts value is string {
+    if (typeof value !== 'string') {
+        throw new TypeError(`${name} must be a string, got ${typeof value}`);
+    }
+}
+
 function fixCompositeVowels(chars: string[]): string[] {
     const result: string[] = [];
     let i = 0;
@@ -107,6 +116,7 @@ export function normalizeKhmerCluster(cluster: string): string {
 }
 
 export function normalizeKhmer(text: string): string {
+    assertStringInput('text', text);
     const cleaned = text.replace(INVISIBLE_CHARS, '');
     const clusters = splitClusters(cleaned);
     return clusters

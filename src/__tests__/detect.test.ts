@@ -70,6 +70,12 @@ describe('containsKhmer', () => {
     it('returns true for text with Khmer digits', () => {
         expect(containsKhmer('៥០០')).toBe(true);
     });
+
+    it('throws for non-string input', () => {
+        expect(() => containsKhmer(123 as unknown as string)).toThrow(
+            TypeError
+        );
+    });
 });
 
 describe('isKhmerText', () => {
@@ -105,5 +111,9 @@ describe('isKhmerText', () => {
 
     it('returns true for Khmer digits', () => {
         expect(isKhmerText('៥០០')).toBe(true);
+    });
+
+    it('throws for non-string input', () => {
+        expect(() => isKhmerText(null as unknown as string)).toThrow(TypeError);
     });
 });

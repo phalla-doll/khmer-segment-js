@@ -73,6 +73,36 @@ describe('runtime option validation', () => {
     it('does not throw when no dictionary is provided', () => {
         expect(() => segmentWords('សួស្តី', { strategy: 'fmm' })).not.toThrow();
     });
+
+    it('throws TypeError for non-string text input', () => {
+        expect(() => segmentWords(123 as unknown as string)).toThrow(TypeError);
+        expect(() => segmentWords(123 as unknown as string)).toThrow(
+            /text must be a string/
+        );
+    });
+
+    it('throws TypeError for invalid dictionary shape', () => {
+        const invalidOptions = {
+            dictionary: { size: 1 },
+        } as unknown as SegmentOptions;
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(TypeError);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(
+            /missing required has/
+        );
+    });
+
+    it('throws TypeError for invalid dictionary size', () => {
+        const invalidOptions = {
+            dictionary: {
+                has: () => true,
+                size: Number.NaN,
+            },
+        } as unknown as SegmentOptions;
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(TypeError);
+        expect(() => segmentWords('សួស្តី', invalidOptions)).toThrow(
+            /size must be a finite number/
+        );
+    });
 });
 
 describe('segmentWords', () => {

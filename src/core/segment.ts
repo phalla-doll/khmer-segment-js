@@ -1,4 +1,5 @@
 import type {
+    KhmerDictionary,
     SegmentOptions,
     SegmentResult,
     SegmentToken,
@@ -14,7 +15,71 @@ import { isKhmerSentencePunctuationToken } from '../constants/char-categories';
 
 const VALID_STRATEGIES = ['fmm', 'bmm', 'bimm', 'viterbi'] as const;
 
+function assertStringInput(
+    name: string,
+    value: unknown
+): asserts value is string {
+    if (typeof value !== 'string') {
+        throw new TypeError(`${name} must be a string, got ${typeof value}`);
+    }
+}
+
+function validateDictionary(
+    dictionary: unknown
+): asserts dictionary is KhmerDictionary {
+    if (dictionary === undefined) {
+        return;
+    }
+    if (dictionary === null || typeof dictionary !== 'object') {
+        throw new TypeError(
+            `Invalid dictionary: expected an object implementing KhmerDictionary, got ${typeof dictionary}`
+        );
+    }
+
+    const maybeDictionary = dictionary as Partial<KhmerDictionary>;
+    if (typeof maybeDictionary.has !== 'function') {
+        throw new TypeError(
+            'Invalid dictionary: missing required has(word) function'
+        );
+    }
+    if (
+        typeof maybeDictionary.size !== 'number' ||
+        !Number.isFinite(maybeDictionary.size)
+    ) {
+        throw new TypeError('Invalid dictionary: size must be a finite number');
+    }
+    if (
+        maybeDictionary.hasPrefix !== undefined &&
+        typeof maybeDictionary.hasPrefix !== 'function'
+    ) {
+        throw new TypeError('Invalid dictionary: hasPrefix must be a function');
+    }
+    if (
+        maybeDictionary.hasSuffix !== undefined &&
+        typeof maybeDictionary.hasSuffix !== 'function'
+    ) {
+        throw new TypeError('Invalid dictionary: hasSuffix must be a function');
+    }
+    if (
+        maybeDictionary.getFrequency !== undefined &&
+        typeof maybeDictionary.getFrequency !== 'function'
+    ) {
+        throw new TypeError(
+            'Invalid dictionary: getFrequency must be a function'
+        );
+    }
+}
+
 function validateOptions(options?: SegmentOptions): void {
+    if (
+        options !== undefined &&
+        (options === null || typeof options !== 'object')
+    ) {
+        throw new TypeError(
+            `options must be an object when provided, got ${typeof options}`
+        );
+    }
+
     if (options?.strategy !== undefined) {
         if (typeof options.strategy !== 'string') {
             throw new TypeError(
@@ -29,12 +94,15 @@ function validateOptions(options?: SegmentOptions): void {
             );
         }
     }
+
+    validateDictionary(options?.dictionary);
 }
 
 export function segmentWords(
     text: string,
     options?: SegmentOptions
 ): SegmentResult {
+    assertStringInput('text', text);
     validateOptions(options);
 
     const shouldNormalize = options?.normalize !== false;

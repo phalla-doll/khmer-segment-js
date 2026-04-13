@@ -1,11 +1,21 @@
 import { isKhmerCodePoint, cpAt } from '../constants/char-categories';
 
+function assertStringInput(
+    name: string,
+    value: unknown
+): asserts value is string {
+    if (typeof value !== 'string') {
+        throw new TypeError(`${name} must be a string, got ${typeof value}`);
+    }
+}
+
 export function isKhmerChar(char: string): boolean {
     if (!char) return false;
     return isKhmerCodePoint(cpAt(char));
 }
 
 export function containsKhmer(text: string): boolean {
+    assertStringInput('text', text);
     for (const ch of text) {
         if (isKhmerChar(ch)) return true;
     }
@@ -13,6 +23,7 @@ export function containsKhmer(text: string): boolean {
 }
 
 export function isKhmerText(text: string): boolean {
+    assertStringInput('text', text);
     if (!text.length) return false;
     let hasKhmer = false;
     for (const ch of text) {

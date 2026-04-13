@@ -148,6 +148,12 @@ describe('normalizeKhmer', () => {
         const input = 'ប៉ុស្តិ៍';
         expect(normalizeKhmer(input)).toBe(input);
     });
+
+    it('throws for non-string input', () => {
+        expect(() => normalizeKhmer(42 as unknown as string)).toThrow(
+            TypeError
+        );
+    });
 });
 
 describe('normalizeKhmerCluster edge cases', () => {

@@ -27,9 +27,6 @@ export function useKhmerSegments(
     input: UseKhmerSegmentsInput
 ): UseKhmerSegmentsResult {
     const { value, dictionary, segmentOptions } = input;
-    const strategy = segmentOptions?.strategy;
-    const normalize = segmentOptions?.normalize;
-    const viterbiBoundaryPenalty = segmentOptions?.viterbiBoundaryPenalty;
 
     const segment = useMemo(
         () =>
@@ -37,7 +34,7 @@ export function useKhmerSegments(
                 ...segmentOptions,
                 dictionary,
             }),
-        [value, dictionary, strategy, normalize, viterbiBoundaryPenalty]
+        [value, dictionary, segmentOptions]
     );
 
     return useMemo(
@@ -124,18 +121,15 @@ export function useKhmerTyping(
     const caretNormalize = caretOptions?.normalize;
     const shouldIncludeSegment =
         includeSegment ?? Boolean(dictionary || segmentOptions);
-    const strategy = segmentOptions?.strategy;
-    const segmentNormalize = segmentOptions?.normalize;
-    const viterbiBoundaryPenalty = segmentOptions?.viterbiBoundaryPenalty;
 
     const caretText = useMemo(
         () => (caretNormalize ? normalizeKhmer(value) : value),
-        [value, caretNormalize]
+        [value, caretOptions]
     );
 
     const caretBoundaries = useMemo(
         () => getCaretBoundaries(value, caretOptions),
-        [value, caretNormalize]
+        [value, caretOptions]
     );
 
     const clampedSelectionStart = useMemo(
@@ -152,14 +146,7 @@ export function useKhmerTyping(
             ...segmentOptions,
             dictionary,
         });
-    }, [
-        shouldIncludeSegment,
-        value,
-        dictionary,
-        strategy,
-        segmentNormalize,
-        viterbiBoundaryPenalty,
-    ]);
+    }, [shouldIncludeSegment, value, dictionary, segmentOptions]);
 
     const snapCaret = useCallback(
         (index: number) => nearestBoundary(caretBoundaries, index),

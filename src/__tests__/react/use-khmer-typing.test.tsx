@@ -65,6 +65,34 @@ describe('useKhmerTyping', () => {
         });
     });
 
+    it('updates caret boundaries when caret options change', () => {
+        const value = '\u200Bក\u200Bក\u200B';
+        const { result, rerender } = renderHook(
+            ({ input }) => useKhmerTyping(input),
+            {
+                initialProps: {
+                    input: {
+                        value,
+                        selectionStart: value.length,
+                        caretOptions: { normalize: false },
+                    },
+                },
+            }
+        );
+
+        const rawBoundaries = result.current.caretBoundaries;
+        rerender({
+            input: {
+                value,
+                selectionStart: value.length,
+                caretOptions: { normalize: true },
+            },
+        });
+
+        const normalizedBoundaries = result.current.caretBoundaries;
+        expect(normalizedBoundaries).not.toEqual(rawBoundaries);
+    });
+
     it('handles mixed Khmer, Latin, and digits consistently', () => {
         const value = 'កa123';
         const { result } = renderHook(({ input }) => useKhmerTyping(input), {

@@ -99,4 +99,50 @@ describe('useKhmerSegments', () => {
         expect(second.segment).toBe(first.segment);
         expect(second.tokens).toBe(first.tokens);
     });
+
+    it('recomputes when segment options change', () => {
+        const dict = createDictionary(
+            ['កម្ពុជា', 'ក', 'ម្ពុជា'],
+            new Map([
+                ['កម្ពុជា', 100],
+                ['ក', 1000],
+                ['ម្ពុជា', 1000],
+            ])
+        );
+        const { result, rerender } = renderHook(
+            ({ input }) => useKhmerSegments(input),
+            {
+                initialProps: {
+                    input: {
+                        value: 'កម្ពុជា',
+                        dictionary: dict,
+                        segmentOptions: {
+                            strategy: 'viterbi' as const,
+                            viterbiBoundaryPenalty: 0,
+                        },
+                    },
+                },
+            }
+        );
+
+        const lowPenaltyTokens = result.current.tokens.map(
+            token => token.value
+        );
+
+        rerender({
+            input: {
+                value: 'កម្ពុជា',
+                dictionary: dict,
+                segmentOptions: {
+                    strategy: 'viterbi' as const,
+                    viterbiBoundaryPenalty: 10,
+                },
+            },
+        });
+
+        const highPenaltyTokens = result.current.tokens.map(
+            token => token.value
+        );
+        expect(highPenaltyTokens).not.toEqual(lowPenaltyTokens);
+    });
 });
