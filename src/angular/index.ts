@@ -1,13 +1,6 @@
 import { Injectable, Pipe, type PipeTransform } from '@angular/core';
-import {
-    containsKhmer,
-    isKhmerChar,
-    isKhmerText,
-} from '../core/detect';
-import {
-    normalizeKhmer,
-    normalizeKhmerCluster,
-} from '../core/normalize';
+import { containsKhmer, isKhmerChar, isKhmerText } from '../core/detect';
+import { normalizeKhmer, normalizeKhmerCluster } from '../core/normalize';
 import {
     splitClusters,
     countClusters,

@@ -355,10 +355,7 @@ export function KhmerInput(): JSX.Element {
 - Angular peer requirement: `@angular/core >= 17`
 
 ```ts
-import {
-    KhmerNormalizePipe,
-    KhmerSegmentService,
-} from 'khmer-segment/angular';
+import { KhmerNormalizePipe, KhmerSegmentService } from 'khmer-segment/angular';
 
 const service = new KhmerSegmentService();
 const dict = service.createDictionary(['សួស្តី', 'អ្នក']);

@@ -12,7 +12,9 @@ describe('KhmerSegmentService', () => {
         expect(service.containsKhmer('Hello សួស្តី')).toBe(
             containsKhmer('Hello សួស្តី')
         );
-        expect(service.isKhmerText('សួស្តីអ្នក')).toBe(isKhmerText('សួស្តីអ្នក'));
+        expect(service.isKhmerText('សួស្តីអ្នក')).toBe(
+            isKhmerText('សួស្តីអ្នក')
+        );
     });
 
     it('matches normalize helper', () => {
