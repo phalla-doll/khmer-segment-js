@@ -7,6 +7,22 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- `khmer-segment/angular` subpath export with Angular adapters:
+    - `KhmerSegmentService` (`@Injectable({ providedIn: 'root' })`) as a full-core facade.
+    - `KhmerNormalizePipe` (`khmerNormalize`) as a standalone normalization pipe.
+- Angular adapter unit tests for service parity with core helpers and pipe behavior.
+- README Angular integration docs with DI + standalone-pipe usage snippets.
+
+### Changed
+
+- Package exports and build config now include `./angular` output (`dist/angular/index.{js,cjs,d.ts}`).
+- Added optional Angular peer dependency metadata:
+    - `peerDependencies.@angular/core: >=17`
+    - `peerDependenciesMeta.@angular/core.optional: true`
+- Enabled TypeScript decorator support in project compiler options for Angular adapter sources.
+
 ## [0.6.2] - 2026-04-13
 
 ### Added

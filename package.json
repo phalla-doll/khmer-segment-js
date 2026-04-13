@@ -21,6 +21,11 @@
             "types": "./dist/react/index.d.ts",
             "import": "./dist/react/index.js",
             "require": "./dist/react/index.cjs"
+        },
+        "./angular": {
+            "types": "./dist/angular/index.d.ts",
+            "import": "./dist/angular/index.js",
+            "require": "./dist/angular/index.cjs"
         }
     },
     "files": [
@@ -67,14 +72,19 @@
         "url": "https://github.com/phalla-doll/khmer-segment-js/issues"
     },
     "peerDependencies": {
+        "@angular/core": ">=17",
         "react": ">=18"
     },
     "peerDependenciesMeta": {
+        "@angular/core": {
+            "optional": true
+        },
         "react": {
             "optional": true
         }
     },
     "devDependencies": {
+        "@angular/core": "^20.3.18",
         "@eslint/js": "^10.0.1",
         "@huggingface/hub": "^2.11.0",
         "@testing-library/react": "^16.3.2",

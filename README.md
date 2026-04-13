@@ -346,6 +346,51 @@ export function KhmerInput(): JSX.Element {
 }
 ```
 
+### Angular (`khmer-segment/angular`)
+
+`khmer-segment/angular` provides Angular adapters for DI and templates:
+
+- `KhmerSegmentService` (injectable full-core facade)
+- `KhmerNormalizePipe` (standalone `khmerNormalize` pipe)
+- Angular peer requirement: `@angular/core >= 17`
+
+```ts
+import {
+    KhmerNormalizePipe,
+    KhmerSegmentService,
+} from 'khmer-segment/angular';
+
+const service = new KhmerSegmentService();
+const dict = service.createDictionary(['សួស្តី', 'អ្នក']);
+const segment = service.segmentWords('សួស្តីអ្នក', { dictionary: dict });
+
+const pipe = new KhmerNormalizePipe();
+const normalized = pipe.transform('\u200Bក\u200Bក\u200B');
+```
+
+```ts
+import { Component, inject } from '@angular/core';
+import { KhmerNormalizePipe, KhmerSegmentService } from 'khmer-segment/angular';
+
+@Component({
+    selector: 'app-khmer-demo',
+    standalone: true,
+    imports: [KhmerNormalizePipe],
+    template: `
+        <p>{{ value | khmerNormalize }}</p>
+        <button type="button" (click)="segment()">Segment</button>
+    `,
+})
+export class KhmerDemoComponent {
+    value = 'សួស្តីអ្នក';
+    private readonly khmer = inject(KhmerSegmentService);
+
+    segment(): void {
+        console.log(this.khmer.segmentWords(this.value).tokens);
+    }
+}
+```
+
 ### Digit Grouping
 
 Consecutive Khmer digit clusters (and ASCII digits) are automatically merged into a single token after segmentation, so `១៨៤` or `184` becomes one token instead of three separate tokens.
@@ -506,7 +551,6 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 ### Future
 
-- `khmer-segment/angular` — injectable service, pipe
 - ICU-style line-breaking helpers
 
 ---
