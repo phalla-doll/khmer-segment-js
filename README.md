@@ -566,13 +566,12 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 - Reordered roadmap entries into ascending version order for easier historical scanning
 
-### v0.8.0 (current)
+### v0.6.2
 
-- **Typing game support** — `compareTyping`, `computeTypingMetrics`, `getCorrectPrefixLength`, `getFirstMismatchIndex` for cluster/word-aware progress and WPM-style metrics
-- **`khmer-segment/typing` subpath** — optional dedicated export matching root typing APIs
-- **Documentation** — [`docs/typing-game.md`](docs/typing-game.md) guide; design doc updated for typing scope
-- **Playground** — live typing demo with `compareTyping` + `computeTypingMetrics`
-- **Tests** — `src/__tests__/typing/` coverage for comparison and metrics
+- Reliability release with CI benchmark hardening and pinned local tooling
+- Runtime guards for public APIs and safer React hook dependency handling
+- Segmentation performance improvements in Viterbi/BMM hot paths and cluster counting
+- Documentation refresh with canonical docs index and updated release notes
 
 ### v0.7.0
 
@@ -580,12 +579,13 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **Angular packaging** — added `./angular` subpath build and exports with optional `@angular/core >= 17` peer metadata
 - **Angular test coverage** — added adapter tests to ensure parity with core normalization/caret/segmentation behavior
 
-### v0.6.2
+### v0.8.0 (current)
 
-- Reliability release with CI benchmark hardening and pinned local tooling
-- Runtime guards for public APIs and safer React hook dependency handling
-- Segmentation performance improvements in Viterbi/BMM hot paths and cluster counting
-- Documentation refresh with canonical docs index and updated release notes
+- **Typing game support** — `compareTyping`, `computeTypingMetrics`, `getCorrectPrefixLength`, `getFirstMismatchIndex` for cluster/word-aware progress and WPM-style metrics
+- **`khmer-segment/typing` subpath** — optional dedicated export matching root typing APIs
+- **Documentation** — [`docs/typing-game.md`](docs/typing-game.md) guide; design doc updated for typing scope
+- **Playground** — live typing demo with `compareTyping` + `computeTypingMetrics`
+- **Tests** — `src/__tests__/typing/` coverage for comparison and metrics
 
 ### Future
 

@@ -1,6 +1,6 @@
 {
     "name": "khmer-segment",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "description": "Khmer text segmentation, normalization, cluster and typing-game utilities for JavaScript and TypeScript.",
     "type": "module",
     "main": "./dist/index.cjs",

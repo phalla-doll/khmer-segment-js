@@ -7,6 +7,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-04-20
+
+### Fixed
+
+- README roadmap version entries are ordered correctly in ascending order, with `v0.8.0 (current)` positioned after `v0.7.0`.
+
 ## [0.8.0] - 2026-04-20
 
 ### Added
