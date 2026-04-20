@@ -309,6 +309,69 @@
 
             <section
                 class="mt-8 border-t border-border pt-8"
+                aria-labelledby="typing-demo-heading"
+            >
+                <div
+                    class="mb-3 text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                    id="typing-demo-heading"
+                >
+                    Typing game demo
+                </div>
+                <p
+                    class="mb-3 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400"
+                >
+                    Live
+                    <code
+                        class="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[11px] dark:bg-neutral-800"
+                        >compareTyping</code
+                    >
+                    +
+                    <code
+                        class="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[11px] dark:bg-neutral-800"
+                        >computeTypingMetrics</code
+                    >
+                    (cluster mode). Timer starts on first keystroke.
+                </p>
+                <div class="rounded-2xl border border-border bg-surface p-4">
+                    <div
+                        class="mb-2 text-[13px] font-medium text-neutral-600 dark:text-neutral-300"
+                    >
+                        Prompt
+                    </div>
+                    <div
+                        id="typing-prompt-render"
+                        class="mb-4 min-h-[2.5rem] rounded-xl border border-border bg-canvas px-3 py-2.5 font-khmer text-base leading-relaxed"
+                        aria-live="polite"
+                    ></div>
+                    <label
+                        for="typing-input"
+                        class="mb-1.5 block text-[13px] font-medium text-neutral-600 dark:text-neutral-300"
+                        >Your typing</label
+                    >
+                    <textarea
+                        id="typing-input"
+                        rows="3"
+                        placeholder="Type the prompt above…"
+                        class="w-full resize-y rounded-2xl border border-border bg-surface px-3.5 py-3 font-khmer text-base leading-relaxed text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/25 focus-visible:ring-offset-2 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500 dark:focus-visible:ring-offset-zinc-950"
+                    ></textarea>
+                    <div class="mt-3 flex flex-wrap items-center gap-2">
+                        <button
+                            type="button"
+                            id="typing-reset"
+                            class="rounded-lg border border-border bg-canvas px-3 py-1.5 text-xs font-medium text-neutral-700 outline-none transition hover:bg-neutral-100 dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                        >
+                            Reset timer &amp; input
+                        </button>
+                    </div>
+                    <div
+                        id="typing-stats"
+                        class="mt-3 rounded-xl border border-border bg-canvas px-3.5 py-2.5 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300"
+                    ></div>
+                </div>
+            </section>
+
+            <section
+                class="mt-8 border-t border-border pt-8"
                 id="results-panel"
                 aria-label="Segmentation results"
             >

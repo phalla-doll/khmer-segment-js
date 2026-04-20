@@ -3,11 +3,12 @@
 ## Overview
 
 `khmer-segment` is a framework-agnostic Khmer text processing library focused on
-three core jobs:
+these core jobs:
 
 - normalize Khmer text into a consistent internal form
 - split text into Khmer-safe grapheme clusters
 - segment clustered text into tokens using dictionary-based matching
+- compare typed input to a target for typing-game style UIs (cluster-aware)
 
 The library is designed so the segmentation pipeline stays deterministic,
 tree-shakeable, and easy to embed in browser or server code.
@@ -106,12 +107,24 @@ It is fast enough for UI and application-level use, but performance assertions
 are kept separate from the main correctness suite because they can vary across
 machines and CI runners.
 
+## Typing game helpers
+
+Typing-oriented APIs live in `src/typing/index.ts` (also importable as `khmer-segment/typing`).
+
+They build on normalization and `splitClusters()` so progress and mismatch offsets align with
+how Khmer is typed, not naive JavaScript character indices. Metrics (`computeTypingMetrics`) use
+standard five-characters-per-word WPM on the caller-supplied correct character count.
+
+## Text editing helpers
+
+Caret and cluster-safe backspace are implemented in `src/core/caret.ts` (`getCaretBoundaries`,
+`deleteBackward`). React adapters are in `khmer-segment/react`.
+
 ## Non-Goals
 
 This library does not currently provide:
 
 - statistical or ML-based segmentation
 - full ICU-grade line breaking
-- caret navigation helpers
-- cluster-safe deletion helpers
+- a full typing game UI (timer, leaderboards, account system)
 - compressed dictionary transport formats

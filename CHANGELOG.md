@@ -7,6 +7,20 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-04-20
+
+### Added
+
+- Typing game support APIs: `compareTyping`, `computeTypingMetrics`, `getCorrectPrefixLength`, and `getFirstMismatchIndex` with Khmer-aware cluster comparison (default), optional `unit: 'word'`, and optional punctuation stripping (`src/typing/index.ts`).
+- Subpath export `khmer-segment/typing` (ESM/CJS/types) alongside root re-exports.
+- Documentation guide [`docs/typing-game.md`](docs/typing-game.md) and README “Typing game support” section.
+- Playground “Typing game demo” panel demonstrating live comparison and metrics.
+- Unit tests in [`src/__tests__/typing/`](src/__tests__/typing/).
+
+### Changed
+
+- [`docs/design/DESIGN.md`](docs/design/DESIGN.md): document typing helpers; caret/backspace helpers removed from the non-goals list (they are shipped in core).
+
 ## [0.7.0] - 2026-04-13
 
 ### Added

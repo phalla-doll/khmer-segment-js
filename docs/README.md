@@ -8,6 +8,7 @@ This directory contains project reference docs and historical planning notes.
 - [`benchmark-results.md`](benchmark-results.md): Current benchmark summary and strategy comparison tables.
 - [`data-sources.md`](data-sources.md): Dictionary/data provenance and licensing notes.
 - [`design/DESIGN.md`](design/DESIGN.md): Core architecture and API design decisions.
+- [`typing-game.md`](typing-game.md): Building MonkeyType-style Khmer typing UIs (compare, metrics, IME notes).
 - [`../CHANGELOG.md`](../CHANGELOG.md): Release-by-release change history and user-facing migration notes.
 
 ## Historical Planning Notes

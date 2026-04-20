@@ -14,6 +14,13 @@ export { getCaretBoundaries, deleteBackward } from './core/caret';
 
 export { createDictionary } from './dictionary/create-dictionary';
 
+export {
+    compareTyping,
+    computeTypingMetrics,
+    getCorrectPrefixLength,
+    getFirstMismatchIndex,
+} from './typing/index';
+
 export type {
     SegmentOptions,
     SegmentResult,
@@ -21,4 +28,10 @@ export type {
     KhmerDictionary,
     CaretOptions,
     DeleteResult,
+    TypingCompareOptions,
+    TypingComparison,
+    TypingMetrics,
+    TypingMetricsInput,
+    TypingUnit,
+    TypingUnitState,
 } from './types/public';

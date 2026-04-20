@@ -9,6 +9,8 @@ import {
     segmentWords,
     createDictionary,
     getCaretBoundaries,
+    compareTyping,
+    computeTypingMetrics,
 } from 'khmer-segment';
 import {
     getDefaultDictionary,
@@ -337,5 +339,82 @@ function renderJson(result: object) {
     const json = JSON.stringify(result, null, 2);
     document.getElementById('json-output')!.textContent = json;
 }
+
+// --- Typing game demo (compareTyping + computeTypingMetrics) ---
+const TYPING_PROMPT = 'សួស្តីអ្នកទាំងអស់គ្នា';
+let typingStartedAt: number | null = null;
+
+const typingPromptEl = document.getElementById('typing-prompt-render')!;
+const typingInputEl = document.getElementById(
+    'typing-input'
+) as HTMLTextAreaElement;
+const typingStatsEl = document.getElementById('typing-stats')!;
+
+function renderTypingPromptNeutral() {
+    const normalized = normalizeKhmer(TYPING_PROMPT);
+    const clusters = splitClusters(normalized);
+    const html = clusters
+        .map(
+            c =>
+                `<span class="inline-block rounded px-0.5 text-neutral-800 dark:text-neutral-100">${escapeHtml(c)}</span>`
+        )
+        .join(
+            '<span class="mx-0.5 select-none text-neutral-300 dark:text-neutral-600">|</span>'
+        );
+    typingPromptEl.innerHTML = html;
+}
+
+function renderTypingDemo() {
+    const typed = typingInputEl.value;
+    if (typed.length > 0 && typingStartedAt === null) {
+        typingStartedAt = performance.now();
+    }
+
+    if (!typed) {
+        typingStartedAt = null;
+        renderTypingPromptNeutral();
+        typingStatsEl.innerHTML =
+            '<span class="text-neutral-500 dark:text-neutral-400">Type to start the timer…</span>';
+        return;
+    }
+
+    const cmp = compareTyping(TYPING_PROMPT, typed);
+    const promptHtml = cmp.unitStates
+        .map(u => {
+            const cls = u.correct
+                ? 'bg-emerald-600/20 text-emerald-950 dark:bg-emerald-500/25 dark:text-emerald-50'
+                : 'bg-neutral-200 text-neutral-800 dark:bg-neutral-700 dark:text-neutral-100';
+            return `<span class="inline-block rounded px-0.5 font-khmer ${cls}">${escapeHtml(u.value)}</span>`;
+        })
+        .join(
+            '<span class="mx-0.5 select-none text-neutral-300 dark:text-neutral-600">|</span>'
+        );
+    typingPromptEl.innerHTML = promptHtml;
+
+    const elapsedMs =
+        typingStartedAt !== null ? performance.now() - typingStartedAt : 0;
+    const metrics = computeTypingMetrics({
+        correctCharCount: cmp.correctPrefixLength,
+        totalTypedCharCount: cmp.normalizedTyped.length,
+        elapsedMs: Math.max(elapsedMs, 1),
+    });
+
+    typingStatsEl.innerHTML = [
+        `<span class="text-neutral-500 dark:text-neutral-400">complete</span> ${cmp.isComplete}`,
+        `<span class="text-neutral-500 dark:text-neutral-400">units</span> ${cmp.correctUnits}/${cmp.totalUnits}`,
+        `<span class="text-neutral-500 dark:text-neutral-400">wpm</span> ${metrics.wpm.toFixed(1)}`,
+        `<span class="text-neutral-500 dark:text-neutral-400">cpm</span> ${metrics.cpm.toFixed(0)}`,
+        `<span class="text-neutral-500 dark:text-neutral-400">accuracy</span> ${metrics.accuracy.toFixed(1)}%`,
+    ].join(' &nbsp;·&nbsp; ');
+}
+
+document.getElementById('typing-reset')!.addEventListener('click', () => {
+    typingInputEl.value = '';
+    typingStartedAt = null;
+    renderTypingDemo();
+});
+
+typingInputEl.addEventListener('input', renderTypingDemo);
+renderTypingDemo();
 
 update();

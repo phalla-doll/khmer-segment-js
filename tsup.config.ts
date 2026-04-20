@@ -37,4 +37,13 @@ export default defineConfig([
         target: 'es2020',
         outDir: 'dist',
     },
+    {
+        entry: { 'typing/index': 'src/typing/index.ts' },
+        format: ['esm', 'cjs'],
+        dts: { compilerOptions: { outDir: 'dist' } },
+        sourcemap: true,
+        minify: false,
+        target: 'es2020',
+        outDir: 'dist',
+    },
 ]);

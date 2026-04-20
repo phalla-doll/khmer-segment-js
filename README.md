@@ -284,6 +284,31 @@ interface DeleteResult {
 }
 ```
 
+### Typing game support
+
+Compare a prompt to user input with **grapheme-cluster-aware** progress (default), or whitespace-delimited words. Use `computeTypingMetrics` for WPM (5 characters = 1 word), CPM, and accuracy.
+
+```ts
+import { compareTyping, computeTypingMetrics } from 'khmer-segment';
+
+const prompt = 'សួស្តីអ្នក';
+const typed = 'សួស្តី';
+const cmp = compareTyping(prompt, typed);
+// cmp.correctUnits, cmp.unitStates, cmp.mismatchOffset, cmp.isComplete
+
+const elapsedMs = 30_000;
+const metrics = computeTypingMetrics({
+    correctCharCount: cmp.correctPrefixLength,
+    totalTypedCharCount: cmp.normalizedTyped.length,
+    elapsedMs,
+});
+// metrics.wpm, metrics.cpm, metrics.accuracy
+```
+
+Subpath (same API): `import { compareTyping } from 'khmer-segment/typing'`.
+
+See [`docs/typing-game.md`](docs/typing-game.md) for IME/composition notes and integration patterns.
+
 ### React Hooks (`khmer-segment/react`)
 
 `khmer-segment/react` provides controlled-input hooks for React:
@@ -516,8 +541,8 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 ### v0.4.0
 
 - **Default strategy switched to Viterbi** (penalty=10.0): Boundary F1 = 0.8572, Token F1 = 0.6744
-- `**getCaretBoundaries(text)`\*\* — returns valid caret positions based on Khmer cluster boundaries
-- `**deleteBackward(text, cursorIndex)**` — cluster-safe backspace for text editors
+- `**getCaretBoundaries(text)` — returns valid caret positions based on Khmer cluster boundaries
+- `**deleteBackward(text, cursorIndex)`\*\* — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
 ### v0.5.1
@@ -541,7 +566,15 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 - Reordered roadmap entries into ascending version order for easier historical scanning
 
-### v0.7.0 (current)
+### v0.8.0 (current)
+
+- **Typing game support** — `compareTyping`, `computeTypingMetrics`, `getCorrectPrefixLength`, `getFirstMismatchIndex` for cluster/word-aware progress and WPM-style metrics
+- **`khmer-segment/typing` subpath** — optional dedicated export matching root typing APIs
+- **Documentation** — [`docs/typing-game.md`](docs/typing-game.md) guide; design doc updated for typing scope
+- **Playground** — live typing demo with `compareTyping` + `computeTypingMetrics`
+- **Tests** — `src/__tests__/typing/` coverage for comparison and metrics
+
+### v0.7.0
 
 - **Angular release** — `khmer-segment/angular` now ships `KhmerSegmentService` and standalone `KhmerNormalizePipe`
 - **Angular packaging** — added `./angular` subpath build and exports with optional `@angular/core >= 17` peer metadata
@@ -616,6 +649,7 @@ Features:
 - Strategy selector (FMM / BMM / BiMM / Viterbi)
 - Normalize toggle (On/Off)
 - Caret boundary visualization
+- Typing game demo (`compareTyping` + `computeTypingMetrics` with live prompt highlighting)
 - Detection, normalization, cluster splitting, and segmentation panels
 - JSON output with copy button
 
