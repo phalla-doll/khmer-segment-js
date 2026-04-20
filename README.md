@@ -6,6 +6,8 @@ Works in **Next.js**, **Angular**, **React**, **Vue**, **Node.js**, and the **br
 
 Zero external dependencies. Tree-shakeable. Pure functions.
 
+![khmer-segment — Khmer text processing for JavaScript and TypeScript](public/khmer-segment-og-2.png)
+
 ---
 
 ## Install
