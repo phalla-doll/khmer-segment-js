@@ -305,6 +305,8 @@ const metrics = computeTypingMetrics({
 // metrics.wpm, metrics.cpm, metrics.accuracy
 ```
 
+`compareTyping` uses strict normalized cluster/word equality for completion. In UI code, it is often useful to trim trailing textarea whitespace before compare, and optionally fold known equivalent prompt variants before calling the API.
+
 Subpath (same API): `import { compareTyping } from 'khmer-segment/typing'`.
 
 See [`docs/typing-game.md`](docs/typing-game.md) for IME/composition notes and integration patterns.

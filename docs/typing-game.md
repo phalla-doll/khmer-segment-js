@@ -33,6 +33,17 @@ const metrics = computeTypingMetrics({
 });
 ```
 
+`compareTyping` is strict at the cluster/word level: if any normalized unit differs, matching stops at that unit and `isComplete` stays `false`.
+
+## Practical UI/UX notes
+
+In real textareas and IME flows, users can produce input that looks correct but does not compare equal byte-for-byte.
+
+- Trim trailing whitespace before compare (`value.replace(/\s+$/u, '')`) so accidental trailing spaces/newlines do not block completion.
+- If your prompt accepts known equivalent spellings, fold those variants in app code before calling `compareTyping` (for example with a small `replaceAll(...)` map).
+
+These are app-level choices. The core API intentionally remains strict and deterministic for predictable scoring.
+
 ## WPM and accuracy
 
 - **WPM** uses the conventional **five characters per word** on `correctCharCount` (UTF-16 code units in the compare/normalize space).

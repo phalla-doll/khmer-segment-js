@@ -7,6 +7,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Fixed
+
+- Playground typing demo no longer treats trailing textarea whitespace as a mismatch, so completion is not blocked by accidental trailing space/newline.
+- Playground typing demo now folds the common Khmer greeting variant `សួស្ដី` to `សួស្តី` for this fixed prompt demo, preventing false early mismatch highlighting.
+
+### Changed
+
+- Typing docs now clarify strict `compareTyping` completion semantics and recommend app-level preprocessing (trailing-whitespace trim and optional known-variant folding) where desired.
+
 ## [0.8.1] - 2026-04-20
 
 ### Fixed
