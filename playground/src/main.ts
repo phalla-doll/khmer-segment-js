@@ -350,8 +350,15 @@ const typingInputEl = document.getElementById(
 ) as HTMLTextAreaElement;
 const typingStatsEl = document.getElementById('typing-stats')!;
 
+function normalizeTypingPromptVariants(text: string): string {
+    // Accept both common spellings of the greeting used in this fixed demo prompt.
+    return text.replaceAll('សួស្ដី', 'សួស្តី');
+}
+
 function renderTypingPromptNeutral() {
-    const normalized = normalizeKhmer(TYPING_PROMPT);
+    const normalized = normalizeKhmer(
+        normalizeTypingPromptVariants(TYPING_PROMPT)
+    );
     const clusters = splitClusters(normalized);
     const html = clusters
         .map(
@@ -365,12 +372,15 @@ function renderTypingPromptNeutral() {
 }
 
 function renderTypingDemo() {
-    const typed = typingInputEl.value;
-    if (typed.length > 0 && typingStartedAt === null) {
+    const typedRaw = typingInputEl.value;
+    const typed = normalizeTypingPromptVariants(typedRaw.replace(/\s+$/u, ''));
+    const target = normalizeTypingPromptVariants(TYPING_PROMPT);
+
+    if (typedRaw.length > 0 && typingStartedAt === null) {
         typingStartedAt = performance.now();
     }
 
-    if (!typed) {
+    if (!typedRaw) {
         typingStartedAt = null;
         renderTypingPromptNeutral();
         typingStatsEl.innerHTML =
@@ -378,7 +388,7 @@ function renderTypingDemo() {
         return;
     }
 
-    const cmp = compareTyping(TYPING_PROMPT, typed);
+    const cmp = compareTyping(target, typed);
     const promptHtml = cmp.unitStates
         .map(u => {
             const cls = u.correct
