@@ -207,7 +207,7 @@ input text
   → normalize (reorder Unicode marks into canonical order)
   → split into clusters (not naive chars)
   → run segmentation algorithm (FMM, BMM, BiMM, or Viterbi)
-  → group consecutive digits into single tokens
+  → group external Latin and numeric tokens
   → return structured tokens
 ```
 
@@ -419,20 +419,28 @@ export class KhmerDemoComponent {
 
 ### Digit Grouping
 
-Consecutive Khmer digit clusters (and ASCII digits) are automatically merged into a single token after segmentation, so `១៨៤` or `184` becomes one token instead of three separate tokens.
+Consecutive Khmer digit clusters (and ASCII digits) are automatically merged into a single token after segmentation, so `១៨៤` or `184` becomes one token instead of three separate tokens. Number-internal comma and period separators are also grouped when surrounded by digits, so `៣,០០០`, `5,500`, and `3.14` are emitted as single known tokens.
+
+### Latin Run Grouping
+
+Contiguous ASCII Latin letters are grouped into stable external tokens after segmentation. For mixed text, `Khmer text` is emitted as `Khmer`, space, `text`; camel-case runs such as `FinoFitness` remain one token. Latin tokens are marked `isKnown: false`.
 
 ---
 
 ## No Dictionary Provided
 
-When no dictionary is passed to `segmentWords()`, it returns each cluster as an unknown token:
+When no dictionary is passed to `segmentWords()`, Khmer text still falls back to unknown cluster tokens, while Latin runs and numeric runs are grouped by the same external-token rules:
 
 ```ts
-const result = segmentWords('កខគ');
+const result = segmentWords('កខគ Anne 3.14');
 // tokens: [
 //   { value: "ក", isKnown: false },
 //   { value: "ខ", isKnown: false },
 //   { value: "គ", isKnown: false },
+//   { value: " ", isKnown: false },
+//   { value: "Anne", isKnown: false },
+//   { value: " ", isKnown: false },
+//   { value: "3.14", isKnown: true },
 // ]
 ```
 

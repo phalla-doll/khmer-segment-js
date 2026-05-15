@@ -1,25 +1,25 @@
 # Benchmark Error Analysis
 
-Date: 2026-05-15T15:02:20.647Z
+Date: 2026-05-15T16:01:27.516Z
 Dataset: kh_data_10000
 Strategy: viterbi
 Viterbi boundary penalty: default (10)
 Sentences: 87875
-Exact sentence match: 1.44%
-Mismatched sentences: 86606
+Exact sentence match: 1.56%
+Mismatched sentences: 86502
 
 ## Category Summary
 
-| Category                 | Sentences | Share of mismatches | Next step                                                                                    |
-| ------------------------ | --------: | ------------------: | -------------------------------------------------------------------------------------------- |
-| Khmer under-split        |     85630 |              98.87% | Improve dictionary coverage and add Viterbi features for short-fragment penalties.           |
-| Khmer over-merge         |     26063 |              30.09% | Add feature costs or dictionary metadata that can discourage specific high-risk compounds.   |
-| Unknown Khmer span       |     20262 |              23.40% | Mine frequent unknown spans from the benchmark and review them for dictionary inclusion.     |
-| Latin run handling       |     15570 |              17.98% | Group contiguous Latin letters as one non-Khmer token before Khmer dictionary segmentation.  |
-| Normalization drift      |      5324 |               6.15% | Normalize gold tokens before boundary extraction, then report raw-text drift separately.     |
-| Numeric format handling  |      4689 |               5.41% | Extend digit grouping to include number-internal separators such as comma and period.        |
-| Punctuation run handling |       478 |               0.55% | Decide whether punctuation runs should be single tokens and encode that policy consistently. |
-| Other                    |        78 |               0.09% | Inspect examples and add a more specific classifier before tuning behavior.                  |
+| Category                 | Sentences | Share of mismatches | Next step                                                                                                              |
+| ------------------------ | --------: | ------------------: | ---------------------------------------------------------------------------------------------------------------------- |
+| Khmer under-split        |     85560 |              98.91% | Improve dictionary coverage and add Viterbi features for short-fragment penalties.                                     |
+| Khmer over-merge         |     25958 |              30.01% | Add feature costs or dictionary metadata that can discourage specific high-risk compounds.                             |
+| Unknown Khmer span       |     20260 |              23.42% | Mine frequent unknown spans from the benchmark and review them for dictionary inclusion.                               |
+| Latin run handling       |     14722 |              17.02% | Audit whether missing Latin spaces should stay out of scope or be handled by a separate text-reconstruction heuristic. |
+| Normalization drift      |      5324 |               6.15% | Normalize gold tokens before boundary extraction, then report raw-text drift separately.                               |
+| Numeric format handling  |      2567 |               2.97% | Decide whether trailing list-marker punctuation such as "១០." should be grouped separately from decimal formatting.    |
+| Punctuation run handling |       481 |               0.56% | Decide whether punctuation runs should be single tokens and encode that policy consistently.                           |
+| Other                    |        48 |               0.06% | Inspect examples and add a more specific classifier before tuning behavior.                                            |
 
 A sentence can appear in multiple categories, so category counts are not expected to sum to total mismatches.
 
@@ -114,31 +114,31 @@ PRED: អា | ប៉េ | ទី | ន | © | អាច | បំបាត់ | 
 
 ### Latin run handling
 
-Latin words or names appear in the gold text but are split into smaller predicted pieces.
+Latin words or names appear in the gold text but the normalized input often lacks the spaces needed to match the gold token boundaries.
 
 ```
 GOLD: សូម | ទស្សនា | រូបភាព | ខាងក្រោម | តើ | អ្នក | មានអារម្មណ៍ | យ៉ាងណា | ? | China | 's | Largesse | in | Tonga | Threatens | Future | of | Pacific
-PRED: សូម | ទស្សនា | រូប | ភាព | ខាង | ក្រោម | តើ | អ្នក | មាន | អារម្មណ៍ | យ៉ាង | ណា | ?China'sLargesseinTongaThreatensFutureofPacific
+PRED: សូម | ទស្សនា | រូប | ភាព | ខាង | ក្រោម | តើ | អ្នក | មាន | អារម្មណ៍ | យ៉ាង | ណា | ? | China | ' | sLargesseinTongaThreatensFutureofPacific
 ```
 
 ```
 GOLD: NUKU | 'ALOFA | , | TONGA | - | The | days | unfold | at | a | leisurely | pace | in | Tonga | , | a | South | Pacific | archipelago | with | no | traffic | lights | or | fast | - | food | chains | . | Snuffling | pigs | roam | dusty | roads | that | wind | through | villages | dotted | with | churches | . | Yet | even | in | this | far | - | flung | island | kingdom | there | are | signs | that | a | battle | for | power | and | influence | is | heating | up | among | much | larger | nations | - | and | Tonga | may | end | up | paying | the | price | . | In | the | capital | , | Nuku | 'alofa | , | government | officials | work | in | a | shiny | new | office | block | - | an | $ | 11 | million | gift | from | China | that | is | rivaled | in | grandeur | only | by | China | 's | imposing | new | embassy | complex | . | Dozens | of | Tongan | bureaucrats | take | all | - | expenses | - | paid | training | trips | to | Beijing | each | year | , | and | China | has | laid | out | millions | of | dollars | to | bring | 107 | Tongan | athletes | and | coaches | to | a | training | camp | in | China | 's | Sichuan | province | ahead | of | this | month | 's | Pacific | Games | in | Sam ... [truncated]
-PRED: NUKU'ALOFA,TONGA-ThedaysunfoldataleisurelypaceinTonga,aSouthPacificarchipelagowithnotrafficlightsorfast-foodchains.Snufflingpigsroamdustyroadsthatwindthroughvillagesdottedwithchurches.Yeteveninthisfar-flungislandkingdomtherearesignsthatabattleforpowerandinfluenceisheatingupamongmuchlargernations-andTongamayenduppayingtheprice.Inthecapital,Nuku'alofa,governmentofficialsworkinashinynewofficeblock-an$ | 11 | milliongiftfromChinathatisrivaledingrandeuronlybyChina'simposingnewembassycomplex.DozensofTonganbureaucratstakeall-expenses-paidtrainingtripstoBeijingeachyear,andChinahaslaidoutmillionsofdollarstobring | 107 | TonganathletesandcoachestoatrainingcampinChina'sSichuanprovinceaheadofthismonth'sPacificGamesinSamoa."Thebestfacilities.Thegym,thetrack,andalotofequipmentwedon'thavehereinTonga,"saidTevitaFauonuku,thecountry'sheadathleticcoach."Theaccommodation:lovely,beautiful.Andthemeals.Notonlythat,butChinagaveeachandeveryonesomemoney.Aperdiem."Chinaalsoofferedlow-interestloansafterpro-democracyriotersdestroyedmuchofdowntownNuku'alofain | 2006 | ,andanalystssaythoseloanscouldproveTonga'sundoing.Thecountryof | 106 | , | 000 | peopleowessome$ | 108 | milliontoChina'sExport-Importbank,equiva ... [truncated]
+PRED: NUKU | ' | ALOFA | , | TONGA | - | ThedaysunfoldataleisurelypaceinTonga | , | aSouthPacificarchipelagowithnotrafficlightsorfast | - | foodchains | . | Snufflingpigsroamdustyroadsthatwindthroughvillagesdottedwithchurches | . | Yeteveninthisfar | - | flungislandkingdomtherearesignsthatabattleforpowerandinfluenceisheatingupamongmuchlargernations | - | andTongamayenduppayingtheprice | . | Inthecapital | , | Nuku | ' | alofa | , | governmentofficialsworkinashinynewofficeblock | - | an | $ | 11 | milliongiftfromChinathatisrivaledingrandeuronlybyChina | ' | simposingnewembassycomplex | . | DozensofTonganbureaucratstakeall | - | expenses | - | paidtrainingtripstoBeijingeachyear | , | andChinahaslaidoutmillionsofdollarstobring | 107 | TonganathletesandcoachestoatrainingcampinChina | ' | sSichuanprovinceaheadofthismonth | ' | sPacificGamesinSamoa | ." | Thebestfacilities | . | Thegym | , | thetrack | , | andalotofequipmentwedon | ' | thavehereinTonga | ," | saidTevitaFauonuku | , | thecountry | ' | sheadathleticcoach | ." | Theaccommodation | : | lovely | , | beautiful | . | Andthemeals | . | Notonlythat | , | butChinagaveeachandeveryonesomemoney | . | Aperdiem | ." | Chinaalsoofferedlow | - ... [truncated]
 ```
 
 ```
 GOLD: កាលពី | ថ្ងៃទី | ០៥ | ខែកក្កដា | ឆ្នាំ | ២០១៩ | ម្ចាស់ | ហ្វេសប៊ុក | ម្នាក់ | ឈ្មោះ | “ | Mark | Bonnie | Salado | Wata | ” | បាន | បង្ហោះ | រូប | ជាង | ៧០ | សន្លឹក | ក្នុង | ថ្ងៃ | ទទួល | សញ្ញាប័ត្រ | ថ្នាក់ | បរិញ្ញាបត្រ | ផ្នែក | វិទ្យាសាស្ត្រ | ជីវសាស្ត្រ | ពី | សាកលវិទ្យាល័យ | Southeastern | Philippines | ( | Bachelor | of | Science | in | Biology | at | University | of | Southeastern | Philippines | ) | ជាមួយ | ស្នាមញញឹម | យ៉ាង | ស្រស់ស្អាត | ក្នុង | ថ្ងៃ | ពិសេស | របស់ | ខ្លួន | ។
-PRED: កាល | ពី | ថ្ងៃ | ទី | ០៥ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | ម្ចាស់ | ហ្វេ | ស | ប៊ុ | ក | ម្នាក់ | ឈ្មោះ | “MarkBonnieSaladoWata” | បាន | បង្ហោះ | រូប | ជាង | ៧០ | សន្លឹក | ក្នុង | ថ្ងៃ | ទទួល | សញ្ញាប័ត្រ | ថ្នាក់ | បរិញ្ញាបត្រ | ផ្នែក | វិទ្យាសាស្ត្រ | ជីវសាស្ត្រ | ពី | សាកលវិទ្យាល័យ | SoutheasternPhilippines(BachelorofScienceinBiologyatUniversityofSoutheasternPhilippines) | ជា | មួយ | ស្នាម | ញញឹម | យ៉ាង | ស្រស់ | ស្អាត | ក្នុង | ថ្ងៃ | ពិសេស | របស់ | ខ្លួន | ។
+PRED: កាល | ពី | ថ្ងៃ | ទី | ០៥ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | ម្ចាស់ | ហ្វេ | ស | ប៊ុ | ក | ម្នាក់ | ឈ្មោះ | “ | MarkBonnieSaladoWata | ” | បាន | បង្ហោះ | រូប | ជាង | ៧០ | សន្លឹក | ក្នុង | ថ្ងៃ | ទទួល | សញ្ញាប័ត្រ | ថ្នាក់ | បរិញ្ញាបត្រ | ផ្នែក | វិទ្យាសាស្ត្រ | ជីវសាស្ត្រ | ពី | សាកលវិទ្យាល័យ | SoutheasternPhilippines | ( | BachelorofScienceinBiologyatUniversityofSoutheasternPhilippines | ) | ជា | មួយ | ស្នាម | ញញឹម | យ៉ាង | ស្រស់ | ស្អាត | ក្នុង | ថ្ងៃ | ពិសេស | របស់ | ខ្លួន | ។
 ```
 
 ```
 GOLD: កីឡាករ | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ខាងក្រោម | នេះ | ជា | បណ្ដា | កីឡាករ | ទាំង | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | លេង | នៅ | ប្រទេស | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ៖ | ១០. | Odion | Ighalo | ៖ | ផ្ទេរ | ពី | ក្លឹប | Watford | ទៅកាន់ | CC | Yatai | កាលពី | រដូវកាល | ២០១៦ | / | ១៧ | ក្នុង | តម្លៃ | ខ្លួន | ២៥ | លាន | ដុល្លារ | ។
-PRED: កីឡា | ករ | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ខាង | ក្រោម | នេះ | ជា | បណ្ដា | កីឡា | ករ | ទាំង | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | លេង | នៅ | ប្រទេស | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ៖ | ១០ | .OdionIghalo | ៖ | ផ្ទេរ | ពី | ក្លឹប | Watford | ទៅ | កាន់ | CCYatai | កាល | ពី | រដូវ | កាល | ២០១៦ | / | ១៧ | ក្នុង | តម្លៃ | ខ្លួន | ២៥ | លាន | ដុល្លារ | ។
+PRED: កីឡា | ករ | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ខាង | ក្រោម | នេះ | ជា | បណ្ដា | កីឡា | ករ | ទាំង | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | លេង | នៅ | ប្រទេស | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ៖ | ១០ | . | OdionIghalo | ៖ | ផ្ទេរ | ពី | ក្លឹប | Watford | ទៅ | កាន់ | CCYatai | កាល | ពី | រដូវ | កាល | ២០១៦ | / | ១៧ | ក្នុង | តម្លៃ | ខ្លួន | ២៥ | លាន | ដុល្លារ | ។
 ```
 
 ```
 GOLD: ៩. | Marko | Arnautovic | ៖ | ផ្ទេរ | ពី | ក្លឹប | West | Ham | ទៅកាន់ | Guangzhou | Evergrande | កាលពី | រដូវកាល | ២០១៩ | / | ២០ | ក្នុង | តម្លៃ | ខ្លួន | ២៧ | លាន | ដុល្លារ | ។
-PRED: ៩ | .MarkoArnautovic | ៖ | ផ្ទេរ | ពី | ក្លឹប | WestHam | ទៅ | កាន់ | GuangzhouEvergrande | កាល | ពី | រដូវ | កាល | ២០១៩ | / | ២០ | ក្នុង | តម្លៃ | ខ្លួន | ២៧ | លាន | ដុល្លារ | ។
+PRED: ៩ | . | MarkoArnautovic | ៖ | ផ្ទេរ | ពី | ក្លឹប | WestHam | ទៅ | កាន់ | GuangzhouEvergrande | កាល | ពី | រដូវ | កាល | ២០១៩ | / | ២០ | ក្នុង | តម្លៃ | ខ្លួន | ២៧ | លាន | ដុល្លារ | ។
 ```
 
 ### Normalization drift
@@ -147,17 +147,17 @@ The normalized text differs from the raw gold text, so token comparison mixes se
 
 ```
 GOLD: សាស្រ្តាចារ្យ | Anne | … | វិធីសាស្រ្ត | ធម្មជាតិ | ដែល | មិន | ប្រើ | ថ្នាំ | … | ជំងឺ | ក្រិន | សរសៃ | ឈាម | កើតឡើង | ដោយសារ | សរសៃ | ឈាម | អាក់ទែ | ប្រែក្លាយទៅជា | រឹង | និង | រួម | តូច | … | ដើម្បី | កាត់បន្ថយ | ការប្រឈមមុខ | នឹង | ជំងឺ | ក្រិន | ថ្លើម | អ្នក | ត្រូវ | ធ្វើ | យ៉ាងណា | ថែទាំ | សុខភាព | ថ្លើម | របស់ | អ្នក | អោយ | បាន | ល្អ | តាម | ការអនុវត្ត | ដូច | ខាងក្រោម | នេះ | ។
-PRED: សាស្ត្រាចារ្យ | Anne… | វិធីសាស្ត្រ | ធម្មជាតិ | ដែល | មិន | ប្រើ | ថ្នាំ | … | ជំងឺ | ក្រិន | សរសៃ | ឈាម | កើត | ឡើង | ដោយ | សារ | សរសៃ | ឈាម | អាក់ | ទែ | ប្រែ | ក្លាយ | ទៅ | ជា | រឹង | និង | រួម | តូច | … | ដើម្បី | កាត់ | បន្ថយ | ការ | ប្រឈម | មុខ | នឹង | ជំងឺ | ក្រិនថ្លើម | អ្នក | ត្រូវ | ធ្វើ | យ៉ាង | ណា | ថែទាំ | សុខ | ភាព | ថ្លើម | របស់ | អ្នក | អោយ | បាន | ល្អ | តាម | ការ | អនុវត្ត | ដូច | ខាង | ក្រោម | នេះ | ។
+PRED: សាស្ត្រាចារ្យ | Anne | … | វិធីសាស្ត្រ | ធម្មជាតិ | ដែល | មិន | ប្រើ | ថ្នាំ | … | ជំងឺ | ក្រិន | សរសៃ | ឈាម | កើត | ឡើង | ដោយ | សារ | សរសៃ | ឈាម | អាក់ | ទែ | ប្រែ | ក្លាយ | ទៅ | ជា | រឹង | និង | រួម | តូច | … | ដើម្បី | កាត់ | បន្ថយ | ការ | ប្រឈម | មុខ | នឹង | ជំងឺ | ក្រិនថ្លើម | អ្នក | ត្រូវ | ធ្វើ | យ៉ាង | ណា | ថែទាំ | សុខ | ភាព | ថ្លើម | របស់ | អ្នក | អោយ | បាន | ល្អ | តាម | ការ | អនុវត្ត | ដូច | ខាង | ក្រោម | នេះ | ។
 ```
 
 ```
 GOLD: ប្រភព | ៖ | Aiy | Somoun | - | អៃ | សំអូន | អភិបាល | ខេត្ត | កំពង់ចាម | បន្ដ | ចុះ | ពិនិត្យ | ភូមិសាស្រ្ត | ដាក់ | លូ | ក្នុង | សង្កាត់ | សំបូរ | មាស | ក្រុង | កំពង់ចាម
-PRED: ប្រភព | ៖ | AiySomoun- | អៃ | សំ | អូន | អភិបាល | ខេត្ត | កំពង់ចាម | បន្ដ | ចុះ | ពិនិត្យ | ភូមិសាស្ត្រ | ដាក់ | លូ | ក្នុង | សង្កាត់ | សំបូរ | មាស | ក្រុង | កំពង់ចាម
+PRED: ប្រភព | ៖ | AiySomoun | - | អៃ | សំ | អូន | អភិបាល | ខេត្ត | កំពង់ចាម | បន្ដ | ចុះ | ពិនិត្យ | ភូមិសាស្ត្រ | ដាក់ | លូ | ក្នុង | សង្កាត់ | សំបូរ | មាស | ក្រុង | កំពង់ចាម
 ```
 
 ```
 GOLD: ( | កំពង់ចាម | ) | ៖ | អភិបាល | ខេត្ត | កំពង់ចាម | លោក | អ៊ុន | ចាន់ | ដា | នា | រសៀល | ថ្ងៃទី | ១០ | ខែកក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹកនាំ | ក្រុមការងារ | មន្ទីរ | ស្ថាប័ន | ពាក់ព័ន្ធ | ក្នុង | ខេត្ត | ចុះ | ពិនិត្យ | ភូមិសាស្រ្ត | ដាក់ | លូ | ប្រវែង | ជាង | ៣,០០០ | ម៉ែត្រ | នៅក្នុង | សង្កាត់ | សំបួរ | មាស | ក្រុង | កំពង់ចាម | ។
-PRED: ( | កំពង់ចាម | ) | ៖ | អភិបាល | ខេត្ត | កំពង់ចាម | លោក | អ៊ុន | ចាន់ | ដា | នា | រសៀល | ថ្ងៃ | ទី | ១០ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹក | នាំ | ក្រុម | ការ | ងារ | មន្ទីរ | ស្ថាប័ន | ពាក់ព័ន្ធ | ក្នុង | ខេត្ត | ចុះ | ពិនិត្យ | ភូមិសាស្ត្រ | ដាក់ | លូ | ប្រវែង | ជាង | ៣ | , | ០០០ | ម៉ែត្រ | នៅ | ក្នុង | សង្កាត់ | សំបួរមាស | ក្រុង | កំពង់ចាម | ។
+PRED: ( | កំពង់ចាម | ) | ៖ | អភិបាល | ខេត្ត | កំពង់ចាម | លោក | អ៊ុន | ចាន់ | ដា | នា | រសៀល | ថ្ងៃ | ទី | ១០ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹក | នាំ | ក្រុម | ការ | ងារ | មន្ទីរ | ស្ថាប័ន | ពាក់ព័ន្ធ | ក្នុង | ខេត្ត | ចុះ | ពិនិត្យ | ភូមិសាស្ត្រ | ដាក់ | លូ | ប្រវែង | ជាង | ៣,០០០ | ម៉ែត្រ | នៅ | ក្នុង | សង្កាត់ | សំបួរមាស | ក្រុង | កំពង់ចាម | ។
 ```
 
 ```
@@ -172,31 +172,31 @@ PRED: ក្រោយ | ពី | បាន | ឃើញ | ដូច | នេះ |
 
 ### Numeric format handling
 
-Formatted numbers such as comma-separated amounts are split around punctuation.
+Number-like gold tokens include punctuation that is not always number-internal, such as list markers.
 
 ```
 GOLD: NUKU | 'ALOFA | , | TONGA | - | The | days | unfold | at | a | leisurely | pace | in | Tonga | , | a | South | Pacific | archipelago | with | no | traffic | lights | or | fast | - | food | chains | . | Snuffling | pigs | roam | dusty | roads | that | wind | through | villages | dotted | with | churches | . | Yet | even | in | this | far | - | flung | island | kingdom | there | are | signs | that | a | battle | for | power | and | influence | is | heating | up | among | much | larger | nations | - | and | Tonga | may | end | up | paying | the | price | . | In | the | capital | , | Nuku | 'alofa | , | government | officials | work | in | a | shiny | new | office | block | - | an | $ | 11 | million | gift | from | China | that | is | rivaled | in | grandeur | only | by | China | 's | imposing | new | embassy | complex | . | Dozens | of | Tongan | bureaucrats | take | all | - | expenses | - | paid | training | trips | to | Beijing | each | year | , | and | China | has | laid | out | millions | of | dollars | to | bring | 107 | Tongan | athletes | and | coaches | to | a | training | camp | in | China | 's | Sichuan | province | ahead | of | this | month | 's | Pacific | Games | in | Sam ... [truncated]
-PRED: NUKU'ALOFA,TONGA-ThedaysunfoldataleisurelypaceinTonga,aSouthPacificarchipelagowithnotrafficlightsorfast-foodchains.Snufflingpigsroamdustyroadsthatwindthroughvillagesdottedwithchurches.Yeteveninthisfar-flungislandkingdomtherearesignsthatabattleforpowerandinfluenceisheatingupamongmuchlargernations-andTongamayenduppayingtheprice.Inthecapital,Nuku'alofa,governmentofficialsworkinashinynewofficeblock-an$ | 11 | milliongiftfromChinathatisrivaledingrandeuronlybyChina'simposingnewembassycomplex.DozensofTonganbureaucratstakeall-expenses-paidtrainingtripstoBeijingeachyear,andChinahaslaidoutmillionsofdollarstobring | 107 | TonganathletesandcoachestoatrainingcampinChina'sSichuanprovinceaheadofthismonth'sPacificGamesinSamoa."Thebestfacilities.Thegym,thetrack,andalotofequipmentwedon'thavehereinTonga,"saidTevitaFauonuku,thecountry'sheadathleticcoach."Theaccommodation:lovely,beautiful.Andthemeals.Notonlythat,butChinagaveeachandeveryonesomemoney.Aperdiem."Chinaalsoofferedlow-interestloansafterpro-democracyriotersdestroyedmuchofdowntownNuku'alofain | 2006 | ,andanalystssaythoseloanscouldproveTonga'sundoing.Thecountryof | 106 | , | 000 | peopleowessome$ | 108 | milliontoChina'sExport-Importbank,equiva ... [truncated]
+PRED: NUKU | ' | ALOFA | , | TONGA | - | ThedaysunfoldataleisurelypaceinTonga | , | aSouthPacificarchipelagowithnotrafficlightsorfast | - | foodchains | . | Snufflingpigsroamdustyroadsthatwindthroughvillagesdottedwithchurches | . | Yeteveninthisfar | - | flungislandkingdomtherearesignsthatabattleforpowerandinfluenceisheatingupamongmuchlargernations | - | andTongamayenduppayingtheprice | . | Inthecapital | , | Nuku | ' | alofa | , | governmentofficialsworkinashinynewofficeblock | - | an | $ | 11 | milliongiftfromChinathatisrivaledingrandeuronlybyChina | ' | simposingnewembassycomplex | . | DozensofTonganbureaucratstakeall | - | expenses | - | paidtrainingtripstoBeijingeachyear | , | andChinahaslaidoutmillionsofdollarstobring | 107 | TonganathletesandcoachestoatrainingcampinChina | ' | sSichuanprovinceaheadofthismonth | ' | sPacificGamesinSamoa | ." | Thebestfacilities | . | Thegym | , | thetrack | , | andalotofequipmentwedon | ' | thavehereinTonga | ," | saidTevitaFauonuku | , | thecountry | ' | sheadathleticcoach | ." | Theaccommodation | : | lovely | , | beautiful | . | Andthemeals | . | Notonlythat | , | butChinagaveeachandeveryonesomemoney | . | Aperdiem | ." | Chinaalsoofferedlow | - ... [truncated]
 ```
 
 ```
-GOLD: ៣ | ៖ | ចំនួន | មនុស្ស | ស្លាប់ | ក្នុង | ការប្រយុទ្ធ | គ្នា | នៅ | រដ្ឋធានីលីប៊ី | បន្ត | កើនឡើង | ដល់ | ជាង | ១ | ពាន់ | នាក់ | និង | របួស | ជាង | ៥,៥០០ | នាក់ | ។
-PRED: ៣ | ៖ | ចំនួន | មនុស្ស | ស្លាប់ | ក្នុង | ការ | ប្រយុទ្ធ | គ្នា | នៅ | រដ្ឋធានី | លីប៊ី | បន្ត | កើន | ឡើង | ដល់ | ជាង | ១ | ពាន់ | នាក់ | និង | របួស | ជាង | ៥ | , | ៥០០ | នាក់ | ។
+GOLD: កីឡាករ | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ខាងក្រោម | នេះ | ជា | បណ្ដា | កីឡាករ | ទាំង | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | លេង | នៅ | ប្រទេស | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ៖ | ១០. | Odion | Ighalo | ៖ | ផ្ទេរ | ពី | ក្លឹប | Watford | ទៅកាន់ | CC | Yatai | កាលពី | រដូវកាល | ២០១៦ | / | ១៧ | ក្នុង | តម្លៃ | ខ្លួន | ២៥ | លាន | ដុល្លារ | ។
+PRED: កីឡា | ករ | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ខាង | ក្រោម | នេះ | ជា | បណ្ដា | កីឡា | ករ | ទាំង | ១០ | រូប | ដែល | ផ្ទេរ | ទៅ | លេង | នៅ | ប្រទេស | ចិន | ក្នុង | តម្លៃ | ខ្លួន | ខ្ពស់ | ជាង | គេ | ៖ | ១០ | . | OdionIghalo | ៖ | ផ្ទេរ | ពី | ក្លឹប | Watford | ទៅ | កាន់ | CCYatai | កាល | ពី | រដូវ | កាល | ២០១៦ | / | ១៧ | ក្នុង | តម្លៃ | ខ្លួន | ២៥ | លាន | ដុល្លារ | ។
 ```
 
 ```
-GOLD: ( | ពោធិ៍សាត់ | )៖ | លោក | ម៉ៅ | ធ | និន | អភិបាល | នៃ | គណៈអភិបាល | ខេត្ត | ពោធិ៍សាត់ | នា | ថ្ងៃទី | ១០ | ខែកក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹកនាំ | កិច្ចប្រជុំ | ស្តីពី | ការធ្វើ | អត្តសញ្ញាណកម្ម | ដី | រដ្ឋ | ដែល | មាន | ការសម្រេច | ពី | រាជ | រដ្ឋាភិបាល | កម្ពុជា | ( | សជណ | ) | ក្នុង | គោលបំណង | ផ្តល់ | សម្បទាន | ដី | សង្គមកិច្ច | សម្រាប់ | ប្រជាពលដ្ឋ | ក្រីក្រ | នៅក្នុង | ស្រុក | ក្រគរ | ដែល | មាន | ទំហំ | ផ្ទៃដី | សរុប | ៥,៤០១ | ហិកតា | ស្ថិត | ក្នុង | ឃុំ | អន្សា | ចំបក់ | និង | ឃុំ | ត្នោត | ជុំ | ស្រុក | ក្រគរ | ខេត្ត | ពោធិ៍សាត់ | ។
-PRED: ( | ពោធិ៍សាត់ | ) | ៖ | លោក | ម៉ៅ | ធនិន | អភិបាល | នៃ | គណៈ | អភិបាល | ខេត្ត | ពោធិ៍សាត់ | នា | ថ្ងៃ | ទី | ១០ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹក | នាំ | កិច្ច | ប្រជុំ | ស្តី | ពី | ការ | ធ្វើ | អត្តសញ្ញាណ | កម្ម | ដី | រដ្ឋ | ដែល | មាន | ការ | សម្រេច | ពី | រាជរដ្ឋាភិបាល | កម្ពុជា | ( | ស | ជណ | ) | ក្នុង | គោល | បំណង | ផ្តល់ | សម្បទាន | ដី | សង្គម | កិច្ច | សម្រាប់ | ប្រ | ជា | ពល | ដ្ឋ | ក្រីក្រ | នៅ | ក្នុង | ស្រុក | ក្រគរ | ដែល | មាន | ទំហំ | ផ្ទៃ | ដី | សរុប | ៥ | , | ៤០១ | ហិកតា | ស្ថិត | ក្នុង | ឃុំ | អន្សាចំបក់ | និង | ឃុំ | ត្នោតជុំ | ស្រុក | ក្រគរ | ខេត្ត | ពោធិ៍សាត់ | ។
+GOLD: ៩. | Marko | Arnautovic | ៖ | ផ្ទេរ | ពី | ក្លឹប | West | Ham | ទៅកាន់ | Guangzhou | Evergrande | កាលពី | រដូវកាល | ២០១៩ | / | ២០ | ក្នុង | តម្លៃ | ខ្លួន | ២៧ | លាន | ដុល្លារ | ។
+PRED: ៩ | . | MarkoArnautovic | ៖ | ផ្ទេរ | ពី | ក្លឹប | WestHam | ទៅ | កាន់ | GuangzhouEvergrande | កាល | ពី | រដូវ | កាល | ២០១៩ | / | ២០ | ក្នុង | តម្លៃ | ខ្លួន | ២៧ | លាន | ដុល្លារ | ។
 ```
 
 ```
-GOLD: ( | កំពង់ចាម | ) | ៖ | អភិបាល | ខេត្ត | កំពង់ចាម | លោក | អ៊ុន | ចាន់ | ដា | នា | រសៀល | ថ្ងៃទី | ១០ | ខែកក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹកនាំ | ក្រុមការងារ | មន្ទីរ | ស្ថាប័ន | ពាក់ព័ន្ធ | ក្នុង | ខេត្ត | ចុះ | ពិនិត្យ | ភូមិសាស្រ្ត | ដាក់ | លូ | ប្រវែង | ជាង | ៣,០០០ | ម៉ែត្រ | នៅក្នុង | សង្កាត់ | សំបួរ | មាស | ក្រុង | កំពង់ចាម | ។
-PRED: ( | កំពង់ចាម | ) | ៖ | អភិបាល | ខេត្ត | កំពង់ចាម | លោក | អ៊ុន | ចាន់ | ដា | នា | រសៀល | ថ្ងៃ | ទី | ១០ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹក | នាំ | ក្រុម | ការ | ងារ | មន្ទីរ | ស្ថាប័ន | ពាក់ព័ន្ធ | ក្នុង | ខេត្ត | ចុះ | ពិនិត្យ | ភូមិសាស្ត្រ | ដាក់ | លូ | ប្រវែង | ជាង | ៣ | , | ០០០ | ម៉ែត្រ | នៅ | ក្នុង | សង្កាត់ | សំបួរមាស | ក្រុង | កំពង់ចាម | ។
+GOLD: ៨. | Ramires | ៖ | ផ្ទេរ | ពី | ក្លឹប | Chelsea | ទៅកាន់ | Jiangsu | Suning | កាលពី | រដូវកាល | ២០១៥ | / | ១៦ | ក្នុង | តម្លៃ | ខ្លួន | ៣១ | លាន | ដុល្លារ | ។
+PRED: ៨ | . | Ramires | ៖ | ផ្ទេរ | ពី | ក្លឹប | Chelsea | ទៅ | កាន់ | JiangsuSuning | កាល | ពី | រដូវ | កាល | ២០១៥ | / | ១៦ | ក្នុង | តម្លៃ | ខ្លួន | ៣១ | លាន | ដុល្លារ | ។
 ```
 
 ```
-GOLD: ក្នុង | នោះ | ចម្ងាយ | ផ្លូវ | ពី | នាង | គង្ហីង | ដល់ | ភូមិ | ព្រែក | ដើម | ចាន់ | ត្រូវ | ដាក់ | លូ | សងខាង | ផ្លូវ | ដែល | មាន | ប្រវែង | ជាង | ២,៩០០ | ម៉ែត្រ | ។
-PRED: ក្នុង | នោះ | ចម្ងាយ | ផ្លូវ | ពី | នាង | គង្ហីង | ដល់ | ភូមិ | ព្រែក | ដើម | ចាន់ | ត្រូវ | ដាក់ | លូ | សង | ខាង | ផ្លូវ | ដែល | មាន | ប្រវែង | ជាង | ២ | , | ៩០០ | ម៉ែត្រ | ។
+GOLD: ៧. | Anthony | Modeste | ៖ | ផ្ទេរ | ពី | ក្លឹប | FC | Koln | ទៅកាន់ | Tianjin | Tianhai | កាលពី | រដូវកាល | ២០១៨ | / | ១៩ | ក្នុង | តម្លៃ | ខ្លួន | ៣២ | លាន | ដុល្លារ | ។
+PRED: ៧ | . | AnthonyModeste | ៖ | ផ្ទេរ | ពី | ក្លឹប | FCKoln | ទៅ | កាន់ | TianjinTianhai | កាល | ពី | រដូវ | កាល | ២០១៨ | / | ១៩ | ក្នុង | តម្លៃ | ខ្លួន | ៣២ | លាន | ដុល្លារ | ។
 ```
 
 ### Punctuation run handling
@@ -205,7 +205,7 @@ Runs such as ellipses are split differently from the benchmark gold tokens.
 
 ```
 GOLD: ( | ពោធិ៍សាត់ | )៖ | លោក | ម៉ៅ | ធ | និន | អភិបាល | នៃ | គណៈអភិបាល | ខេត្ត | ពោធិ៍សាត់ | នា | ថ្ងៃទី | ១០ | ខែកក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹកនាំ | កិច្ចប្រជុំ | ស្តីពី | ការធ្វើ | អត្តសញ្ញាណកម្ម | ដី | រដ្ឋ | ដែល | មាន | ការសម្រេច | ពី | រាជ | រដ្ឋាភិបាល | កម្ពុជា | ( | សជណ | ) | ក្នុង | គោលបំណង | ផ្តល់ | សម្បទាន | ដី | សង្គមកិច្ច | សម្រាប់ | ប្រជាពលដ្ឋ | ក្រីក្រ | នៅក្នុង | ស្រុក | ក្រគរ | ដែល | មាន | ទំហំ | ផ្ទៃដី | សរុប | ៥,៤០១ | ហិកតា | ស្ថិត | ក្នុង | ឃុំ | អន្សា | ចំបក់ | និង | ឃុំ | ត្នោត | ជុំ | ស្រុក | ក្រគរ | ខេត្ត | ពោធិ៍សាត់ | ។
-PRED: ( | ពោធិ៍សាត់ | ) | ៖ | លោក | ម៉ៅ | ធនិន | អភិបាល | នៃ | គណៈ | អភិបាល | ខេត្ត | ពោធិ៍សាត់ | នា | ថ្ងៃ | ទី | ១០ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹក | នាំ | កិច្ច | ប្រជុំ | ស្តី | ពី | ការ | ធ្វើ | អត្តសញ្ញាណ | កម្ម | ដី | រដ្ឋ | ដែល | មាន | ការ | សម្រេច | ពី | រាជរដ្ឋាភិបាល | កម្ពុជា | ( | ស | ជណ | ) | ក្នុង | គោល | បំណង | ផ្តល់ | សម្បទាន | ដី | សង្គម | កិច្ច | សម្រាប់ | ប្រ | ជា | ពល | ដ្ឋ | ក្រីក្រ | នៅ | ក្នុង | ស្រុក | ក្រគរ | ដែល | មាន | ទំហំ | ផ្ទៃ | ដី | សរុប | ៥ | , | ៤០១ | ហិកតា | ស្ថិត | ក្នុង | ឃុំ | អន្សាចំបក់ | និង | ឃុំ | ត្នោតជុំ | ស្រុក | ក្រគរ | ខេត្ត | ពោធិ៍សាត់ | ។
+PRED: ( | ពោធិ៍សាត់ | ) | ៖ | លោក | ម៉ៅ | ធនិន | អភិបាល | នៃ | គណៈ | អភិបាល | ខេត្ត | ពោធិ៍សាត់ | នា | ថ្ងៃ | ទី | ១០ | ខែ | កក្កដា | ឆ្នាំ | ២០១៩ | នេះ | បាន | ដឹក | នាំ | កិច្ច | ប្រជុំ | ស្តី | ពី | ការ | ធ្វើ | អត្តសញ្ញាណ | កម្ម | ដី | រដ្ឋ | ដែល | មាន | ការ | សម្រេច | ពី | រាជរដ្ឋាភិបាល | កម្ពុជា | ( | ស | ជណ | ) | ក្នុង | គោល | បំណង | ផ្តល់ | សម្បទាន | ដី | សង្គម | កិច្ច | សម្រាប់ | ប្រ | ជា | ពល | ដ្ឋ | ក្រីក្រ | នៅ | ក្នុង | ស្រុក | ក្រគរ | ដែល | មាន | ទំហំ | ផ្ទៃ | ដី | សរុប | ៥,៤០១ | ហិកតា | ស្ថិត | ក្នុង | ឃុំ | អន្សាចំបក់ | និង | ឃុំ | ត្នោតជុំ | ស្រុក | ក្រគរ | ខេត្ត | ពោធិ៍សាត់ | ។
 ```
 
 ```
@@ -238,21 +238,21 @@ PRED: មាន | ដំណឹង | អាច | ទាក់ទង | មក | �
 ```
 
 ```
-GOLD: Toyota | ប្រកាស | ផលិត | SUV | ម៉ូដែល | ថ្មី | សន្លាង | ទំនង | អាច | ជា | ម៉ូដែល | FT | - | 4 | X | នេះ
-PRED: Toyota | ប្រកាស | ផលិត | SUV | ម៉ូដែល | ថ្មី | សន្លាង | ទំនង | អាច | ជា | ម៉ូដែល | FT- | 4 | X | នេះ
-```
-
-```
 GOLD: បើ | ដឹង | ហើយ | ត្រូវ | យក | ទៅ | ជួប | គ្រូពេទ្យ | ... | » | ។
 PRED: បើ | ដឹង | ហើយ | ត្រូវ | យក | ទៅ | ជួប | គ្រូពេទ្យ | ...» | ។
 ```
 
 ```
-GOLD: កប់ | ! | U | 15 | ចិន | លត់ | ម្ចាស់ | ផ្ទះ | កម្ពុជា | ៧ | ទល់ | នឹង | ០ | ក្នុង | ជំនួប | ជើង | ទី | ១
-PRED: កប់ | !U | 15 | ចិន | លត់ | ម្ចាស់ | ផ្ទះ | កម្ពុជា | ៧ | ទល់ | នឹង | ០ | ក្នុង | ជំនួប | ជើង | ទី | ១
+GOLD: មាន | ដំណឹង | អាច | ទាក់ទង | មក | លេខ | : | 070 | 225 | 225 | 096 | 4 | 225 | 225 | 076 | 6666 | 627 | 097 | 2929 | 729 | ″ | ៕
+PRED: មាន | ដំណឹង | អាច | ទាក់ទង | មក | លេខ | : | 070225225096422522507666666270972929729 | ″ | ៕
 ```
 
 ```
-GOLD: មាន | ដំណឹង | អាច | ទាក់ទង | មក | លេខ | : | 070 | 225 | 225 | 096 | 4 | 225 | 225 | 076 | 6666 | 627 | 097 | 2929 | 729 | ″ | ៕
-PRED: មាន | ដំណឹង | អាច | ទាក់ទង | មក | លេខ | : | 070225225096422522507666666270972929729 | ″ | ៕
+GOLD: ម្យ៉ាង | ដែរ | អស់ | បារម្ភ | រឿង | កូន | លេង | ទូរស័ព្ទ | អត់ | ឈប់ | ! | ! | សាក | វិធី | នេះ | ធានា | ថា | កូន | អ្នក | ឈប់ | លេង | ទូរស័ព្ទ | ១០០ | %
+PRED: ម្យ៉ាង | ដែរ | អស់ | បារម្ភ | រឿង | កូន | លេង | ទូរស័ព្ទ | អត់ | ឈប់ | !! | សាក | វិធី | នេះ | ធានា | ថា | កូន | អ្នក | ឈប់ | លេង | ទូរស័ព្ទ | ១០០ | %
+```
+
+```
+GOLD: សំឡេង | សម | នឹង | មាឌ | ! | រស់ | ស្រី | ខេ | ច្រៀង | បទ | « | មួយ | លាន | ឆ្នាំ | » | ស្រែក | ឡើង | ខ្ទរ | រង្គើ | ឆាក | យប់ | មិញ | ! | ( | វីដេអូ | )
+PRED: សំឡេង | សម | នឹង | មាឌ | ! | រស់ | ស្រី | ខេ | ច្រៀង | បទ | « | មួយ | លាន | ឆ្នាំ | » | ស្រែក | ឡើង | ខ្ទរ | រង្គើ | ឆាក | យប់ | មិញ | !( | វីដេអូ | )
 ```

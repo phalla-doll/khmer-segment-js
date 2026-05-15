@@ -7,6 +7,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-05-15
+
+### Changed
+
+- Segmentation now groups ASCII Latin runs and formatted number runs (`៣,០០០`, `5,500`, `3.14`) as stable external tokens across all strategies and no-dictionary mode.
+
 ## [0.8.2] - 2026-05-15
 
 ### Added

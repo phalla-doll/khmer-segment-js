@@ -10,7 +10,7 @@ import { fmmSegment } from '../algorithms/fmm';
 import { bmmSegment } from '../algorithms/bmm';
 import { bimmSegment } from '../algorithms/bimm';
 import { viterbiSegment } from '../algorithms/viterbi';
-import { groupDigitTokens } from '../algorithms/group-digits';
+import { groupExternalTokens } from '../algorithms/group-external-tokens';
 import { isKhmerSentencePunctuationToken } from '../constants/char-categories';
 
 const VALID_STRATEGIES = ['fmm', 'bmm', 'bimm', 'viterbi'] as const;
@@ -139,7 +139,7 @@ export function segmentWords(
         });
     }
 
-    tokens = groupDigitTokens(tokens);
+    tokens = groupExternalTokens(tokens);
     tokens = markKhmerSentencePunctuationKnown(tokens);
 
     return {

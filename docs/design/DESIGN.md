@@ -23,7 +23,7 @@ tree-shakeable, and easy to embed in browser or server code.
     - Backward Maximum Matching (BMM)
     - Bidirectional Maximum Matching (BiMM)
     - Viterbi dynamic programming
-5. Merge consecutive digit tokens into a single token.
+5. Group external Latin and numeric tokens into stable spans.
 6. Return `original`, `normalized`, and token metadata.
 
 ## Normalization

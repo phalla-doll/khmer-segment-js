@@ -52,16 +52,16 @@ const CATEGORY_INFO: Record<
     'latin-run-handling': {
         title: 'Latin run handling',
         description:
-            'Latin words or names appear in the gold text but are split into smaller predicted pieces.',
+            'Latin words or names appear in the gold text but the normalized input often lacks the spaces needed to match the gold token boundaries.',
         nextStep:
-            'Group contiguous Latin letters as one non-Khmer token before Khmer dictionary segmentation.',
+            'Audit whether missing Latin spaces should stay out of scope or be handled by a separate text-reconstruction heuristic.',
     },
     'numeric-format-handling': {
         title: 'Numeric format handling',
         description:
-            'Formatted numbers such as comma-separated amounts are split around punctuation.',
+            'Number-like gold tokens include punctuation that is not always number-internal, such as list markers.',
         nextStep:
-            'Extend digit grouping to include number-internal separators such as comma and period.',
+            'Decide whether trailing list-marker punctuation such as "១០." should be grouped separately from decimal formatting.',
     },
     'punctuation-run-handling': {
         title: 'Punctuation run handling',

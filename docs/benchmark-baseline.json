@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-05-15T15:05:48.196Z",
+    "generatedAt": "2026-05-15T16:02:34.371Z",
     "dataset": "kh_data_10000",
     "dictionarySize": 101107,
     "sentences": 87875,
@@ -7,31 +7,31 @@
     "results": [
         {
             "strategy": "fmm",
-            "boundaryMetrics": { "f1": 0.8023899271060564 },
-            "tokenMetrics": { "f1": 0.630419592658994 },
-            "exactMatchRate": 0.0195049786628734,
-            "oovBoundaryF1": 0.41607808762784193
+            "boundaryMetrics": { "f1": 0.8766349293211024 },
+            "tokenMetrics": { "f1": 0.7277454472043657 },
+            "exactMatchRate": 0.02471692745376956,
+            "oovBoundaryF1": 0.9007461073551903
         },
         {
             "strategy": "bmm",
-            "boundaryMetrics": { "f1": 0.7981189298675725 },
-            "tokenMetrics": { "f1": 0.6239076879037041 },
-            "exactMatchRate": 0.017923186344238975,
-            "oovBoundaryF1": 0.4193050121230462
+            "boundaryMetrics": { "f1": 0.8716718457900536 },
+            "tokenMetrics": { "f1": 0.7201967241528728 },
+            "exactMatchRate": 0.023089615931721194,
+            "oovBoundaryF1": 0.9222440176989178
         },
         {
             "strategy": "bimm",
-            "boundaryMetrics": { "f1": 0.8041263100480274 },
-            "tokenMetrics": { "f1": 0.6326796867211796 },
-            "exactMatchRate": 0.020051209103840683,
-            "oovBoundaryF1": 0.4185533671848793
+            "boundaryMetrics": { "f1": 0.8787043514544403 },
+            "tokenMetrics": { "f1": 0.7304341216818862 },
+            "exactMatchRate": 0.025547652916073967,
+            "oovBoundaryF1": 0.9272455547441537
         },
         {
             "strategy": "viterbi",
-            "boundaryMetrics": { "f1": 0.8571714600306599 },
-            "tokenMetrics": { "f1": 0.6743831077104666 },
-            "exactMatchRate": 0.014440967283072547,
-            "oovBoundaryF1": 0.8874205627474057
+            "boundaryMetrics": { "f1": 0.8673597644038145 },
+            "tokenMetrics": { "f1": 0.6840097426416645 },
+            "exactMatchRate": 0.015624466571834993,
+            "oovBoundaryF1": 0.935673489088339
         }
     ]
 }

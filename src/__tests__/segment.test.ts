@@ -149,10 +149,13 @@ describe('segmentWords', () => {
     });
 
     it('handles mixed Khmer and Latin without dictionary', () => {
-        const result = segmentWords('កA');
+        const result = segmentWords('កAnne');
         expect(result.tokens).toHaveLength(2);
         expect(result.tokens[0].value).toBe('ក');
-        expect(result.tokens[1].value).toBe('A');
+        expect(result.tokens[1]).toMatchObject({
+            value: 'Anne',
+            isKnown: false,
+        });
     });
 
     it('respects normalize: false option', () => {
@@ -314,6 +317,110 @@ describe('segmentWords', () => {
                 value: '៥៦',
                 isKnown: true,
             });
+        });
+
+        it('groups comma-formatted Khmer digits into a single known token', () => {
+            const result = segmentWords('៣,០០០', { dictionary: dict });
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0]).toMatchObject({
+                value: '៣,០០០',
+                start: 0,
+                end: 5,
+                isKnown: true,
+            });
+        });
+
+        it('groups comma-formatted ASCII digits into a single known token', () => {
+            const result = segmentWords('5,500', { dictionary: dict });
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0]).toMatchObject({
+                value: '5,500',
+                isKnown: true,
+            });
+        });
+
+        it('groups decimal digit formats into a single known token', () => {
+            const result = segmentWords('3.14', { dictionary: dict });
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0]).toMatchObject({
+                value: '3.14',
+                isKnown: true,
+            });
+        });
+
+        it('does not group separators that are not between digits', () => {
+            const result = segmentWords('3,អ្នក', { dictionary: dict });
+            expect(result.tokens.map(t => t.value)).toEqual(['3', ',', 'អ្នក']);
+        });
+    });
+
+    describe('Latin run grouping', () => {
+        const dict = getDefaultDictionary();
+
+        it('groups Latin runs and separates punctuation in default strategy', () => {
+            const result = segmentWords('Anne…', { dictionary: dict });
+            expect(result.tokens.map(t => t.value)).toEqual(['Anne', '…']);
+            expect(result.tokens.map(t => t.isKnown)).toEqual([false, false]);
+        });
+
+        it('groups non-Khmer punctuation and symbol runs', () => {
+            const result = segmentWords('Anne...Twitter!?', {
+                dictionary: dict,
+            });
+            expect(result.tokens.map(t => t.value)).toEqual([
+                'Anne',
+                '...',
+                'Twitter',
+                '!?',
+            ]);
+            expect(result.tokens.map(t => t.isKnown)).toEqual([
+                false,
+                false,
+                false,
+                false,
+            ]);
+        });
+
+        it('groups common Latin words without splitting camel case', () => {
+            const result = segmentWords('Twitter FinoFitness AiySomoun', {
+                dictionary: dict,
+            });
+            expect(result.tokens.map(t => t.value)).toEqual([
+                'Twitter',
+                ' ',
+                'FinoFitness',
+                ' ',
+                'AiySomoun',
+            ]);
+        });
+
+        it('preserves spaces and Latin words in mixed Khmer text', () => {
+            const text = 'ខ្ញុំសរសេរ Khmer text ភាសាខ្មែរ';
+            const result = segmentWords(text, { dictionary: dict });
+            expect(result.tokens.map(t => t.value).join('')).toBe(
+                result.normalized
+            );
+            expect(result.tokens.some(t => t.value === 'Khmer')).toBe(true);
+            expect(result.tokens.some(t => t.value === 'text')).toBe(true);
+            expect(result.tokens.filter(t => t.value === ' ').length).toBe(3);
+        });
+
+        it('groups Latin and formatted number runs without a dictionary', () => {
+            const result = segmentWords('Anne 3.14 ក');
+            expect(result.tokens.map(t => t.value)).toEqual([
+                'Anne',
+                ' ',
+                '3.14',
+                ' ',
+                'ក',
+            ]);
+            expect(result.tokens.map(t => t.isKnown)).toEqual([
+                false,
+                false,
+                true,
+                false,
+                false,
+            ]);
         });
     });
 
