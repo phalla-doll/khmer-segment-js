@@ -1,10 +1,11 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
+import { basename, join } from 'path';
 import { segmentWords } from '../src/core/segment';
 import { getDefaultDictionary } from '../src/dictionary/default-dictionary';
 
 const BENCHMARK_DIR = join(import.meta.dirname, '..', 'benchmark', 'data');
 const RESULTS_DIR = join(import.meta.dirname, '..', 'docs');
+const DEFAULT_VITERBI_BOUNDARY_PENALTY = 10;
 
 interface BoundaryMetrics {
     precision: number;
@@ -254,15 +255,20 @@ function runBenchmark(
 
 function formatResults(
     results: BenchmarkResult[],
+    datasetName: string,
     viterbiBoundaryPenalty?: number
 ): string {
     const lines: string[] = [];
     lines.push('# Benchmark Results');
     lines.push('');
     lines.push(`Date: ${new Date().toISOString()}`);
-    lines.push(`Dataset: kh_data_10000b (phylypo/segmentation-crf-khmer)`);
+    lines.push(`Dataset: ${datasetName} (phylypo/segmentation-crf-khmer)`);
     if (typeof viterbiBoundaryPenalty === 'number') {
         lines.push(`Viterbi boundary penalty: ${viterbiBoundaryPenalty}`);
+    } else {
+        lines.push(
+            `Viterbi boundary penalty: default (${DEFAULT_VITERBI_BOUNDARY_PENALTY})`
+        );
     }
     lines.push('');
 
@@ -336,6 +342,7 @@ async function main() {
     }
 
     console.log(`Loading gold data from ${goldFile}...`);
+    const datasetName = basename(goldFile, '.txt');
     const goldSentences = loadGoldData(goldFile);
     console.log(`Loaded ${goldSentences.length} sentences`);
 
@@ -366,7 +373,7 @@ async function main() {
     }
 
     mkdirSync(RESULTS_DIR, { recursive: true });
-    const report = formatResults(results, viterbiBoundaryPenalty);
+    const report = formatResults(results, datasetName, viterbiBoundaryPenalty);
     const reportPath = join(RESULTS_DIR, 'benchmark-results.md');
     writeFileSync(reportPath, report, 'utf-8');
     const jsonPath = join(RESULTS_DIR, 'benchmark-results.json');
@@ -375,9 +382,11 @@ async function main() {
         JSON.stringify(
             {
                 generatedAt: new Date().toISOString(),
-                dataset: 'kh_data_10000b',
+                dataset: datasetName,
                 dictionarySize: dictionary.size,
                 sentences: goldSentences.length,
+                effectiveViterbiBoundaryPenalty:
+                    viterbiBoundaryPenalty ?? DEFAULT_VITERBI_BOUNDARY_PENALTY,
                 viterbiBoundaryPenalty,
                 results: results.map(r => ({
                     strategy: r.strategy,

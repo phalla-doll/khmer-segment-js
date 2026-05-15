@@ -49,6 +49,14 @@ npm run test:accuracy
 
 Results are written to `docs/benchmark-results.md`.
 
+To generate the categorized Viterbi error report used for accuracy planning:
+
+```bash
+npm run test:accuracy:errors
+```
+
+Results are written to `docs/benchmark-error-analysis.md`.
+
 ## Performance Gate Policy
 
 Performance tests (`npm run test:perf`) use a **warmup + median** strategy to reduce CI jitter:

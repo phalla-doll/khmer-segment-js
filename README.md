@@ -616,6 +616,7 @@ npm run lint      # TypeScript type check + ESLint
 npm test              # run the main Vitest correctness suite
 npm run test:perf     # non-blocking CI perf checks (relative thresholds)
 npm run test:accuracy # run full accuracy benchmark and write docs/benchmark-results.*
+npm run test:accuracy:errors # write categorized Viterbi error analysis
 npm run test:accuracy:check # accuracy benchmark + baseline regression gate (manual/scheduled CI)
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check + ESLint

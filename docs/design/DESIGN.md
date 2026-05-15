@@ -22,6 +22,7 @@ tree-shakeable, and easy to embed in browser or server code.
     - Forward Maximum Matching (FMM)
     - Backward Maximum Matching (BMM)
     - Bidirectional Maximum Matching (BiMM)
+    - Viterbi dynamic programming
 5. Merge consecutive digit tokens into a single token.
 6. Return `original`, `normalized`, and token metadata.
 
@@ -90,6 +91,12 @@ heuristics:
 - fewer unknown tokens wins
 - if tied, fewer total tokens wins
 - if still tied, FMM wins
+
+### Viterbi
+
+Viterbi finds the lowest-cost segmentation path using dictionary frequencies,
+unknown-token penalties, and a boundary penalty. It is the default strategy when
+a dictionary is provided.
 
 ## Token Offsets
 

@@ -53,6 +53,7 @@
         "prepublishOnly": "npm run build && npm run test && npm run lint && npm run format:check",
         "download:benchmark": "tsx scripts/download-benchmark-data.ts",
         "test:accuracy": "tsx scripts/benchmark-accuracy.ts",
+        "test:accuracy:errors": "tsx scripts/analyze-benchmark-errors.ts",
         "test:accuracy:check": "npm run test:accuracy && tsx scripts/check-benchmark-regression.ts",
         "test:accuracy:sweep": "tsx scripts/benchmark-viterbi-penalty.ts",
         "playground:dev": "npm run dev --prefix playground",

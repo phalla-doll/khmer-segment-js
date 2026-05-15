@@ -1,36 +1,37 @@
 {
-    "generatedAt": "2026-04-08T02:25:56.283Z",
-    "dataset": "kh_data_10000b",
+    "generatedAt": "2026-05-15T15:05:48.196Z",
+    "dataset": "kh_data_10000",
     "dictionarySize": 101107,
     "sentences": 87875,
+    "effectiveViterbiBoundaryPenalty": 10,
     "results": [
         {
             "strategy": "fmm",
-            "boundaryMetrics": { "f1": 0.8024 },
-            "tokenMetrics": { "f1": 0.6304 },
-            "exactMatchRate": 0.0195,
-            "oovBoundaryF1": 0.5353
+            "boundaryMetrics": { "f1": 0.8023899271060564 },
+            "tokenMetrics": { "f1": 0.630419592658994 },
+            "exactMatchRate": 0.0195049786628734,
+            "oovBoundaryF1": 0.41607808762784193
         },
         {
             "strategy": "bmm",
-            "boundaryMetrics": { "f1": 0.7981 },
-            "tokenMetrics": { "f1": 0.6239 },
-            "exactMatchRate": 0.0179,
-            "oovBoundaryF1": 0.5352
+            "boundaryMetrics": { "f1": 0.7981189298675725 },
+            "tokenMetrics": { "f1": 0.6239076879037041 },
+            "exactMatchRate": 0.017923186344238975,
+            "oovBoundaryF1": 0.4193050121230462
         },
         {
             "strategy": "bimm",
-            "boundaryMetrics": { "f1": 0.8041 },
-            "tokenMetrics": { "f1": 0.6327 },
-            "exactMatchRate": 0.0201,
-            "oovBoundaryF1": 0.535
+            "boundaryMetrics": { "f1": 0.8041263100480274 },
+            "tokenMetrics": { "f1": 0.6326796867211796 },
+            "exactMatchRate": 0.020051209103840683,
+            "oovBoundaryF1": 0.4185533671848793
         },
         {
             "strategy": "viterbi",
-            "boundaryMetrics": { "f1": 0.7268 },
-            "tokenMetrics": { "f1": 0.4219 },
-            "exactMatchRate": 0.0012,
-            "oovBoundaryF1": 0.9621
+            "boundaryMetrics": { "f1": 0.8571714600306599 },
+            "tokenMetrics": { "f1": 0.6743831077104666 },
+            "exactMatchRate": 0.014440967283072547,
+            "oovBoundaryF1": 0.8874205627474057
         }
     ]
 }

@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Accuracy benchmark error-analysis tooling and reports for categorized Viterbi failure review.
+
 ### Fixed
 
 - Playground typing demo no longer treats trailing textarea whitespace as a mismatch, so completion is not blocked by accidental trailing space/newline.

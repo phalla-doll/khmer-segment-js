@@ -1,9 +1,9 @@
 {
-    "generatedAt": "2026-04-08T08:53:21.184Z",
-    "dataset": "kh_data_10000b",
+    "generatedAt": "2026-05-15T15:05:48.196Z",
+    "dataset": "kh_data_10000",
     "dictionarySize": 101107,
     "sentences": 87875,
-    "viterbiBoundaryPenalty": 6,
+    "effectiveViterbiBoundaryPenalty": 10,
     "results": [
         {
             "strategy": "fmm",
@@ -20,7 +20,7 @@
             "exactMatchRate": 0.0195049786628734,
             "oovRate": 0.2795967261677915,
             "oovBoundaryF1": 0.41607808762784193,
-            "elapsedMs": 6890
+            "elapsedMs": 20825
         },
         {
             "strategy": "bmm",
@@ -37,7 +37,7 @@
             "exactMatchRate": 0.017923186344238975,
             "oovRate": 0.2772092990771114,
             "oovBoundaryF1": 0.4193050121230462,
-            "elapsedMs": 10510
+            "elapsedMs": 28093
         },
         {
             "strategy": "bimm",
@@ -54,24 +54,24 @@
             "exactMatchRate": 0.020051209103840683,
             "oovRate": 0.2772717565015437,
             "oovBoundaryF1": 0.4185533671848793,
-            "elapsedMs": 15537
+            "elapsedMs": 43987
         },
         {
             "strategy": "viterbi",
             "boundaryMetrics": {
-                "precision": 0.7209409995902525,
-                "recall": 0.9286007091367025,
-                "f1": 0.8116997829438296
+                "precision": 0.801372581065342,
+                "recall": 0.9213223366187923,
+                "f1": 0.8571714600306599
             },
             "tokenMetrics": {
-                "precision": 0.5123809185810109,
-                "recall": 0.6599670217297414,
-                "f1": 0.5768842119301628
+                "precision": 0.6304831143508589,
+                "recall": 0.72485406892785,
+                "f1": 0.6743831077104666
             },
-            "exactMatchRate": 0.006190611664295875,
-            "oovRate": 0.03149685960134198,
-            "oovBoundaryF1": 0.8874803257373571,
-            "elapsedMs": 23469
+            "exactMatchRate": 0.014440967283072547,
+            "oovRate": 0.03527008182764325,
+            "oovBoundaryF1": 0.8874205627474057,
+            "elapsedMs": 50068
         }
     ]
 }
