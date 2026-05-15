@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-05-15
+
 ### Added
 
 - Accuracy benchmark error-analysis tooling and reports for categorized Viterbi failure review.
