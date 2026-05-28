@@ -49,29 +49,54 @@ function stripIgnoredForCompare(text: string): string {
     return kept.join('');
 }
 
-function splitWords(text: string): string[] {
-    return text.split(/\s+/).filter(Boolean);
+interface TypingUnitSpan {
+    value: string;
+    start: number;
+    end: number;
+}
+
+function splitWordSpans(text: string): TypingUnitSpan[] {
+    return [...text.matchAll(/\S+/gu)].map(match => {
+        const start = match.index;
+        const value = match[0];
+        return {
+            value,
+            start,
+            end: start + value.length,
+        };
+    });
+}
+
+function splitClusterSpans(text: string): TypingUnitSpan[] {
+    const spans: TypingUnitSpan[] = [];
+    let offset = 0;
+    for (const value of splitClusters(text)) {
+        spans.push({
+            value,
+            start: offset,
+            end: offset + value.length,
+        });
+        offset += value.length;
+    }
+    return spans;
 }
 
 function offsetAfterUnits(
     fullText: string,
-    units: string[],
+    units: TypingUnitSpan[],
     count: number
 ): number {
     if (count <= 0) return 0;
-    let offset = 0;
-    for (let i = 0; i < count && i < units.length; i++) {
-        offset += units[i].length;
-    }
-    return offset;
+    if (count >= units.length) return fullText.length;
+    return units[count - 1]?.end ?? 0;
 }
 
 function buildUnitStates(
-    targetUnits: string[],
+    targetUnits: TypingUnitSpan[],
     correctLeading: number
 ): TypingUnitState[] {
-    return targetUnits.map((value, i) => ({
-        value,
+    return targetUnits.map((unit, i) => ({
+        value: unit.value,
         correct: i < correctLeading,
     }));
 }
@@ -108,19 +133,19 @@ export function compareTyping(
 
     const targetUnits =
         unit === 'word'
-            ? splitWords(normalizedTarget)
-            : splitClusters(normalizedTarget);
+            ? splitWordSpans(normalizedTarget)
+            : splitClusterSpans(normalizedTarget);
     const typedUnits =
         unit === 'word'
-            ? splitWords(normalizedTyped)
-            : splitClusters(normalizedTyped);
+            ? splitWordSpans(normalizedTyped)
+            : splitClusterSpans(normalizedTyped);
 
     const totalUnits = targetUnits.length;
 
     let correctUnits = 0;
     const maxCompare = Math.min(targetUnits.length, typedUnits.length);
     for (let i = 0; i < maxCompare; i++) {
-        if (typedUnits[i] !== targetUnits[i]) break;
+        if (typedUnits[i]?.value !== targetUnits[i]?.value) break;
         correctUnits++;
     }
 

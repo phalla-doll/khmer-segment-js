@@ -41,7 +41,27 @@ describe('compareTyping', () => {
         const r = compareTyping(target, typed, { unit: 'word' });
         expect(r.correctUnits).toBe(1);
         expect(r.totalUnits).toBe(2);
+        expect(r.correctPrefixLength).toBe('សួស្តី'.length);
         expect(r.isComplete).toBe(false);
+    });
+
+    it('counts whitespace in word-mode prefix length when complete', () => {
+        const target = 'សួស្តី អ្នក';
+        const r = compareTyping(target, target, { unit: 'word' });
+        expect(r.isComplete).toBe(true);
+        expect(r.correctPrefixLength).toBe(r.normalizedTarget.length);
+        expect(r.mismatchOffset).toBe(r.normalizedTarget.length);
+    });
+
+    it('keeps word-mode mismatch offsets in target text space', () => {
+        const target = 'hello world';
+        const r = compareTyping(target, 'hello there', {
+            normalize: false,
+            unit: 'word',
+        });
+        expect(r.correctUnits).toBe(1);
+        expect(r.correctPrefixLength).toBe(5);
+        expect(r.mismatchOffset).toBe(5);
     });
 
     it('ignorePunctuation strips sentence punctuation for comparison', () => {
