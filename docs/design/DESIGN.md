@@ -126,6 +126,10 @@ They build on normalization and `splitClusters()` so progress and mismatch offse
 how Khmer is typed, not naive JavaScript character indices. Metrics (`computeTypingMetrics`) use
 standard five-characters-per-word WPM on the caller-supplied correct character count.
 
+`compareTyping()` also supports whitespace-delimited word mode. In both cluster and word mode,
+`mismatchOffset` and `correctPrefixLength` are offsets into the returned normalized target string;
+word mode compares word values but preserves whitespace in the target text space for offsets.
+
 ## Text editing helpers
 
 Caret and cluster-safe backspace are implemented in `src/core/caret.ts` (`getCaretBoundaries`,

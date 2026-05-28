@@ -6,7 +6,7 @@ Works in **Next.js**, **Angular**, **React**, **Vue**, **Node.js**, and the **br
 
 Zero external dependencies. Tree-shakeable. Pure functions.
 
-![khmer-segment — Khmer text processing for JavaScript and TypeScript](public/khmer-segment-og-2.png)
+![khmer-segment — Khmer text processing for JavaScript and TypeScript](https://raw.githubusercontent.com/phalla-doll/khmer-segment-js/main/public/khmer-segment-og-2.png)
 
 ---
 
@@ -309,9 +309,11 @@ const metrics = computeTypingMetrics({
 
 `compareTyping` uses strict normalized cluster/word equality for completion. In UI code, it is often useful to trim trailing textarea whitespace before compare, and optionally fold known equivalent prompt variants before calling the API.
 
+Offsets and lengths (`mismatchOffset`, `correctPrefixLength`) always refer to the returned normalized target string. In word mode, words are compared while whitespace remains part of the target text space, so completed word-mode prompts still report the full target length.
+
 Subpath (same API): `import { compareTyping } from 'khmer-segment/typing'`.
 
-See [`docs/typing-game.md`](docs/typing-game.md) for IME/composition notes and integration patterns.
+See [`docs/typing-game.md`](https://github.com/phalla-doll/khmer-segment-js/blob/main/docs/typing-game.md) for IME/composition notes and integration patterns.
 
 ### React Hooks (`khmer-segment/react`)
 
@@ -510,7 +512,7 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 | BMM      | 0.8717      | 0.7202     | 2.31%       | 6.47%    | 0.9222          | 0.7x            |
 | Viterbi  | 0.8674      | 0.6840     | 1.56%       | 4.89%    | **0.9357**      | 1.5x            |
 
-**Recommended:** omit `strategy` or use `strategy: 'bimm'` for the best current aggregate Boundary F1/Token F1. Use `strategy: 'viterbi'` explicitly for frequency-aware segmentation when OOV boundary handling matters most. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) for methodology.
+**Recommended:** omit `strategy` or use `strategy: 'bimm'` for the best current aggregate Boundary F1/Token F1. Use `strategy: 'viterbi'` explicitly for frequency-aware segmentation when OOV boundary handling matters most. See [`docs/benchmark-results.md`](https://github.com/phalla-doll/khmer-segment-js/blob/main/docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](https://github.com/phalla-doll/khmer-segment-js/blob/main/docs/benchmark-methodology.md) for methodology.
 
 ---
 
@@ -595,7 +597,7 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 - **Typing game support** — `compareTyping`, `computeTypingMetrics`, `getCorrectPrefixLength`, `getFirstMismatchIndex` for cluster/word-aware progress and WPM-style metrics
 - **`khmer-segment/typing` subpath** — optional dedicated export matching root typing APIs
-- **Documentation** — [`docs/typing-game.md`](docs/typing-game.md) guide; design doc updated for typing scope
+- **Documentation** — [`docs/typing-game.md`](https://github.com/phalla-doll/khmer-segment-js/blob/main/docs/typing-game.md) guide; design doc updated for typing scope
 - **Playground** — live typing demo with `compareTyping` + `computeTypingMetrics`
 - **Tests** — `src/__tests__/typing/` coverage for comparison and metrics
 
@@ -649,8 +651,8 @@ CI behavior:
 
 ## Project Docs
 
-- Canonical docs index: [`docs/README.md`](docs/README.md)
-- Release history and migration notes: [`CHANGELOG.md`](CHANGELOG.md)
+- Canonical docs index: [`docs/README.md`](https://github.com/phalla-doll/khmer-segment-js/blob/main/docs/README.md)
+- Release history and migration notes: [`CHANGELOG.md`](https://github.com/phalla-doll/khmer-segment-js/blob/main/CHANGELOG.md)
 
 ### Manual Testing (Playground)
 

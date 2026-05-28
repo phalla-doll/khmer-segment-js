@@ -35,6 +35,8 @@ const metrics = computeTypingMetrics({
 
 `compareTyping` is strict at the cluster/word level: if any normalized unit differs, matching stops at that unit and `isComplete` stays `false`.
 
+Offsets and lengths are always in the returned normalized target text space. For example, `mismatchOffset` and `correctPrefixLength` include whitespace when it is part of the target. In `unit: 'word'` mode, comparison ignores whitespace as a unit boundary detail, but completed prompts still report `correctPrefixLength === normalizedTarget.length`.
+
 ## Practical UI/UX notes
 
 In real textareas and IME flows, users can produce input that looks correct but does not compare equal byte-for-byte.
@@ -60,7 +62,7 @@ This is application-level behavior; the library compares final strings you pass 
 
 ## Optional: word-level prompts
 
-Use `compareTyping(prompt, typed, { unit: 'word' })` when the prompt is split on whitespace and you want per-word correctness. Cluster mode is preferred for “natural” Khmer typing feel.
+Use `compareTyping(prompt, typed, { unit: 'word' })` when the prompt is split on whitespace and you want per-word correctness. `unitStates` contains the target words, while `mismatchOffset` and `correctPrefixLength` still point into the normalized target string. Cluster mode is preferred for “natural” Khmer typing feel.
 
 ## Optional: ignore punctuation
 
