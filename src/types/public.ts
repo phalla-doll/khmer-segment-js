@@ -4,6 +4,10 @@ export interface SegmentToken {
     start: number;
     /** Zero-based exclusive end offset into `SegmentResult.normalized`. */
     end: number;
+    /** Zero-based start offset into `SegmentResult.original`. */
+    originalStart?: number;
+    /** Zero-based exclusive end offset into `SegmentResult.original`. */
+    originalEnd?: number;
     isKnown: boolean;
 }
 

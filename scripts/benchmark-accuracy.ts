@@ -6,6 +6,7 @@ import { getDefaultDictionary } from '../src/dictionary/default-dictionary';
 const BENCHMARK_DIR = join(import.meta.dirname, '..', 'benchmark', 'data');
 const RESULTS_DIR = join(import.meta.dirname, '..', 'docs');
 const DEFAULT_VITERBI_BOUNDARY_PENALTY = 10;
+const DEFAULT_SEGMENTATION_STRATEGY = 'bimm';
 
 interface BoundaryMetrics {
     precision: number;
@@ -270,6 +271,23 @@ function formatResults(
             `Viterbi boundary penalty: default (${DEFAULT_VITERBI_BOUNDARY_PENALTY})`
         );
     }
+    lines.push(`Current default strategy: ${DEFAULT_SEGMENTATION_STRATEGY}`);
+    const bestBoundary = [...results].sort(
+        (a, b) => b.boundaryMetrics.f1 - a.boundaryMetrics.f1
+    )[0];
+    const bestOov = [...results].sort(
+        (a, b) => b.oovBoundaryF1 - a.oovBoundaryF1
+    )[0];
+    if (bestBoundary) {
+        lines.push(
+            `Best Boundary F1: ${bestBoundary.strategy} (${bestBoundary.boundaryMetrics.f1.toFixed(4)})`
+        );
+    }
+    if (bestOov) {
+        lines.push(
+            `Best OOV Boundary F1: ${bestOov.strategy} (${bestOov.oovBoundaryF1.toFixed(4)})`
+        );
+    }
     lines.push('');
 
     lines.push('## Summary');
@@ -388,6 +406,13 @@ async function main() {
                 effectiveViterbiBoundaryPenalty:
                     viterbiBoundaryPenalty ?? DEFAULT_VITERBI_BOUNDARY_PENALTY,
                 viterbiBoundaryPenalty,
+                defaultStrategy: DEFAULT_SEGMENTATION_STRATEGY,
+                bestBoundaryF1Strategy: [...results].sort(
+                    (a, b) => b.boundaryMetrics.f1 - a.boundaryMetrics.f1
+                )[0]?.strategy,
+                bestOovBoundaryF1Strategy: [...results].sort(
+                    (a, b) => b.oovBoundaryF1 - a.oovBoundaryF1
+                )[0]?.strategy,
                 results: results.map(r => ({
                     strategy: r.strategy,
                     boundaryMetrics: r.boundaryMetrics,

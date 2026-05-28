@@ -1,12 +1,4 @@
-import {
-    isConsonant,
-    isDependentVowel,
-    isSign,
-    isCoeng,
-    isClusterBase,
-    isRobat,
-    cpAt,
-} from '../constants/char-categories';
+import { walkClusterEnd } from './cluster-walker';
 
 export function splitClusters(text: string): string[] {
     if (!text) return [];
@@ -16,38 +8,9 @@ export function splitClusters(text: string): string[] {
     let i = 0;
 
     while (i < chars.length) {
-        const cp = cpAt(chars[i], 0);
-
-        if (isClusterBase(cp)) {
-            let cluster = chars[i];
-            i++;
-
-            while (i < chars.length) {
-                const nextCp = cpAt(chars[i], 0);
-
-                if (isCoeng(nextCp)) {
-                    cluster += chars[i];
-                    i++;
-                    if (i < chars.length && isConsonant(cpAt(chars[i], 0))) {
-                        cluster += chars[i];
-                        i++;
-                    }
-                } else if (isRobat(nextCp)) {
-                    cluster += chars[i];
-                    i++;
-                } else if (isDependentVowel(nextCp) || isSign(nextCp)) {
-                    cluster += chars[i];
-                    i++;
-                } else {
-                    break;
-                }
-            }
-
-            clusters.push(cluster);
-        } else {
-            clusters.push(chars[i]);
-            i++;
-        }
+        const end = walkClusterEnd(chars, i);
+        clusters.push(chars.slice(i, end).join(''));
+        i = end;
     }
 
     return clusters;
@@ -61,31 +24,8 @@ export function countClusters(text: string): number {
     let count = 0;
 
     while (i < chars.length) {
-        const cp = cpAt(chars[i], 0);
         count++;
-
-        if (!isClusterBase(cp)) {
-            i++;
-            continue;
-        }
-
-        i++;
-        while (i < chars.length) {
-            const nextCp = cpAt(chars[i], 0);
-
-            if (isCoeng(nextCp)) {
-                i++;
-                if (i < chars.length && isConsonant(cpAt(chars[i], 0))) {
-                    i++;
-                }
-            } else if (isRobat(nextCp)) {
-                i++;
-            } else if (isDependentVowel(nextCp) || isSign(nextCp)) {
-                i++;
-            } else {
-                break;
-            }
-        }
+        i = walkClusterEnd(chars, i);
     }
 
     return count;

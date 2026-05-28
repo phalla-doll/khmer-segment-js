@@ -4,12 +4,9 @@ import {
     isDigit,
     isConsonant,
     isClusterBase,
-    isDependentVowel,
-    isSign,
-    isCoeng,
-    isRobat,
     cpAt,
 } from '../constants/char-categories';
+import { walkClusterEnd } from '../core/cluster-walker';
 
 const DEFAULT_COST = 10.0;
 const UNKNOWN_COST = 20.0;
@@ -19,33 +16,6 @@ const DEFAULT_BOUNDARY_PENALTY = 10.0;
 
 interface ViterbiOptions {
     boundaryPenalty?: number;
-}
-
-function getClusterLength(chars: string[], start: number): number {
-    let i = start;
-    if (i >= chars.length) return 0;
-
-    const cp = cpAt(chars[i]);
-    if (!isClusterBase(cp)) return 1;
-
-    i++;
-    while (i < chars.length) {
-        const nextCp = cpAt(chars[i]);
-        if (isCoeng(nextCp)) {
-            i++;
-            if (i < chars.length && isConsonant(cpAt(chars[i]))) {
-                i++;
-            }
-        } else if (isRobat(nextCp)) {
-            i++;
-        } else if (isDependentVowel(nextCp) || isSign(nextCp)) {
-            i++;
-        } else {
-            break;
-        }
-    }
-
-    return i - start;
 }
 
 function isSeparator(cp: number): boolean {
@@ -163,7 +133,7 @@ export function viterbiSegment(
             }
         }
 
-        const clusterLen = getClusterLength(chars, i);
+        const clusterLen = walkClusterEnd(chars, i) - i;
         let unknownCost = dp[i] + UNKNOWN_COST + boundaryPenalty;
 
         if (clusterLen === 1 && isConsonant(cp)) {

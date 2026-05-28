@@ -7,6 +7,22 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-05-28
+
+### Added
+
+- `SegmentToken.originalStart` and `SegmentToken.originalEnd` source-span offsets for mapping normalized tokens back to `SegmentResult.original`.
+- Dictionary candidate mining script (`npm run test:accuracy:candidates`) for reviewable corpus-mined dictionary additions.
+- Dictionary size reporting script (`npm run report:dictionary-size`) for raw/gzip/load-time measurement before compression work.
+- Shared Khmer cluster walker used by cluster utilities, caret boundaries, and Viterbi fallback logic.
+
+### Changed
+
+- Default dictionary-backed segmentation strategy is now BiMM again, matching the current benchmark winner for Boundary F1 and Token F1.
+- Playground default strategy now starts on BiMM to match core behavior.
+- Benchmark reports now identify the current default strategy, best Boundary F1 strategy, and best OOV Boundary F1 strategy.
+- Historical planning docs moved to `docs/archive/`; canonical docs now carry current behavior.
+
 ## [0.8.3] - 2026-05-15
 
 ### Changed

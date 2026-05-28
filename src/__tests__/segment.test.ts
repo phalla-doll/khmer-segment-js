@@ -230,6 +230,97 @@ describe('segmentWords', () => {
         });
     });
 
+    describe('original offsets', () => {
+        it('matches normalized offsets when normalize: false', () => {
+            const result = segmentWords('ក Anne 3.14', {
+                normalize: false,
+            });
+
+            for (const token of result.tokens) {
+                expect(token.originalStart).toBe(token.start);
+                expect(token.originalEnd).toBe(token.end);
+            }
+        });
+
+        it('matches normalized offsets for already-normal text', () => {
+            const result = segmentWords('សួស្តីអ្នក', { dictionary: dict });
+
+            for (const token of result.tokens) {
+                expect(token.originalStart).toBe(token.start);
+                expect(token.originalEnd).toBe(token.end);
+            }
+        });
+
+        it('maps zero-width-stripped tokens back to original source spans', () => {
+            const input = 'ស\u200Bប្តា\u200Bហ៍';
+            const defaultDict = getDefaultDictionary();
+            const result = segmentWords(input, {
+                dictionary: defaultDict,
+                strategy: 'fmm',
+            });
+            const token = result.tokens.find(t => t.value === 'សប្តាហ៍');
+
+            expect(token).toBeDefined();
+            if (!token) throw new Error('Missing expected token');
+            expect(token.start).toBe(0);
+            expect(token.end).toBe(result.normalized.length);
+            expect(token.originalStart).toBe(0);
+            expect(token.originalEnd).toBe(input.length);
+        });
+
+        it('maps reordered Khmer marks to the whole original cluster span', () => {
+            const input = '\u1780\u17CB\u17B6';
+            const result = segmentWords(input);
+
+            expect(result.normalized).toBe('\u1780\u17B6\u17CB');
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0]).toMatchObject({
+                value: result.normalized,
+                start: 0,
+                end: result.normalized.length,
+                originalStart: 0,
+                originalEnd: input.length,
+            });
+        });
+
+        it('maps composite vowel normalization to the whole original cluster span', () => {
+            const input = '\u1780\u17C1\u17B8';
+            const result = segmentWords(input);
+
+            expect(result.normalized).toBe('\u1780\u17BE');
+            expect(result.tokens).toHaveLength(1);
+            expect(result.tokens[0]).toMatchObject({
+                value: result.normalized,
+                start: 0,
+                end: result.normalized.length,
+                originalStart: 0,
+                originalEnd: input.length,
+            });
+        });
+
+        it('maps mixed Khmer, Latin, digits, and punctuation spans', () => {
+            const input = 'ក\u200B Anne ៣,០០០!';
+            const result = segmentWords(input);
+            const anne = result.tokens.find(t => t.value === 'Anne');
+            const number = result.tokens.find(t => t.value === '៣,០០០');
+            const bang = result.tokens.find(t => t.value === '!');
+
+            expect(result.normalized).toBe('ក Anne ៣,០០០!');
+            expect(anne).toMatchObject({
+                originalStart: input.indexOf('Anne'),
+                originalEnd: input.indexOf('Anne') + 'Anne'.length,
+            });
+            expect(number).toMatchObject({
+                originalStart: input.indexOf('៣'),
+                originalEnd: input.indexOf('៣') + '៣,០០០'.length,
+            });
+            expect(bang).toMatchObject({
+                originalStart: input.length - 1,
+                originalEnd: input.length,
+            });
+        });
+    });
+
     describe('digit grouping', () => {
         const dict = createDictionary(['សួស្តី', 'អ្នក']);
 
@@ -636,11 +727,33 @@ describe('segmentWords', () => {
     });
 
     describe('strategy comparison', () => {
-        it('defaults to Viterbi when no strategy specified', () => {
+        it('defaults to BiMM when no strategy specified', () => {
             const dict = createDictionary(['សួស្តី']);
-            const result = segmentWords('សួស្តី', { dictionary: dict });
-            expect(result.tokens[0].value).toBe('សួស្តី');
-            expect(result.tokens[0].isKnown).toBe(true);
+            const defaultResult = segmentWords('សួស្តី', { dictionary: dict });
+            const bimmResult = segmentWords('សួស្តី', {
+                dictionary: dict,
+                strategy: 'bimm',
+            });
+
+            expect(defaultResult.tokens).toEqual(bimmResult.tokens);
+        });
+
+        it('keeps Viterbi selectable explicitly', () => {
+            const dict = createDictionary(
+                ['ក', 'ខ', 'កខ'],
+                new Map([
+                    ['ក', 100],
+                    ['ខ', 100],
+                    ['កខ', 1],
+                ])
+            );
+            const result = segmentWords('កខ', {
+                dictionary: dict,
+                strategy: 'viterbi',
+                viterbiBoundaryPenalty: 0,
+            });
+
+            expect(result.tokens.map(t => t.value)).toEqual(['ក', 'ខ']);
         });
 
         it('all strategies produce contiguous offsets', () => {

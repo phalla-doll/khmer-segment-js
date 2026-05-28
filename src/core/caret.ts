@@ -1,4 +1,4 @@
-import { splitClusters } from './cluster';
+import { getClusterCharBoundaries } from './cluster-walker';
 import { normalizeKhmer } from './normalize';
 import type { CaretOptions, DeleteResult } from '../types/public';
 
@@ -10,13 +10,10 @@ export function getCaretBoundaries(
 
     if (!src) return [0];
 
-    const clusters = splitClusters(src);
     const positions: number[] = [0];
-    let offset = 0;
 
-    for (const cluster of clusters) {
-        offset += cluster.length;
-        positions.push(offset);
+    for (const boundary of getClusterCharBoundaries(src)) {
+        positions.push(boundary.end);
     }
 
     return positions;

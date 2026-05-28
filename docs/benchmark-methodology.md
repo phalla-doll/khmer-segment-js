@@ -57,6 +57,16 @@ npm run test:accuracy:errors
 
 Results are written to `docs/benchmark-error-analysis.md`.
 
+To generate review candidates for future dictionary expansion:
+
+```bash
+npm run test:accuracy:candidates
+```
+
+Results are written to `docs/dictionary-candidates.md`. These candidates are
+not accepted dictionary entries until source and licensing checks are recorded in
+`docs/data-sources.md`.
+
 ## Performance Gate Policy
 
 Performance tests (`npm run test:perf`) use a **warmup + median** strategy to reduce CI jitter:

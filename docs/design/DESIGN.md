@@ -95,17 +95,21 @@ heuristics:
 ### Viterbi
 
 Viterbi finds the lowest-cost segmentation path using dictionary frequencies,
-unknown-token penalties, and a boundary penalty. It is the default strategy when
-a dictionary is provided.
+unknown-token penalties, and a boundary penalty. It is explicit opt-in; BiMM is
+the default strategy when a dictionary is provided because current benchmark
+results give BiMM the best aggregate Boundary F1 and Token F1.
 
 ## Token Offsets
 
-Token offsets are measured against `result.normalized`.
+Token `start` and `end` offsets are measured against `result.normalized`.
 
 This is an intentional contract: if normalization removes invisible characters,
 `SegmentToken.start` and `end` may no longer line up with positions in the
 original input string. The returned `original` field preserves the caller's raw
 input, while `normalized` is the coordinate space used by token boundaries.
+`originalStart` and `originalEnd` provide source-span mapping back into
+`result.original`; reordered marks and composite vowels map to the whole original
+cluster span that produced the normalized token.
 
 ## Performance Notes
 

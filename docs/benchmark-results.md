@@ -1,23 +1,26 @@
 # Benchmark Results
 
-Date: 2026-05-15T16:02:34.369Z
+Date: 2026-05-15T16:27:10.959Z
 Dataset: kh_data_10000 (phylypo/segmentation-crf-khmer)
 Viterbi boundary penalty: default (10)
+Current default strategy: bimm
+Best Boundary F1: bimm (0.8787)
+Best OOV Boundary F1: viterbi (0.9357)
 
 ## Summary
 
 | Strategy | Boundary P | Boundary R | Boundary F1 | Token P | Token R | Token F1 | Exact Match | OOV Rate | OOV Boundary F1 | Time (ms) |
 | -------- | ---------- | ---------- | ----------- | ------- | ------- | -------- | ----------- | -------- | --------------- | --------- |
-| fmm      | 0.9169     | 0.8398     | 0.8766      | 0.7612  | 0.6971  | 0.7277   | 0.0247      | 0.0673   | 0.9007          | 9001      |
-| bmm      | 0.9106     | 0.8360     | 0.8717      | 0.7523  | 0.6907  | 0.7202   | 0.0231      | 0.0647   | 0.9222          | 12609     |
-| bimm     | 0.9202     | 0.8408     | 0.8787      | 0.7650  | 0.6989  | 0.7304   | 0.0255      | 0.0637   | 0.9272          | 17788     |
-| viterbi  | 0.8060     | 0.9388     | 0.8674      | 0.6357  | 0.7403  | 0.6840   | 0.0156      | 0.0489   | 0.9357          | 26649     |
+| fmm      | 0.9169     | 0.8398     | 0.8766      | 0.7612  | 0.6971  | 0.7277   | 0.0247      | 0.0673   | 0.9007          | 10608     |
+| bmm      | 0.9106     | 0.8360     | 0.8717      | 0.7523  | 0.6907  | 0.7202   | 0.0231      | 0.0647   | 0.9222          | 13694     |
+| bimm     | 0.9202     | 0.8408     | 0.8787      | 0.7650  | 0.6989  | 0.7304   | 0.0255      | 0.0637   | 0.9272          | 19222     |
+| viterbi  | 0.8060     | 0.9388     | 0.8674      | 0.6357  | 0.7403  | 0.6840   | 0.0156      | 0.0489   | 0.9357          | 27434     |
 
 ## FMM Details
 
 - Sentences: 87875
 - Avg tokens/sentence: 35.1
-- Elapsed: 9001ms
+- Elapsed: 10608ms
 
 ### Error Examples
 
@@ -125,7 +128,7 @@ PRED: លោក | ប្រធានាធិបតី | មិនបាន | �
 
 - Sentences: 87875
 - Avg tokens/sentence: 35.2
-- Elapsed: 12609ms
+- Elapsed: 13694ms
 
 ### Error Examples
 
@@ -233,7 +236,7 @@ PRED: លោក | ប្រធានាធិបតី | មិនបាន | �
 
 - Sentences: 87875
 - Avg tokens/sentence: 35.0
-- Elapsed: 17788ms
+- Elapsed: 19222ms
 
 ### Error Examples
 
@@ -341,7 +344,7 @@ PRED: លោក | ប្រធានាធិបតី | មិនបាន | �
 
 - Sentences: 87875
 - Avg tokens/sentence: 44.6
-- Elapsed: 26649ms
+- Elapsed: 27434ms
 
 ### Error Examples
 

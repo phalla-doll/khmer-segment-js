@@ -53,7 +53,7 @@ const tabPanels = [
 ];
 
 let normalize = true;
-let strategy = 'viterbi';
+let strategy = 'bimm';
 
 function activateTab(index: number) {
     const i = Math.max(0, Math.min(index, tabs.length - 1));

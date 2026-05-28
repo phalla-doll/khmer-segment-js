@@ -4,7 +4,6 @@ import type {
     SegmentResult,
     SegmentToken,
 } from '../types/public';
-import { normalizeKhmer } from './normalize';
 import { splitClusters } from './cluster';
 import { fmmSegment } from '../algorithms/fmm';
 import { bmmSegment } from '../algorithms/bmm';
@@ -12,6 +11,10 @@ import { bimmSegment } from '../algorithms/bimm';
 import { viterbiSegment } from '../algorithms/viterbi';
 import { groupExternalTokens } from '../algorithms/group-external-tokens';
 import { isKhmerSentencePunctuationToken } from '../constants/char-categories';
+import {
+    addOriginalOffsets,
+    normalizeKhmerWithSourceMap,
+} from './original-offsets';
 
 const VALID_STRATEGIES = ['fmm', 'bmm', 'bimm', 'viterbi'] as const;
 
@@ -106,13 +109,16 @@ export function segmentWords(
     validateOptions(options);
 
     const shouldNormalize = options?.normalize !== false;
-    const normalized = shouldNormalize ? normalizeKhmer(text) : text;
+    const sourceMap = shouldNormalize
+        ? normalizeKhmerWithSourceMap(text)
+        : undefined;
+    const normalized = sourceMap?.normalized ?? text;
     const clusters = splitClusters(normalized);
     const dictionary = options?.dictionary;
 
     let tokens: SegmentToken[];
     if (dictionary) {
-        const strategy = options?.strategy ?? 'viterbi';
+        const strategy = options?.strategy ?? 'bimm';
         switch (strategy) {
             case 'fmm':
                 tokens = fmmSegment(clusters, dictionary);
@@ -141,6 +147,13 @@ export function segmentWords(
 
     tokens = groupExternalTokens(tokens);
     tokens = markKhmerSentencePunctuationKnown(tokens);
+    tokens = addOriginalOffsets(
+        tokens,
+        text,
+        normalized,
+        shouldNormalize,
+        sourceMap
+    );
 
     return {
         original: text,

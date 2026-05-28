@@ -36,6 +36,14 @@ This document records all external data sources used in the khmer-segment dictio
 - **Usage**: Gold-standard segmented corpus for accuracy benchmarking
 - **Redistribution**: Downloaded at benchmark time, not included in npm package
 
+## Candidate Review Workflow
+
+`npm run test:accuracy:candidates` mines benchmark mismatches for frequent
+unknown Khmer spans, under-split gold tokens, and recurring name/compound
+candidates. The generated report is review-only: entries must not be added to
+the default dictionary until their source, quality, and redistribution status are
+recorded in this file.
+
 ## Removed / Considered Sources
 
 ### Google language-resources/km

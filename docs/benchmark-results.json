@@ -1,9 +1,12 @@
 {
-    "generatedAt": "2026-05-15T16:02:34.371Z",
+    "generatedAt": "2026-05-15T16:27:10.960Z",
     "dataset": "kh_data_10000",
     "dictionarySize": 101107,
     "sentences": 87875,
     "effectiveViterbiBoundaryPenalty": 10,
+    "defaultStrategy": "bimm",
+    "bestBoundaryF1Strategy": "bimm",
+    "bestOovBoundaryF1Strategy": "viterbi",
     "results": [
         {
             "strategy": "fmm",
@@ -20,7 +23,7 @@
             "exactMatchRate": 0.02471692745376956,
             "oovRate": 0.06725121749011326,
             "oovBoundaryF1": 0.9007461073551903,
-            "elapsedMs": 9001
+            "elapsedMs": 10608
         },
         {
             "strategy": "bmm",
@@ -37,7 +40,7 @@
             "exactMatchRate": 0.023089615931721194,
             "oovRate": 0.06467407382260654,
             "oovBoundaryF1": 0.9222440176989178,
-            "elapsedMs": 12609
+            "elapsedMs": 13694
         },
         {
             "strategy": "bimm",
@@ -54,7 +57,7 @@
             "exactMatchRate": 0.025547652916073967,
             "oovRate": 0.0637172770616568,
             "oovBoundaryF1": 0.9272455547441537,
-            "elapsedMs": 17788
+            "elapsedMs": 19222
         },
         {
             "strategy": "viterbi",
@@ -71,7 +74,7 @@
             "exactMatchRate": 0.015624466571834993,
             "oovRate": 0.04889497967806549,
             "oovBoundaryF1": 0.935673489088339,
-            "elapsedMs": 26649
+            "elapsedMs": 27434
         }
     ]
 }

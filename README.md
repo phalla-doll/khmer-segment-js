@@ -106,7 +106,7 @@ deleteBackward('ក្កក', 4); // { text: 'ក្ក', cursorIndex: 3 }
 
 ```ts
 interface SegmentOptions {
-    strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi'; // default: "viterbi"
+    strategy?: 'fmm' | 'bmm' | 'bimm' | 'viterbi'; // default: "bimm"
     dictionary?: KhmerDictionary;
     normalize?: boolean; // default: true
     viterbiBoundaryPenalty?: number; // default: 10.0 (Viterbi only)
@@ -128,11 +128,13 @@ interface SegmentToken {
     value: string;
     start: number; // zero-based offset into result.normalized
     end: number; // exclusive offset into result.normalized
+    originalStart?: number; // zero-based offset into result.original
+    originalEnd?: number; // exclusive offset into result.original
     isKnown: boolean;
 }
 ```
 
-When normalization is enabled, token offsets always refer to `result.normalized`. Invisible characters such as ZWS/ZWJ/BOM may be stripped during normalization, so offsets may not line up with the original input string.
+`start` and `end` always refer to `result.normalized`. `originalStart` and `originalEnd` map each token back to the smallest contiguous source span in `result.original` that contributed to the normalized token. When normalization reorders marks or combines vowels, original offsets cover the whole source cluster span.
 
 ### Dictionary
 
@@ -242,7 +244,7 @@ Runs both FMM and BMM, then picks the better result using heuristics: fewer unkn
 
 Frequency-weighted dynamic programming segmentation. Finds the globally lowest-cost path through all possible word boundaries using `-log(frequency)` as word cost. Requires a dictionary with frequency data.
 
-**Default strategy** as of v0.4.0. With a boundary penalty of 10.0, Viterbi achieves Boundary F1 = 0.8572 (+5.3% over BiMM) and Token F1 = 0.6744 (+4.2% over BiMM) while maintaining superior OOV handling (OOV Boundary F1 = 0.8875 vs BiMM's 0.4186).
+Viterbi is available as an explicit opt-in strategy for frequency-aware segmentation. In the current benchmark, BiMM is the aggregate default, while Viterbi has the strongest OOV Boundary F1.
 
 ### Text Editing
 
@@ -501,14 +503,14 @@ No framework-specific code in the core. Tree-shakeable with `sideEffects: false`
 
 Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segmentation-crf-khmer](https://github.com/phylypo/segmentation-crf-khmer)) with the default 101,107-word dictionary.
 
-| Strategy    | Boundary F1 | Token F1   | Exact Match | OOV Rate | OOV Boundary F1 | Relative Speed  |
-| ----------- | ----------- | ---------- | ----------- | -------- | --------------- | --------------- |
-| **Viterbi** | **0.8572**  | **0.6744** | **1.4%**    | 5.4%     | **0.8875**      | 1.4x            |
-| BiMM        | 0.8041      | 0.6327     | 2.0%        | 32.6%    | 0.4186          | 1.0x (baseline) |
-| FMM         | 0.8024      | 0.6304     | 2.0%        | 32.8%    | —               | 0.5x            |
-| BMM         | 0.7981      | 0.6239     | 1.8%        | 32.6%    | —               | 0.7x            |
+| Strategy | Boundary F1 | Token F1   | Exact Match | OOV Rate | OOV Boundary F1 | Relative Speed  |
+| -------- | ----------- | ---------- | ----------- | -------- | --------------- | --------------- |
+| **BiMM** | **0.8787**  | **0.7304** | **2.55%**   | 6.37%    | 0.9272          | 1.0x (baseline) |
+| FMM      | 0.8766      | 0.7277     | 2.47%       | 6.73%    | 0.9007          | 0.5x            |
+| BMM      | 0.8717      | 0.7202     | 2.31%       | 6.47%    | 0.9222          | 0.7x            |
+| Viterbi  | 0.8674      | 0.6840     | 1.56%       | 4.89%    | **0.9357**      | 1.5x            |
 
-**Recommended:** `strategy: 'viterbi'` (default) for best accuracy. See `[docs/benchmark-results.md](docs/benchmark-results.md)` for full details and `[docs/benchmark-methodology.md](docs/benchmark-methodology.md)` for methodology.
+**Recommended:** omit `strategy` or use `strategy: 'bimm'` for the best current aggregate Boundary F1/Token F1. Use `strategy: 'viterbi'` explicitly for frequency-aware segmentation when OOV boundary handling matters most. See [`docs/benchmark-results.md`](docs/benchmark-results.md) for full details and [`docs/benchmark-methodology.md`](docs/benchmark-methodology.md) for methodology.
 
 ---
 
@@ -550,9 +552,9 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 
 ### v0.4.0
 
-- **Default strategy switched to Viterbi** (penalty=10.0): Boundary F1 = 0.8572, Token F1 = 0.6744
-- `**getCaretBoundaries(text)` — returns valid caret positions based on Khmer cluster boundaries
-- `**deleteBackward(text, cursorIndex)`\*\* — cluster-safe backspace for text editors
+- **Viterbi strategy tuning** — penalty=10.0 improved OOV-heavy segmentation, but BiMM remains the aggregate default in current benchmarks
+- **`getCaretBoundaries(text)`** — returns valid caret positions based on Khmer cluster boundaries
+- **`deleteBackward(text, cursorIndex)`** — cluster-safe backspace for text editors
 - **Extended Viterbi penalty sweep** — range [0.25–10.0], documented in `docs/viterbi-penalty-sweep.md`
 
 ### v0.5.1
@@ -589,13 +591,20 @@ Measured on the `kh_data_10000b` dataset (87,875 sentences from [phylypo/segment
 - **Angular packaging** — added `./angular` subpath build and exports with optional `@angular/core >= 17` peer metadata
 - **Angular test coverage** — added adapter tests to ensure parity with core normalization/caret/segmentation behavior
 
-### v0.8.0 (current)
+### v0.8.0
 
 - **Typing game support** — `compareTyping`, `computeTypingMetrics`, `getCorrectPrefixLength`, `getFirstMismatchIndex` for cluster/word-aware progress and WPM-style metrics
 - **`khmer-segment/typing` subpath** — optional dedicated export matching root typing APIs
 - **Documentation** — [`docs/typing-game.md`](docs/typing-game.md) guide; design doc updated for typing scope
 - **Playground** — live typing demo with `compareTyping` + `computeTypingMetrics`
 - **Tests** — `src/__tests__/typing/` coverage for comparison and metrics
+
+### v0.9.0
+
+- **Default strategy realigned to BiMM** based on current benchmark results
+- **Original source offsets** — tokens now include `originalStart` and `originalEnd` alongside normalized offsets
+- **Benchmark reports** — generated reports now identify the current default, best Boundary F1 strategy, and best OOV Boundary F1 strategy
+- **Dictionary candidate mining and size reporting** — added review tooling for accuracy and bundle-size planning
 
 ### Future
 
@@ -625,7 +634,9 @@ npm test              # run the main Vitest correctness suite
 npm run test:perf     # non-blocking CI perf checks (relative thresholds)
 npm run test:accuracy # run full accuracy benchmark and write docs/benchmark-results.*
 npm run test:accuracy:errors # write categorized Viterbi error analysis
+npm run test:accuracy:candidates # write review-only dictionary candidates
 npm run test:accuracy:check # accuracy benchmark + baseline regression gate (manual/scheduled CI)
+npm run report:dictionary-size # write dictionary size/load-time report after build
 npm run test:watch    # watch mode — re-runs on changes
 npm run lint          # TypeScript type check + ESLint
 ```
